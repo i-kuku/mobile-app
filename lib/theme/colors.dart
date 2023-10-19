@@ -8,6 +8,7 @@ const black = Colors.black;
 const primary = Color(0xff00681D);
 const primaryAlt = Color(0xff98B130);
 const secondary = Color(0xffF9B420);
+const orangeShade = Color(0xffFFF8E6);
 
 const textAccentDark = Color(0xff243B25);
 const textAccentLight = Color(0xff00681D);
