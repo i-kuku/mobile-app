@@ -13,11 +13,11 @@ class WelcomeScreenCurve extends CustomPainter {
     var path = Path();
 
     //  creating our curve
-    path.moveTo(0, size.height * 0.25);
+    path.moveTo(0, size.height * 0.4);
     path.quadraticBezierTo(
-        size.width / 2, size.height / 2, size.width, size.height * 0.25);
-    path.lineTo(size.width, 0);
-    path.lineTo(0, 0);
+        size.width / 2, size.height / 6, size.width, size.height * 0.3);
+    path.lineTo(size.width, size.height);
+    path.lineTo(0, size.height);
 
     //  draw path
     canvas.drawPath(path, paint);

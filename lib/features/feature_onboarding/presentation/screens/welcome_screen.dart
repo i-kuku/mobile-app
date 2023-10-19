@@ -4,6 +4,7 @@ import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:ikuku/core/presentation/components/action_button.dart';
 import 'package:ikuku/features/feature_onboarding/presentation/components/onboarding_app_bar.dart';
+import 'package:ikuku/features/feature_onboarding/presentation/components/welcome_screen_curve.dart';
 import 'package:ikuku/theme/colors.dart';
 
 class WelcomeScreen extends StatelessWidget {
@@ -21,16 +22,23 @@ class WelcomeScreen extends StatelessWidget {
         child: Stack(
           children: [
             //  orange circle
-            Align(
-              alignment: AlignmentDirectional.bottomCenter,
-              child: ClipPath(
-                clipper: OvalTopBorderClipper(),
-                child: Container(
-                    width: double.infinity,
-                    height: MediaQuery.of(context).size.height * 0.6,
-                    color: const Color(0xffFFF8E6)),
+            Container(
+              width: double.infinity,
+              height: double.infinity,
+              child: CustomPaint(
+                painter: WelcomeScreenCurve(),
               ),
             ),
+            // Align(
+            //   alignment: AlignmentDirectional.bottomCenter,
+            //   child: ClipPath(
+            //     clipper: OvalTopBorderClipper(),
+            //     child: Container(
+            //         width: double.infinity,
+            //         height: MediaQuery.of(context).size.height * 0.6,
+            //         color: const Color(0xffFFF8E6)),
+            //   ),
+            // ),
             //  content
             Padding(
               padding: const EdgeInsets.only(
