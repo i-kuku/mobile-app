@@ -12,7 +12,7 @@ class WelcomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: onboardingAppBar(onClick: (){}),
+      appBar: onboardingAppBar(onClick: () {}, showBackButton: false),
       body: SafeArea(
         child: Stack(
           children: [
@@ -34,14 +34,20 @@ class WelcomeScreen extends StatelessWidget {
                 children: [
                   //  header
                   Expanded(
-                      child: Text(
+                      child: Align(
+                        alignment: AlignmentDirectional.centerStart,
+                        child: Text(
                     "Bridging the Gap in Poultry\nManagement",
                     style: TextStyle(
-                        fontSize: Theme.of(context).textTheme.titleMedium!.fontSize!,
-                        fontWeight:
-                            Theme.of(context).textTheme.titleMedium!.fontWeight!,
-                        color: textAccentDark),
-                  )),
+                          fontSize:
+                              Theme.of(context).textTheme.titleLarge!.fontSize!,
+                          fontWeight: Theme.of(context)
+                              .textTheme
+                              .bodyLarge!
+                              .fontWeight!,
+                          color: textAccentDark),
+                  ),
+                      )),
                   //  farmer image
                   Column(
                     children: [
@@ -50,7 +56,7 @@ class WelcomeScreen extends StatelessWidget {
                         width: double.infinity,
                         height: MediaQuery.of(context).size.height * 0.6,
                       ),
-                      ActionButton(text: 'Get Started', onTap: (){}),
+                      ActionButton(text: 'Get Started', onTap: () {}),
                     ],
                   )
                 ],
