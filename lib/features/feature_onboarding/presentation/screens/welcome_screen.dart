@@ -13,7 +13,10 @@ class WelcomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: onboardingAppBar(onClick: () {}, showBackButton: false),
+      appBar: onboardingAppBar(
+          onClick: () {},
+          navigationBarColor: const Color(0xffFFF8E6),
+          showBackButton: false),
       body: SafeArea(
         child: Stack(
           children: [
@@ -25,12 +28,13 @@ class WelcomeScreen extends StatelessWidget {
                 child: Container(
                     width: double.infinity,
                     height: MediaQuery.of(context).size.height * 0.6,
-                    color: Color(0xffFFF8E6)),
+                    color: const Color(0xffFFF8E6)),
               ),
             ),
             //  content
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.only(
+                  left: 16.0, right: 16.0, top: 16.0, bottom: 32),
               child: Column(
                 children: [
                   //  header
@@ -58,6 +62,7 @@ class WelcomeScreen extends StatelessWidget {
                         height: MediaQuery.of(context).size.height * 0.6,
                       ),
                       ActionButton(text: 'Get Started', onTap: () {}),
+                      const SizedBox(height: 16),
                       Text.rich(TextSpan(children: [
                         TextSpan(
                             text: 'Have an existing account? ',
@@ -66,11 +71,16 @@ class WelcomeScreen extends StatelessWidget {
                             text: 'LOGIN',
                             recognizer: TapGestureRecognizer()..onTap = () {},
                             style: TextStyle(
-                              fontSize: Theme.of(context).textTheme.bodyMedium!.fontSize,
-                              fontWeight: Theme.of(context).textTheme.bodyMedium!.fontWeight!,
-                              color: textAccentLight,
-                              decoration: TextDecoration.underline
-                            )),
+                                fontSize: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium!
+                                    .fontSize,
+                                fontWeight: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium!
+                                    .fontWeight!,
+                                color: textAccentLight,
+                                decoration: TextDecoration.underline)),
                       ]))
                     ],
                   )
