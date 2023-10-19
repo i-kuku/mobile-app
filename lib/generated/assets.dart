@@ -12,5 +12,6 @@ class Assets {
   static const String fontsDMSansSemiBold = 'assets/fonts/DMSans-SemiBold.ttf';
   static const String fontsDMSansThin = 'assets/fonts/DMSans-Thin.ttf';
   static const String imagesFarmer = 'assets/images/farmer.svg';
+  static const String imagesIKukuLogo = 'assets/images/i-kuku-logo.svg';
 
 }
