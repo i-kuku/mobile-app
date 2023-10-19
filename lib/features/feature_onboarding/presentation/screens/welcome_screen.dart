@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:ikuku/core/presentation/components/action_button.dart';
 import 'package:ikuku/theme/colors.dart';
 
 class WelcomeScreen extends StatelessWidget {
@@ -47,6 +48,7 @@ class WelcomeScreen extends StatelessWidget {
                         width: double.infinity,
                         height: MediaQuery.of(context).size.height * 0.6,
                       ),
+                      ActionButton(text: 'Get Started', onTap: (){})
                     ],
                   )
                 ],
