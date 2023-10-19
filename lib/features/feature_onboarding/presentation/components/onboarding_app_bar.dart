@@ -6,7 +6,7 @@ PreferredSizeWidget onboardingAppBar(
         {bool showBackButton = true, required VoidCallback onClick}) =>
     AppBar(
       title: SvgPicture.asset('assets/images/i-kuku-logo.svg',
-          width: 40, height: double.infinity, fit: BoxFit.contain),
+          width: 50, height: 50, fit: BoxFit.contain),
       centerTitle: true,
       leading: showBackButton
           ? IconButton(
