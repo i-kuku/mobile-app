@@ -60,7 +60,10 @@ class WelcomeScreen extends StatelessWidget {
                         width: double.infinity,
                         height: MediaQuery.of(context).size.height * 0.6,
                       ),
-                      ActionButton(text: 'Get Started', onTap: () {}),
+                      ActionButton(
+                          key: const Key('get-started-button'),
+                          text: 'Get Started',
+                          onTap: () {}),
                       const SizedBox(height: 16),
                       Text.rich(TextSpan(children: [
                         TextSpan(
