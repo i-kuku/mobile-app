@@ -56,6 +56,7 @@ class WelcomeScreen extends StatelessWidget {
                     children: [
                       SvgPicture.asset(
                         'assets/images/farmer.svg',
+                        key: const Key('farmer-image'),
                         width: double.infinity,
                         height: MediaQuery.of(context).size.height * 0.6,
                       ),

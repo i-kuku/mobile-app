@@ -14,7 +14,10 @@ PreferredSizeWidget onboardingAppBar(
           systemNavigationBarColor: navigationBarColor,
           systemNavigationBarIconBrightness: Brightness.dark),
       title: SvgPicture.asset('assets/images/i-kuku-logo.svg',
-          width: 50, height: 50, fit: BoxFit.contain),
+          key: const Key('i-kuku-logo'),
+          width: 50,
+          height: 50,
+          fit: BoxFit.contain),
       centerTitle: true,
       leading: showBackButton
           ? IconButton(
