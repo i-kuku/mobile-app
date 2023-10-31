@@ -29,16 +29,6 @@ class WelcomeScreen extends StatelessWidget {
                 painter: WelcomeScreenCurve(),
               ),
             ),
-            // Align(
-            //   alignment: AlignmentDirectional.bottomCenter,
-            //   child: ClipPath(
-            //     clipper: OvalTopBorderClipper(),
-            //     child: Container(
-            //         width: double.infinity,
-            //         height: MediaQuery.of(context).size.height * 0.6,
-            //         color: const Color(0xffFFF8E6)),
-            //   ),
-            // ),
             //  content
             Padding(
               padding: const EdgeInsets.only(
