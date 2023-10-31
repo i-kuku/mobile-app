@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ikuku/core/presentation/components/action_button.dart';
-import 'package:ikuku/features/feature_onboarding/presentation/screens/welcome_screen.dart';
 
 import 'package:ikuku/main.dart';
 

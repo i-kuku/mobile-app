@@ -1,6 +1,5 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:ikuku/core/presentation/components/action_button.dart';
 import 'package:ikuku/features/feature_onboarding/presentation/components/onboarding_app_bar.dart';
@@ -22,7 +21,7 @@ class WelcomeScreen extends StatelessWidget {
         child: Stack(
           children: [
             //  orange circle
-            Container(
+            SizedBox(
               width: double.infinity,
               height: double.infinity,
               child: CustomPaint(
