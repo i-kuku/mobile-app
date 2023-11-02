@@ -1,4 +1,6 @@
 {
+  "continue": "Endelea",
   "language_screen_welcome_title": "Karibu I-kuku",
-  "language_screen_welcome_message": "Chagua lugha yako"
+  "language_screen_welcome_message": "Chagua lugha yako",
+  "language_screen_preferences_message": "Mapendeleo ya lugha yanaweza kubadilishwa wakati wowote katika mipangilio."
 }

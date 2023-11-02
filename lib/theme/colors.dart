@@ -12,7 +12,7 @@ const orangeShade = Color(0xffFFF8E6);
 
 const textAccentDark = Color(0xff243B25);
 const textAccentLight = Color(0xff00681D);
-const textAccentLighter = Color(0xff243B25);
+const textAccentLighter = Color(0xef243b25);
 const textBlack900 = Color(0xFF000000);
 const textBlack700 = Color(0xFF171717);
 const textBlack500 = Color(0xFF353535);

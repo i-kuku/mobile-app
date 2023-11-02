@@ -27,6 +27,7 @@ class LanguageToggleItem extends StatelessWidget {
           border: Border.all(color: Theme.of(context).primaryColor, width: 1)),
       child: ListTile(
         title: Text(title, style: Theme.of(context).textTheme.bodyLarge),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 32),
         tileColor: Theme.of(context).primaryColor,
         onTap: onTap,
         trailing:

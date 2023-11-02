@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:ikuku/core/presentation/components/action_button.dart';
 import 'package:ikuku/core/utils/locale_constants.dart';
 import 'package:ikuku/features/feature_onboarding/presentation/components/language_toggle_item.dart';
 import 'package:ikuku/features/feature_onboarding/presentation/controller/onboarding_controller.dart';
@@ -43,44 +44,77 @@ class _ChooseLanguageScreenState extends State<ChooseLanguageScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 16),
-            Text(
-              tr(LocaleConstants.chooseLanguageTitle),
-              style: TextStyle(
-                  fontSize: Theme.of(context).textTheme.titleLarge!.fontSize!,
-                  fontWeight:
-                      Theme.of(context).textTheme.bodyLarge!.fontWeight!,
-                  color: textAccentDark),
+
+            //  welcome message
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    tr(LocaleConstants.chooseLanguageTitle),
+                    style: TextStyle(
+                        fontSize:
+                            Theme.of(context).textTheme.titleLarge!.fontSize!,
+                        fontWeight:
+                            Theme.of(context).textTheme.bodyLarge!.fontWeight!,
+                        color: textAccentDark),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    tr(LocaleConstants.chooseLanguageMessage),
+                    style: TextStyle(
+                        fontSize:
+                            Theme.of(context).textTheme.titleSmall!.fontSize!,
+                        fontWeight:
+                            Theme.of(context).textTheme.bodyLarge!.fontWeight!,
+                        color: textAccentDark),
+                  ),
+                  const SizedBox(height: 24),
+                  //  language toggle
+                  ListView.separated(
+                      itemBuilder: (context, index) => Obx(
+                            () => LanguageToggleItem(
+                                title: languages[index],
+                                groupValue:
+                                    _onboardingController.activeLanguage.value,
+                                isActive: _onboardingController
+                                        .activeLanguage.value ==
+                                    languages[index],
+                                onTap: () {
+                                  _onboardingController.setActiveLanguage(
+                                      languageTitle: languages[index]);
+                                },
+                                onChanged: (value) {
+                                  _onboardingController.setActiveLanguage(
+                                      languageTitle: languages[index]);
+                                }),
+                          ),
+                      separatorBuilder: (context, index) =>
+                          const SizedBox(height: 16),
+                      itemCount: languages.length,
+                      shrinkWrap: true)
+                ],
+              ),
             ),
-            const SizedBox(height: 8),
-            Text(
-              tr(LocaleConstants.chooseLanguageMessage),
-              style: TextStyle(
-                  fontSize: Theme.of(context).textTheme.titleSmall!.fontSize!,
-                  fontWeight:
-                      Theme.of(context).textTheme.bodyLarge!.fontWeight!,
-                  color: textAccentDark),
-            ),
-            const SizedBox(height: 24),
-            //  language toggle
-            ListView.separated(
-                itemBuilder: (context, index) => Obx(
-                    () => LanguageToggleItem(
-                      title: languages[index],
-                      groupValue: _onboardingController.activeLanguage.value,
-                      isActive: _onboardingController.activeLanguage.value ==
-                          languages[index],
-                      onTap: () {
-                        _onboardingController.setActiveLanguage(
-                            languageTitle: languages[index]);
-                      },
-                      onChanged: (value) {
-                        _onboardingController.setActiveLanguage(
-                            languageTitle: languages[index]);
-                      }),
-                ),
-                separatorBuilder: (context, index) => const SizedBox(height: 16),
-                itemCount: languages.length,
-                shrinkWrap: true)
+
+            //  continue button
+            Expanded(
+                child: Column(
+              children: [
+                ActionButton(
+                    text: tr(LocaleConstants.continueTitle), onTap: () {}),
+                const SizedBox(height: 24),
+                Text(
+                  tr(LocaleConstants.chooseLanguagePreferencesMessage),
+                  style: TextStyle(
+                      fontSize:
+                          Theme.of(context).textTheme.bodyLarge!.fontSize!,
+                      fontWeight:
+                          Theme.of(context).textTheme.bodyLarge!.fontWeight!,
+                      color: textAccentLighter),
+                )
+              ],
+            ))
           ],
         ),
       ),

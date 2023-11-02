@@ -1,4 +1,6 @@
 {
+  "continue": "Continue",
   "language_screen_welcome_title": "Welcome to I-kuku",
-  "language_screen_welcome_message": "Choose your language"
+  "language_screen_welcome_message": "Choose your language",
+  "language_screen_preferences_message": "Language preferences can be changed anytime in settings"
 }
