@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ikuku/core/utils/locale_constants.dart';
 
+import '../../../../theme/colors.dart';
 import '../components/onboarding_app_bar.dart';
 
 class ChooseLanguageScreen extends StatefulWidget {
@@ -29,14 +30,32 @@ class _ChooseLanguageScreenState extends State<ChooseLanguageScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            const SizedBox(height: 16),
             Text(
               tr(LocaleConstants.chooseLanguageTitle),
-              style: Theme.of(context).textTheme.titleLarge,
+              style: TextStyle(
+                  fontSize:
+                  Theme.of(context).textTheme.titleLarge!.fontSize!,
+                  fontWeight: Theme.of(context)
+                      .textTheme
+                      .bodyLarge!
+                      .fontWeight!,
+                  color: textAccentDark),
             ),
+            const SizedBox(height: 8),
             Text(
               tr(LocaleConstants.chooseLanguageMessage),
-              style: Theme.of(context).textTheme.titleLarge,
+              style: TextStyle(
+                  fontSize:
+                  Theme.of(context).textTheme.titleSmall!.fontSize!,
+                  fontWeight: Theme.of(context)
+                      .textTheme
+                      .bodyLarge!
+                      .fontWeight!,
+                  color: textAccentDark),
             ),
+            const SizedBox(height: 24),
+            //  language toggle
           ],
         ),
       ),
