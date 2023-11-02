@@ -13,5 +13,7 @@ class Assets {
   static const String fontsDMSansThin = 'assets/fonts/DMSans-Thin.ttf';
   static const String imagesFarmer = 'assets/images/farmer.svg';
   static const String imagesIKukuLogo = 'assets/images/i-kuku-logo.svg';
+  static const String translationsEn = 'assets/translations/en.json';
+  static const String translationsKisw = 'assets/translations/kisw.json';
 
 }
