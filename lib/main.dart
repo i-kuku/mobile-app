@@ -1,10 +1,15 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ikuku/features/feature_onboarding/presentation/screens/welcome_screen.dart';
 import 'package:ikuku/theme/my_theme.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(EasyLocalization(
+      supportedLocales: const [Locale('en'), Locale('kisw')],
+      path: 'assets/translations',
+      fallbackLocale: const Locale('en', 'US'),
+      child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
