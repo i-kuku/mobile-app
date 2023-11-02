@@ -6,7 +6,7 @@ import 'package:get/get.dart';
 PreferredSizeWidget onboardingAppBar(
         {bool showBackButton = true,
         required Color navigationBarColor,
-        required VoidCallback onClick}) =>
+        required VoidCallback onBackClicked}) =>
     AppBar(
       systemOverlayStyle: SystemUiOverlayStyle(
           statusBarBrightness: Brightness.dark,
@@ -21,7 +21,7 @@ PreferredSizeWidget onboardingAppBar(
       centerTitle: true,
       leading: showBackButton
           ? IconButton(
-              onPressed: onClick,
+              onPressed: onBackClicked,
               icon: Icon(Icons.arrow_back_rounded,
                   color: Theme.of(Get.context!).iconTheme.color))
           : null,

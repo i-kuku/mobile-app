@@ -1,9 +1,11 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:get/get.dart';
 import 'package:ikuku/core/presentation/components/action_button.dart';
 import 'package:ikuku/features/feature_onboarding/presentation/components/onboarding_app_bar.dart';
 import 'package:ikuku/features/feature_onboarding/presentation/components/welcome_screen_curve.dart';
+import 'package:ikuku/features/feature_onboarding/presentation/screens/choose_language_screen.dart';
 import 'package:ikuku/theme/colors.dart';
 
 class WelcomeScreen extends StatelessWidget {
@@ -14,7 +16,7 @@ class WelcomeScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: onboardingAppBar(
-          onClick: () {},
+          onBackClicked: () {},
           navigationBarColor: const Color(0xffFFF8E6),
           showBackButton: false),
       body: SafeArea(
@@ -62,7 +64,8 @@ class WelcomeScreen extends StatelessWidget {
                       ActionButton(
                           key: const Key('get-started-button'),
                           text: 'Get Started',
-                          onTap: () {}),
+                          onTap: () =>
+                              Get.to(() => const ChooseLanguageScreen())),
                       const SizedBox(height: 16),
                       Text.rich(TextSpan(children: [
                         TextSpan(
