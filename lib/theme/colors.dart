@@ -5,6 +5,7 @@ const white = Colors.white;
 const black = Colors.black;
 
 const primary = Color(0xff00681D);
+const primaryLight = Color(0xffFEFFFB);
 const primaryAlt = Color(0xff98B130);
 const secondary = Color(0xffF9B420);
 const orangeShade = Color(0xffFFF8E6);
