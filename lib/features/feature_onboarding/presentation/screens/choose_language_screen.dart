@@ -2,6 +2,8 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ikuku/core/utils/locale_constants.dart';
+import 'package:ikuku/features/feature_onboarding/presentation/components/language_toggle_item.dart';
+import 'package:ikuku/features/feature_onboarding/presentation/controller/onboarding_controller.dart';
 
 import '../../../../theme/colors.dart';
 import '../components/onboarding_app_bar.dart';
@@ -14,6 +16,16 @@ class ChooseLanguageScreen extends StatefulWidget {
 }
 
 class _ChooseLanguageScreenState extends State<ChooseLanguageScreen> {
+  final languages = ['English', 'Kiswahili'];
+  late final OnboardingController _onboardingController;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _onboardingController = Get.find<OnboardingController>();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,28 +46,41 @@ class _ChooseLanguageScreenState extends State<ChooseLanguageScreen> {
             Text(
               tr(LocaleConstants.chooseLanguageTitle),
               style: TextStyle(
-                  fontSize:
-                  Theme.of(context).textTheme.titleLarge!.fontSize!,
-                  fontWeight: Theme.of(context)
-                      .textTheme
-                      .bodyLarge!
-                      .fontWeight!,
+                  fontSize: Theme.of(context).textTheme.titleLarge!.fontSize!,
+                  fontWeight:
+                      Theme.of(context).textTheme.bodyLarge!.fontWeight!,
                   color: textAccentDark),
             ),
             const SizedBox(height: 8),
             Text(
               tr(LocaleConstants.chooseLanguageMessage),
               style: TextStyle(
-                  fontSize:
-                  Theme.of(context).textTheme.titleSmall!.fontSize!,
-                  fontWeight: Theme.of(context)
-                      .textTheme
-                      .bodyLarge!
-                      .fontWeight!,
+                  fontSize: Theme.of(context).textTheme.titleSmall!.fontSize!,
+                  fontWeight:
+                      Theme.of(context).textTheme.bodyLarge!.fontWeight!,
                   color: textAccentDark),
             ),
             const SizedBox(height: 24),
             //  language toggle
+            ListView.separated(
+                itemBuilder: (context, index) => Obx(
+                    () => LanguageToggleItem(
+                      title: languages[index],
+                      groupValue: _onboardingController.activeLanguage.value,
+                      isActive: _onboardingController.activeLanguage.value ==
+                          languages[index],
+                      onTap: () {
+                        _onboardingController.setActiveLanguage(
+                            languageTitle: languages[index]);
+                      },
+                      onChanged: (value) {
+                        _onboardingController.setActiveLanguage(
+                            languageTitle: languages[index]);
+                      }),
+                ),
+                separatorBuilder: (context, index) => const SizedBox(height: 16),
+                itemCount: languages.length,
+                shrinkWrap: true)
           ],
         ),
       ),
