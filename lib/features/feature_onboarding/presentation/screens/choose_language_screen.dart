@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:ikuku/core/utils/locale_constants.dart';
 
 import '../components/onboarding_app_bar.dart';
 
@@ -29,7 +30,11 @@ class _ChooseLanguageScreenState extends State<ChooseLanguageScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              tr("welcome_message"),
+              tr(LocaleConstants.chooseLanguageTitle),
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            Text(
+              tr(LocaleConstants.chooseLanguageMessage),
               style: Theme.of(context).textTheme.titleLarge,
             ),
           ],
