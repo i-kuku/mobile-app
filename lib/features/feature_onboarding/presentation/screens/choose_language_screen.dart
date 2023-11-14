@@ -18,6 +18,7 @@ class ChooseLanguageScreen extends StatefulWidget {
 
 class _ChooseLanguageScreenState extends State<ChooseLanguageScreen> {
   final languages = ['English', 'Kiswahili'];
+  final languageCodes = ['en', 'sw'];
   late final OnboardingController _onboardingController;
 
   @override
@@ -83,6 +84,14 @@ class _ChooseLanguageScreenState extends State<ChooseLanguageScreen> {
                                 onTap: () {
                                   _onboardingController.setActiveLanguage(
                                       languageTitle: languages[index]);
+
+                                  //  change the locale
+                                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                                    setState(() {
+                                      EasyLocalization.of(context)?.setLocale(
+                                          Locale(languageCodes[index]));
+                                    });
+                                  });
                                 },
                                 onChanged: (value) {
                                   _onboardingController.setActiveLanguage(
