@@ -5,6 +5,7 @@ import 'package:ikuku/core/presentation/components/action_button.dart';
 import 'package:ikuku/core/utils/locale_constants.dart';
 import 'package:ikuku/features/feature_onboarding/presentation/components/language_toggle_item.dart';
 import 'package:ikuku/features/feature_onboarding/presentation/controller/onboarding_controller.dart';
+import 'package:ikuku/features/feature_onboarding/presentation/screens/sign_up_type_screen.dart';
 
 import '../../../../theme/colors.dart';
 import '../components/onboarding_app_bar.dart';
@@ -86,7 +87,8 @@ class _ChooseLanguageScreenState extends State<ChooseLanguageScreen> {
                                       languageTitle: languages[index]);
 
                                   //  change the locale
-                                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                                  WidgetsBinding.instance
+                                      .addPostFrameCallback((_) {
                                     setState(() {
                                       EasyLocalization.of(context)?.setLocale(
                                           Locale(languageCodes[index]));
@@ -111,7 +113,8 @@ class _ChooseLanguageScreenState extends State<ChooseLanguageScreen> {
                 child: Column(
               children: [
                 ActionButton(
-                    text: tr(LocaleConstants.continueTitle), onTap: () {}),
+                    text: tr(LocaleConstants.continueTitle),
+                    onTap: () => Get.to(() => const SignUpTypeScreen())),
                 const SizedBox(height: 24),
                 Text(
                   tr(LocaleConstants.chooseLanguagePreferencesMessage),

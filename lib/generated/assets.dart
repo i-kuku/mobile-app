@@ -11,9 +11,11 @@ class Assets {
   static const String fontsDMSansRegular = 'assets/fonts/DMSans-Regular.ttf';
   static const String fontsDMSansSemiBold = 'assets/fonts/DMSans-SemiBold.ttf';
   static const String fontsDMSansThin = 'assets/fonts/DMSans-Thin.ttf';
+  static const String imagesBusinessman = 'assets/images/businessman.svg';
   static const String imagesFarmer = 'assets/images/farmer.svg';
   static const String imagesIKukuLogo = 'assets/images/i-kuku-logo.svg';
+  static const String imagesPerson = 'assets/images/person.svg';
   static const String translationsEn = 'assets/translations/en.json';
-  static const String translationsKisw = 'assets/translations/sw.json';
+  static const String translationsSw = 'assets/translations/sw.json';
 
 }
