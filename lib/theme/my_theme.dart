@@ -28,6 +28,7 @@ class MyTheme {
         primarySwatch: mycolor,
         scaffoldBackgroundColor: white,
         fontFamily: 'DMSans',
+        useMaterial3: false,
         textTheme: const TextTheme(
           bodySmall: TextStyle(
               fontSize: 11, fontWeight: FontWeight.w500, color: textBlack500),
