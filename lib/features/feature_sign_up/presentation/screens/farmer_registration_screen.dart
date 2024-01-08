@@ -68,16 +68,61 @@ class _FarmerRegistrationScreenState extends State<FarmerRegistrationScreen> {
 
                     const SizedBox(height: 24),
 
-                    Text(
-                      "I’m registering on behalf of a group",
-                      style: TextStyle(
-                          fontSize:
-                              Theme.of(context).textTheme.bodyLarge!.fontSize!,
-                          fontWeight: Theme.of(context)
-                              .textTheme
-                              .bodyLarge!
-                              .fontWeight!,
-                          color: textAccentLighter),
+                    //  Registering on behalf of a group
+                    Container(
+                      width: double.infinity,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "I’m registering on behalf of a group",
+                            style: TextStyle(
+                                fontSize: Theme.of(context)
+                                    .textTheme
+                                    .bodyLarge!
+                                    .fontSize!,
+                                fontWeight: Theme.of(context)
+                                    .textTheme
+                                    .bodyLarge!
+                                    .fontWeight!,
+                                color: textAccentLighter),
+                          ),
+                          const SizedBox(height: 16),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: ListTile(
+                                  leading: Radio(
+                                      value: 'Yes',
+                                      groupValue: 'Yes',
+                                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                      visualDensity: VisualDensity(horizontal: 0.0),
+                                      onChanged: (value) {}),
+                                  title: Text("Yes",
+                                      style: Theme.of(context).textTheme.bodyMedium),
+                                  contentPadding: EdgeInsets.zero,
+                                  onTap: () {},
+                                ),
+                              ),
+                              Expanded(
+                                child: ListTile(
+                                  leading: Radio(
+                                      value: 'Yes',
+                                      groupValue: 'Yes',
+                                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                      visualDensity: VisualDensity(horizontal: 0.0),
+                                      onChanged: (value) {}),
+                                  title: Text("Yes",
+                                      style: Theme.of(context).textTheme.bodyMedium),
+                                  contentPadding: EdgeInsets.zero,
+                                  onTap: () {},
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     )
                   ],
                 ),
