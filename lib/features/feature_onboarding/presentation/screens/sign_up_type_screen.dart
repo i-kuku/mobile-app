@@ -1,10 +1,8 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:ikuku/features/feature_onboarding/presentation/components/sign_up_type/sign_up_type_card.dart';
 
-import '../../../../core/utils/locale_constants.dart';
 import '../../../../theme/colors.dart';
 import '../components/onboarding_app_bar.dart';
 

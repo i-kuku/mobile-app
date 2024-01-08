@@ -1,6 +1,8 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:ikuku/core/presentation/components/action_button.dart';
 import 'package:ikuku/core/presentation/components/custom_text_field.dart';
 
 import '../../../../theme/colors.dart';
@@ -14,7 +16,6 @@ class FarmerRegistrationScreen extends StatefulWidget {
 }
 
 class _FarmerRegistrationScreenState extends State<FarmerRegistrationScreen> {
-
   String registeringOnBehalfOfGroup = "Yes";
 
   @override
@@ -99,11 +100,15 @@ class _FarmerRegistrationScreenState extends State<FarmerRegistrationScreen> {
                                   leading: Radio(
                                       value: 'Yes',
                                       groupValue: registeringOnBehalfOfGroup,
-                                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                      visualDensity: VisualDensity(horizontal: 0.0),
+                                      materialTapTargetSize:
+                                          MaterialTapTargetSize.shrinkWrap,
+                                      visualDensity:
+                                          VisualDensity(horizontal: 0.0),
                                       onChanged: (value) {}),
                                   title: Text("Yes",
-                                      style: Theme.of(context).textTheme.bodyMedium),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium),
                                   contentPadding: EdgeInsets.zero,
                                   onTap: () {
                                     setState(() {
@@ -117,15 +122,19 @@ class _FarmerRegistrationScreenState extends State<FarmerRegistrationScreen> {
                                   leading: Radio(
                                       value: 'No',
                                       groupValue: registeringOnBehalfOfGroup,
-                                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                      visualDensity: VisualDensity(horizontal: 0.0),
+                                      materialTapTargetSize:
+                                          MaterialTapTargetSize.shrinkWrap,
+                                      visualDensity:
+                                          VisualDensity(horizontal: 0.0),
                                       onChanged: (value) {
                                         setState(() {
                                           registeringOnBehalfOfGroup = value!;
                                         });
                                       }),
                                   title: Text("No",
-                                      style: Theme.of(context).textTheme.bodyMedium),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium),
                                   contentPadding: EdgeInsets.zero,
                                   onTap: () {
                                     setState(() {
@@ -138,6 +147,37 @@ class _FarmerRegistrationScreenState extends State<FarmerRegistrationScreen> {
                           ),
                         ],
                       ),
+                    ),
+
+                    //  Group Registration implementation
+
+
+                    //  sign up button
+                    Align(
+                        alignment: AlignmentDirectional.center,
+                        child: ActionButton(text: 'SIGN UP', onTap: () {})),
+
+                    Align(
+                      alignment: AlignmentDirectional.center,
+                      child: Text.rich(TextSpan(children: [
+                        TextSpan(
+                            text: 'Have an existing account? ',
+                            style: Theme.of(context).textTheme.bodyMedium),
+                        TextSpan(
+                            text: 'LOGIN',
+                            recognizer: TapGestureRecognizer()..onTap = () {},
+                            style: TextStyle(
+                                fontSize: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium!
+                                    .fontSize,
+                                fontWeight: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium!
+                                    .fontWeight!,
+                                color: textAccentLight,
+                                decoration: TextDecoration.underline)),
+                      ])),
                     )
                   ],
                 ),
