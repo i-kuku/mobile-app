@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:ikuku/core/presentation/components/action_button.dart';
 import 'package:ikuku/core/presentation/components/custom_text_field.dart';
+import 'package:ikuku/features/feature_sign_up/presentation/components/group_registration.dart';
 
 import '../../../../theme/colors.dart';
 
@@ -150,12 +151,16 @@ class _FarmerRegistrationScreenState extends State<FarmerRegistrationScreen> {
                     ),
 
                     //  Group Registration implementation
-
+                    Visibility(
+                        visible: registeringOnBehalfOfGroup == "Yes",
+                        child: const GroupRegistration()),
 
                     //  sign up button
                     Align(
                         alignment: AlignmentDirectional.center,
                         child: ActionButton(text: 'SIGN UP', onTap: () {})),
+
+                    const SizedBox(height: 24),
 
                     Align(
                       alignment: AlignmentDirectional.center,
