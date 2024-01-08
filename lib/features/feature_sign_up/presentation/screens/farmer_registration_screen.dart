@@ -14,6 +14,9 @@ class FarmerRegistrationScreen extends StatefulWidget {
 }
 
 class _FarmerRegistrationScreenState extends State<FarmerRegistrationScreen> {
+
+  String registeringOnBehalfOfGroup = "Yes";
+
   @override
   Widget build(BuildContext context) {
     return AnnotatedRegion(
@@ -95,28 +98,40 @@ class _FarmerRegistrationScreenState extends State<FarmerRegistrationScreen> {
                                 child: ListTile(
                                   leading: Radio(
                                       value: 'Yes',
-                                      groupValue: 'Yes',
+                                      groupValue: registeringOnBehalfOfGroup,
                                       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                       visualDensity: VisualDensity(horizontal: 0.0),
                                       onChanged: (value) {}),
                                   title: Text("Yes",
                                       style: Theme.of(context).textTheme.bodyMedium),
                                   contentPadding: EdgeInsets.zero,
-                                  onTap: () {},
+                                  onTap: () {
+                                    setState(() {
+                                      registeringOnBehalfOfGroup = 'Yes';
+                                    });
+                                  },
                                 ),
                               ),
                               Expanded(
                                 child: ListTile(
                                   leading: Radio(
-                                      value: 'Yes',
-                                      groupValue: 'Yes',
+                                      value: 'No',
+                                      groupValue: registeringOnBehalfOfGroup,
                                       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                       visualDensity: VisualDensity(horizontal: 0.0),
-                                      onChanged: (value) {}),
-                                  title: Text("Yes",
+                                      onChanged: (value) {
+                                        setState(() {
+                                          registeringOnBehalfOfGroup = value!;
+                                        });
+                                      }),
+                                  title: Text("No",
                                       style: Theme.of(context).textTheme.bodyMedium),
                                   contentPadding: EdgeInsets.zero,
-                                  onTap: () {},
+                                  onTap: () {
+                                    setState(() {
+                                      registeringOnBehalfOfGroup = 'No';
+                                    });
+                                  },
                                 ),
                               ),
                             ],
