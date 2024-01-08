@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/presentation/components/custom_text_field.dart';
+
 class GroupRegistration extends StatefulWidget {
   const GroupRegistration({super.key});
 
@@ -10,6 +12,18 @@ class GroupRegistration extends StatefulWidget {
 class _GroupRegistrationState extends State<GroupRegistration> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Column(
+      children: [
+        //  group name
+        CustomTextField(label: 'Group name'),
+
+        const SizedBox(height: 16),
+
+        //  group name
+        CustomTextField(label: 'Group location'),
+
+        const SizedBox(height: 16),
+      ],
+    );
   }
 }

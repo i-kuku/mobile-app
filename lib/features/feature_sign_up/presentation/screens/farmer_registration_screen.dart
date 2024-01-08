@@ -105,7 +105,11 @@ class _FarmerRegistrationScreenState extends State<FarmerRegistrationScreen> {
                                           MaterialTapTargetSize.shrinkWrap,
                                       visualDensity:
                                           VisualDensity(horizontal: 0.0),
-                                      onChanged: (value) {}),
+                                      onChanged: (value) {
+                                        setState(() {
+                                          registeringOnBehalfOfGroup = value!;
+                                        });
+                                      }),
                                   title: Text("Yes",
                                       style: Theme.of(context)
                                           .textTheme
