@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:ikuku/di/controllers.dart';
 import 'package:ikuku/features/feature_onboarding/presentation/screens/welcome_screen.dart';
 import 'package:ikuku/features/feature_sign_up/presentation/screens/farmer_registration_screen.dart';
+import 'package:ikuku/features/feature_sign_up/presentation/screens/verification_screen.dart';
 import 'package:ikuku/theme/my_theme.dart';
 
 void main() async {
@@ -30,7 +31,7 @@ class MyApp extends StatelessWidget {
       localizationsDelegates: context.localizationDelegates,
       supportedLocales: context.supportedLocales,
       locale: context.locale,
-      home: FarmerRegistrationScreen(),
+      home: VerificationScreen(),
       theme: MyTheme.lightTheme,
       darkTheme: MyTheme.lightTheme,
     );

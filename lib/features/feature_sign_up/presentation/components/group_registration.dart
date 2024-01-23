@@ -24,26 +24,20 @@ class _GroupRegistrationState extends State<GroupRegistration> {
 
         const SizedBox(height: 16),
 
-        Row(
-          children: [
-            const Expanded(
-              child: CustomTextField(
-                label: 'How many farmers are in the group?'
-              ),
-            ),
-            Container(
-              width: 100,
-              height: 100,
-              color: Colors.red,
-              child: const Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Icon(Icons.arrow_drop_up_rounded, size: 30),
-                  Icon(Icons.arrow_drop_up_rounded, size: 30),
-                ],
-              ),
-            ),
-          ],
+        CustomTextField(
+          label: 'How many farmers are in the group?',
+        ),
+
+        const SizedBox(height: 16),
+
+        CustomTextField(
+          label: 'How many farmers are female?',
+        ),
+
+        const SizedBox(height: 16),
+
+        CustomTextField(
+          label: 'How many farmers are male?',
         ),
       ],
     );
