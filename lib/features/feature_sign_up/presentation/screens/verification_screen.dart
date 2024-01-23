@@ -1,7 +1,11 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+
+import '../../../../core/presentation/components/action_button.dart';
+import '../../../../theme/colors.dart';
 
 class VerificationScreen extends StatefulWidget {
   const VerificationScreen({super.key});
@@ -49,7 +53,30 @@ class _VerificationScreenState extends State<VerificationScreen> {
               "A 4- digit code has been sent to \n+254721 XXX X89",
               style: Theme.of(context).textTheme.bodyMedium,
               textAlign: TextAlign.center,
-            )
+            ),
+
+            const SizedBox(height: 32),
+
+            //  sign up button
+            ActionButton(text: 'VERIFY PHONE NUMBER', onTap: () {}),
+
+            const SizedBox(height: 24),
+
+            Text.rich(TextSpan(children: [
+              TextSpan(
+                  text: "Didn't get the code? ",
+                  style: Theme.of(context).textTheme.bodyMedium),
+              TextSpan(
+                  text: 'Resend code',
+                  recognizer: TapGestureRecognizer()..onTap = () {},
+                  style: TextStyle(
+                      fontSize:
+                          Theme.of(context).textTheme.bodyMedium!.fontSize,
+                      fontWeight:
+                          Theme.of(context).textTheme.bodyMedium!.fontWeight!,
+                      color: textAccentLight,
+                      decoration: TextDecoration.underline)),
+            ]))
           ],
         ),
       ),
