@@ -30,14 +30,14 @@ class _FarmerRegistrationScreenState extends State<FarmerRegistrationScreen> {
         body: SafeArea(
           child: Padding(
             padding: const EdgeInsets.all(16.0),
-            child: Container(
+            child: SizedBox(
               width: double.infinity,
               height: double.infinity,
               child: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
+                    SizedBox(
                       width: double.infinity,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -59,22 +59,22 @@ class _FarmerRegistrationScreenState extends State<FarmerRegistrationScreen> {
                     const SizedBox(height: 24),
 
                     //  first name
-                    CustomTextField(label: 'First name'),
+                    const CustomTextField(label: 'First name'),
 
                     const SizedBox(height: 16),
 
                     //  last name
-                    CustomTextField(label: 'Last name'),
+                    const CustomTextField(label: 'Last name'),
 
                     const SizedBox(height: 16),
 
                     //  phone number
-                    CustomTextField(label: 'Phone number'),
+                    const CustomTextField(label: 'Phone number'),
 
                     const SizedBox(height: 24),
 
                     //  Registering on behalf of a group
-                    Container(
+                    SizedBox(
                       width: double.infinity,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -104,7 +104,7 @@ class _FarmerRegistrationScreenState extends State<FarmerRegistrationScreen> {
                                       materialTapTargetSize:
                                           MaterialTapTargetSize.shrinkWrap,
                                       visualDensity:
-                                          VisualDensity(horizontal: 0.0),
+                                          const VisualDensity(horizontal: 0.0),
                                       onChanged: (value) {
                                         setState(() {
                                           registeringOnBehalfOfGroup = value!;
@@ -130,7 +130,7 @@ class _FarmerRegistrationScreenState extends State<FarmerRegistrationScreen> {
                                       materialTapTargetSize:
                                           MaterialTapTargetSize.shrinkWrap,
                                       visualDensity:
-                                          VisualDensity(horizontal: 0.0),
+                                          const VisualDensity(horizontal: 0.0),
                                       onChanged: (value) {
                                         setState(() {
                                           registeringOnBehalfOfGroup = value!;
@@ -159,6 +159,7 @@ class _FarmerRegistrationScreenState extends State<FarmerRegistrationScreen> {
                         visible: registeringOnBehalfOfGroup == "Yes",
                         child: const GroupRegistration()),
 
+                    const SizedBox(height: 24),
                     //  sign up button
                     Align(
                         alignment: AlignmentDirectional.center,
