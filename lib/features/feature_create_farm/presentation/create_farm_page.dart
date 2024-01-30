@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
+import 'package:ikuku/core/presentation/components/action_button.dart';
 import 'package:ikuku/core/presentation/components/custom_text_field.dart';
 import 'package:ikuku/core/presentation/components/custom_text_field_dropdown.dart';
 import 'package:ikuku/features/feature_create_farm/presentation/components/create_farm_appbar.dart';
@@ -23,7 +24,9 @@ class _CreateFarmPageState extends State<CreateFarmPage> {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: createFarmAppbar(
           onBackClicked: () => Get.back(),
-          onSkipClicked: () {},
+          onSkipClicked: () {
+            //  TODO - SKIP LOGIC
+          },
           navigationBarColor: const Color(0xffFFF8E6),
           showBackButton: true),
       body: Container(
@@ -58,9 +61,23 @@ class _CreateFarmPageState extends State<CreateFarmPage> {
 
               // Location
               const CustomTextFieldDropdown(
-                hint: "Select the location of your farm",
-                items: ["Kisumu", "Nairobi"]
-              )
+                  hint: "Select the location of your farm",
+                  items: ["Kisumu", "Nairobi"]),
+
+              const SizedBox(height: 8),
+
+              //  locate me
+              TextButton(
+                  onPressed: () {
+                    //  TODO - get current user location
+                  },
+                  child: Text("Locate me")),
+
+              const SizedBox(height: 24),
+              
+              ActionButton(text: "CREATE FARM", onTap: (){
+                //  TODO - CREATE FARM LOGIC
+              })
             ],
           ),
         ),
