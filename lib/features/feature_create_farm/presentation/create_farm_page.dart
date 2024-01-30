@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 
@@ -21,19 +22,30 @@ class _CreateFarmPageState extends State<CreateFarmPage> {
           onBackClicked: () => Get.back(),
           navigationBarColor: const Color(0xffFFF8E6),
           showBackButton: true),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            //  create farm logo
-            Text(
-              "Create farm:",
-              style: TextStyle(
-                  fontSize: Theme.of(context).textTheme.titleLarge!.fontSize!,
-                  fontWeight:
-                      Theme.of(context).textTheme.bodyLarge!.fontWeight!,
-                  color: textAccentDark),
-            ),
-          ],
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              //  create farm logo
+              Text(
+                "Create farm:",
+                style: TextStyle(
+                    fontSize: Theme.of(context).textTheme.titleLarge!.fontSize!,
+                    fontWeight:
+                        Theme.of(context).textTheme.bodyLarge!.fontWeight!,
+                    color: textAccentDark),
+              ),
+
+              const SizedBox(height: 16),
+
+              //  image
+              SvgPicture.asset('assets/images/create_farm_logo.svg')
+            ],
+          ),
         ),
       ),
     );
