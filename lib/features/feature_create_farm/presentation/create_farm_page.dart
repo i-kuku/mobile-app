@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
+import 'package:ikuku/core/presentation/components/custom_text_field.dart';
 import 'package:ikuku/features/feature_create_farm/presentation/components/create_farm_appbar.dart';
 
 import '../../../theme/colors.dart';
@@ -21,6 +22,7 @@ class _CreateFarmPageState extends State<CreateFarmPage> {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: createFarmAppbar(
           onBackClicked: () => Get.back(),
+          onSkipClicked: () {},
           navigationBarColor: const Color(0xffFFF8E6),
           showBackButton: true),
       body: Container(
@@ -44,7 +46,17 @@ class _CreateFarmPageState extends State<CreateFarmPage> {
               const SizedBox(height: 16),
 
               //  image
-              SvgPicture.asset('assets/images/create_farm_logo.svg')
+              SvgPicture.asset('assets/images/create_farm_logo.svg'),
+
+              const SizedBox(height: 24),
+
+              //  Farm name
+              const CustomTextField(label: 'Enter the name of your farm'),
+
+              const SizedBox(height: 24),
+
+              // Location
+
             ],
           ),
         ),

@@ -8,7 +8,8 @@ import '../../../../theme/colors.dart';
 PreferredSizeWidget createFarmAppbar(
         {bool showBackButton = true,
         required Color navigationBarColor,
-        required VoidCallback onBackClicked}) =>
+        required VoidCallback onBackClicked,
+        required VoidCallback onSkipClicked}) =>
     AppBar(
       systemOverlayStyle: SystemUiOverlayStyle(
           statusBarBrightness: Brightness.dark,
@@ -29,5 +30,5 @@ PreferredSizeWidget createFarmAppbar(
           : null,
       elevation: 0,
       backgroundColor: Theme.of(Get.context!).scaffoldBackgroundColor,
-      actions: [TextButton(onPressed: () {}, child: Text("Skip"))],
+      actions: [TextButton(onPressed: onSkipClicked, child: Text("Skip"))],
     );
