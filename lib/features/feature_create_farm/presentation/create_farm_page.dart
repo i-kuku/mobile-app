@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
+import 'package:ikuku/features/feature_create_farm/presentation/components/create_farm_appbar.dart';
 
 import '../../../theme/colors.dart';
 import '../../feature_onboarding/presentation/components/onboarding_app_bar.dart';
@@ -18,7 +19,7 @@ class _CreateFarmPageState extends State<CreateFarmPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: onboardingAppBar(
+      appBar: createFarmAppbar(
           onBackClicked: () => Get.back(),
           navigationBarColor: const Color(0xffFFF8E6),
           showBackButton: true),
