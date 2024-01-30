@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:ikuku/core/presentation/components/custom_text_field.dart';
+import 'package:ikuku/core/presentation/components/custom_text_field_dropdown.dart';
 import 'package:ikuku/features/feature_create_farm/presentation/components/create_farm_appbar.dart';
 
 import '../../../theme/colors.dart';
@@ -56,7 +57,10 @@ class _CreateFarmPageState extends State<CreateFarmPage> {
               const SizedBox(height: 24),
 
               // Location
-
+              const CustomTextFieldDropdown(
+                hint: "Select the location of your farm",
+                items: ["Kisumu", "Nairobi"]
+              )
             ],
           ),
         ),
