@@ -51,7 +51,7 @@ class _CustomTextFieldDropdownState extends State<CustomTextFieldDropdown> {
           selectedValue = value;
         });
       },
-      buttonStyleData: ButtonStyleData(width: double.infinity),
+      buttonStyleData: const ButtonStyleData(width: double.infinity),
       dropdownStyleData: DropdownStyleData(
         maxHeight: 200,
         decoration: BoxDecoration(
