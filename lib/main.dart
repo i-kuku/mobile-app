@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ikuku/di/controllers.dart';
 import 'package:ikuku/features/feature_create_farm/presentation/create_farm_page.dart';
+import 'package:ikuku/features/feature_dashboard/presentation/farmer_dashboard.dart';
 import 'package:ikuku/features/feature_onboarding/presentation/screens/welcome_screen.dart';
 import 'package:ikuku/features/feature_sign_up/presentation/screens/farmer_registration_screen.dart';
 import 'package:ikuku/features/feature_sign_up/presentation/screens/verification_screen.dart';
@@ -32,7 +33,7 @@ class MyApp extends StatelessWidget {
       localizationsDelegates: context.localizationDelegates,
       supportedLocales: context.supportedLocales,
       locale: context.locale,
-      home: CreateFarmPage(),
+      home: FarmerDashboard(),
       theme: MyTheme.lightTheme,
       darkTheme: MyTheme.lightTheme,
     );

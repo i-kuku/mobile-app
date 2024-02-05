@@ -37,11 +37,11 @@ class MyTheme {
           bodyLarge: TextStyle(
               fontSize: 16, fontWeight: FontWeight.w500, color: textBlack700),
           titleSmall: TextStyle(
-              fontSize: 18, fontWeight: FontWeight.w700, color: textBlack700),
+              fontSize: 18, fontWeight: FontWeight.w700, color: textAccentDark),
           titleMedium: TextStyle(
-              fontSize: 20, fontWeight: FontWeight.bold, color: textBlack900),
+              fontSize: 20, fontWeight: FontWeight.bold, color: textAccentDark),
           titleLarge: TextStyle(
-              fontSize: 24, fontWeight: FontWeight.bold, color: textBlack900),
+              fontSize: 24, fontWeight: FontWeight.bold, color: textAccentDark),
         ));
   }
 }
