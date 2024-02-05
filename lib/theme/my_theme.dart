@@ -29,6 +29,9 @@ class MyTheme {
         scaffoldBackgroundColor: white,
         fontFamily: 'DMSans',
         useMaterial3: false,
+        iconTheme: IconThemeData(
+          color: textBlack500
+        ),
         textTheme: const TextTheme(
           bodySmall: TextStyle(
               fontSize: 11, fontWeight: FontWeight.w500, color: textBlack500),

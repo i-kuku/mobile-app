@@ -20,7 +20,12 @@ class _FarmerDashboardState extends State<FarmerDashboard> {
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         elevation: 0,
         actions: [
-          IconButton(onPressed: () {}, icon: Icon(Icons.notifications_rounded))
+          IconButton(
+              onPressed: () {},
+              icon: Icon(
+                Icons.notifications_rounded,
+                color: Theme.of(context).iconTheme.color,
+              ))
         ],
       ),
       body: SafeArea(
