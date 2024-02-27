@@ -44,13 +44,14 @@ class _FarmerDashboardState extends State<FarmerDashboard> {
               height: double.infinity,
               padding: const EdgeInsets.all(16),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   FarmerDashboardOverviewCard(),
 
                   const SizedBox(height: 30),
 
                   //  Quick Action sectiom
-                  QuickActionSection()
+                  Expanded(child: QuickActionSection())
                 ],
               ))),
     );
