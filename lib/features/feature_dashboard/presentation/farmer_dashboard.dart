@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:ikuku/features/feature_dashboard/presentation/components/farmer_dashboard_overview_card.dart';
 
 class FarmerDashboard extends StatefulWidget {
   const FarmerDashboard({super.key});
@@ -28,9 +30,10 @@ class _FarmerDashboardState extends State<FarmerDashboard> {
         actions: [
           IconButton(
               onPressed: () {},
-              icon: Icon(
-                Icons.notifications_rounded,
-                color: Theme.of(context).iconTheme.color,
+              icon: SvgPicture.asset(
+                'assets/images/icon_images/notification.svg',
+                width: 24,
+                height: 24,
               ))
         ],
       ),
@@ -39,7 +42,11 @@ class _FarmerDashboardState extends State<FarmerDashboard> {
               width: double.infinity,
               height: double.infinity,
               padding: const EdgeInsets.all(16),
-              child: Text("Hello"))),
+              child: Column(
+                children: [
+                  FarmerDashboardOverviewCard()
+                ],
+              ))),
     );
   }
 }
