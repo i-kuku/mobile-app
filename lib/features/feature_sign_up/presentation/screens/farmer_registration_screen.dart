@@ -24,7 +24,9 @@ class _FarmerRegistrationScreenState extends State<FarmerRegistrationScreen> {
     return AnnotatedRegion(
       value: SystemUiOverlayStyle(
           statusBarColor: Theme.of(context).scaffoldBackgroundColor,
-          statusBarIconBrightness: Brightness.dark),
+          statusBarIconBrightness: Brightness.dark,
+          systemNavigationBarColor: Theme.of(context).scaffoldBackgroundColor,
+          systemNavigationBarIconBrightness: Brightness.dark),
       child: Scaffold(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         body: SafeArea(
