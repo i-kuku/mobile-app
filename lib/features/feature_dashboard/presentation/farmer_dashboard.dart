@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:ikuku/features/feature_dashboard/presentation/components/farmer_dashboard_overview_card.dart';
+import 'package:ikuku/features/feature_dashboard/presentation/components/quick_action_section.dart';
 
 class FarmerDashboard extends StatefulWidget {
   const FarmerDashboard({super.key});
@@ -44,7 +45,12 @@ class _FarmerDashboardState extends State<FarmerDashboard> {
               padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
-                  FarmerDashboardOverviewCard()
+                  FarmerDashboardOverviewCard(),
+
+                  const SizedBox(height: 30),
+
+                  //  Quick Action sectiom
+                  QuickActionSection()
                 ],
               ))),
     );

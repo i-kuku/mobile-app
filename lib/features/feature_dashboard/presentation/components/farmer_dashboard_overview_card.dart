@@ -36,7 +36,7 @@ class _FarmerDashboardOverviewCardState
             Text('Kuku Farm Inventory',
                 style: Theme.of(context).textTheme.bodyLarge),
 
-            Expanded(
+            const Expanded(
                 child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
