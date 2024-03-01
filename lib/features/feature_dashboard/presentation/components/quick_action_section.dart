@@ -62,7 +62,7 @@ class _QuickActionSectionState extends State<QuickActionSection> {
         Expanded(
           child: GridView.builder(
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3, crossAxisSpacing: 16, mainAxisSpacing: 16),
+                  crossAxisCount: 3, crossAxisSpacing: 16, mainAxisSpacing: 24),
               itemBuilder: (context, index) => quickActions[index],
               itemCount: quickActions.length),
         )
