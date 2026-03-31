@@ -122,32 +122,32 @@ class AppRouter {
         builder: (context, state) => const RecoverySetupPage(),
       ),
     ],
-    // redirect: (context, state) async {
-    //   final user = Supabase.instance.client.auth.currentUser;
-    //   final loggingIn = state.matchedLocation == '/sign-in';
-    //   final resettingPassword = state.matchedLocation == '/reset-password';
-    //   final onboarding = state.matchedLocation == '/onboarding';
-    //   final language = state.matchedLocation == '/language';
-    //   final splash = state.matchedLocation == '/splash';
-    //   final prefs = await SharedPreferences.getInstance();
-    //   final langSet = prefs.getString('app_language') != null;
-    //   final onboardingComplete = await AppRouter.onboardingComplete();
+    redirect: (context, state) async {
+      final user = Supabase.instance.client.auth.currentUser;
+      final loggingIn = state.matchedLocation == '/sign-in';
+      final resettingPassword = state.matchedLocation == '/reset-password';
+      final onboarding = state.matchedLocation == '/onboarding';
+      final language = state.matchedLocation == '/language';
+      final splash = state.matchedLocation == '/splash';
+      final prefs = await SharedPreferences.getInstance();
+      final langSet = prefs.getString('app_language') != null;
+      final onboardingComplete = await AppRouter.onboardingComplete();
 
-    //   // If on splash screen, let it handle its own navigation
-    //   if (splash) return null;
+      // If on splash screen, let it handle its own navigation
+      if (splash) return null;
 
-    //   if (!langSet && !language) return '/language';
-    //   if (!onboardingComplete && !onboarding && langSet) return '/onboarding';
-    //   if (user == null &&
-    //       !loggingIn &&
-    //       !resettingPassword &&
-    //       langSet &&
-    //       onboardingComplete) {
-    //     return '/sign-in';
-    //   }
-    //   if (user != null && loggingIn) return '/';
-    //   return null;
-    // },
+      if (!langSet && !language) return '/language';
+      if (!onboardingComplete && !onboarding && langSet) return '/onboarding';
+      if (user == null &&
+          !loggingIn &&
+          !resettingPassword &&
+          langSet &&
+          onboardingComplete) {
+        return '/sign-in';
+      }
+      if (user != null && loggingIn) return '/';
+      return null;
+    },
     errorBuilder: (context, state) => Scaffold(
       appBar: AppBar(title: const Text('Page Not Found')),
       body: const Center(child: Text('404 - Page Not Found')),
