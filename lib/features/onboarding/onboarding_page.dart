@@ -91,9 +91,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
                           colors: [
-                            CustomColors.lightGreen.withOpacity(0.0),
-                            CustomColors.lightGreen.withOpacity(0.95),
-                            CustomColors.lightGreen.withOpacity(1.0),
+                            CustomColors.lightGreen.withValues(alpha:0.0),
+                            CustomColors.lightGreen.withValues(alpha: 0.95),
+                            CustomColors.lightGreen.withValues(alpha:1.0),
                           ],
                           stops: [0.0, 0.5, 1.0],
                         )
@@ -102,9 +102,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
                           colors: [
-                            CustomColors.secondary.withOpacity(0.0),
-                            CustomColors.secondary.withOpacity(0.95),
-                            CustomColors.secondary.withOpacity(1.0),
+                            CustomColors.secondary.withValues(alpha:0.0),
+                            CustomColors.secondary.withValues(alpha:0.95),
+                            CustomColors.secondary.withValues(alpha:1.0),
                           ],
                           stops: [0.0, 0.5, 1.0],
                         )
@@ -112,9 +112,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
                           colors: [
-                            CustomColors.primary.withOpacity(0.0),
-                            CustomColors.primary.withOpacity(0.7),
-                            CustomColors.primary.withOpacity(1.0),
+                            CustomColors.primary.withValues(alpha:0.0),
+                            CustomColors.primary.withValues(alpha:0.7),
+                            CustomColors.primary.withValues(alpha:1.0),
                           ],
                           stops: [0.0, 0.5, 1.0],
                         ),
@@ -139,7 +139,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                             child: LinearProgressIndicator(
                               value: (_currentPage + 1) / _screens.length,
                               minHeight: 6,
-                              backgroundColor: Colors.white.withOpacity(0.3),
+                              backgroundColor: Colors.white.withValues(alpha:0.3),
                               valueColor: AlwaysStoppedAnimation<Color>(
                                 _currentPage == 0
                                     ? CustomColors.primary
@@ -212,7 +212,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                             // Continue button centered on page 3
                             if (_currentPage == 2) ...[
                               CircleAvatar(
-                                backgroundColor: Colors.white.withOpacity(0.18),
+                                backgroundColor: Colors.white.withValues(alpha:0.18),
                                 child: IconButton(
                                   icon: Icon(
                                     Icons.arrow_forward,

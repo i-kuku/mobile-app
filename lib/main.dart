@@ -4,9 +4,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'routing/app_router.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'shared/services/supabase_service.dart';
-import 'shared/services/connectivity_manager.dart';
-import 'shared/services/offline_service.dart';
-import 'shared/services/offline_data_service.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

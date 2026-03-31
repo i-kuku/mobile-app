@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SupabaseService {
@@ -10,27 +11,27 @@ class SupabaseService {
   // Test Supabase connection
   Future<bool> testConnection() async {
     try {
-      print('Testing Supabase connection...');
+      debugPrint('Testing Supabase connection...');
 
       // Try to fetch a simple query to test connection
       // Use a table that should exist, or try a simple RPC call
       try {
         final response = await supabase.from('users').select('count').limit(1);
-        print('Connection test successful: $response');
+        debugPrint('Connection test successful: $response');
         return true;
       } catch (tableError) {
         // If users table doesn't exist, try a different approach
-        print('Users table not accessible, trying alternative test...');
+        debugPrint('Users table not accessible, trying alternative test...');
         // Try to get the current user (this should work even if no user is logged in)
         final user = supabase.auth.currentUser;
-        print(
+        debugPrint(
           'Current user check successful: ${user?.id ?? 'No user logged in'}',
         );
         return true;
       }
     } catch (e) {
-      print('Supabase connection test failed: $e');
-      print('Error type: ${e.runtimeType}');
+      debugPrint('Supabase connection test failed: $e');
+      debugPrint('Error type: ${e.runtimeType}');
       return false;
     }
   }
@@ -118,7 +119,7 @@ class SupabaseService {
         .update({'quantity': finalQuantity})
         .eq('id', itemId);
 
-    print(
+    debugPrint(
       '[SupabaseService] Updated inventory $itemId: $currentQuantity -> $finalQuantity',
     );
   }
@@ -135,13 +136,13 @@ class SupabaseService {
 
   // Add a new daily record
   Future<String> addDailyRecord(Map<String, dynamic> record) async {
-    print('addDailyRecord - Creating daily record: $record');
+    debugPrint('addDailyRecord - Creating daily record: $record');
     final response = await supabase
         .from('daily_records')
         .insert(record)
         .select()
         .single();
-    print('addDailyRecord - Created daily record with ID: ${response['id']}');
+    debugPrint('addDailyRecord - Created daily record with ID: ${response['id']}');
     return response['id'] as String;
   }
 
@@ -189,13 +190,13 @@ class SupabaseService {
     }
 
     if (rec.containsKey('id')) {
-      print('addBatchRecord - Updating existing record: ${rec['id']}');
+      debugPrint('addBatchRecord - Updating existing record: ${rec['id']}');
       await supabase.from('batch_records').update(rec).eq('id', rec['id']);
     } else {
-      print('addBatchRecord - Inserting new record');
+      debugPrint('addBatchRecord - Inserting new record');
       await supabase.from('batch_records').insert(rec);
     }
-    print('addBatchRecord - Operation completed successfully');
+    debugPrint('addBatchRecord - Operation completed successfully');
   }
 
   // Fix database constraints to allow one report per batch per day
@@ -222,9 +223,9 @@ class SupabaseService {
         ''',
         },
       );
-      print('Database constraints fixed successfully');
+      debugPrint('Database constraints fixed successfully');
     } catch (e) {
-      print('Error fixing database constraints: $e');
+      debugPrint('Error fixing database constraints: $e');
       // Continue execution even if constraint fix fails
     }
   }
@@ -262,7 +263,7 @@ class SupabaseService {
       // Return true if any batch records exist for this batch
       return batchRecords.isNotEmpty;
     } catch (e) {
-      print('Error checking daily record for batch: $e');
+      debugPrint('Error checking daily record for batch: $e');
       return false; // Return false on error to allow reporting
     }
   }
@@ -276,8 +277,8 @@ class SupabaseService {
         .select()
         .eq('daily_record_id', dailyRecordId);
 
-    // Debug: Print the raw response from Supabase
-    print(
+    // Debug: debugPrint the raw response from Supabase
+    debugPrint(
       'SupabaseService - fetchBatchRecordsForDailyRecord response: $response',
     );
 
@@ -310,7 +311,7 @@ class SupabaseService {
         .eq('user_id', userId)
         .gte('record_date', startOfDay.toIso8601String())
         .lt('record_date', endOfDay.toIso8601String());
-    print(
+    debugPrint(
       '[SupabaseService] fetchDailyRecordsForDate: dailyRecords =  [33m$dailyRecords\u001b[0m',
     );
     if (dailyRecords.isEmpty) return [];
@@ -321,7 +322,7 @@ class SupabaseService {
         .from('batch_records')
         .select('batch_id')
         .inFilter('daily_record_id', dailyRecordIds);
-    print(
+    debugPrint(
       '[SupabaseService] fetchDailyRecordsForDate: batchRecords = \u001b[36m$batchRecords\u001b[0m',
     );
     // Ensure every record is a map with a batch_id key
@@ -446,7 +447,7 @@ class SupabaseService {
       }
       return dates;
     } catch (e) {
-      print('Error fetching report dates for batch: $e');
+      debugPrint('Error fetching report dates for batch: $e');
       return [];
     }
   }

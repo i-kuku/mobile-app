@@ -42,7 +42,7 @@ class StoreSuccessScreen extends StatelessWidget {
 class StoreErrorScreen extends StatelessWidget {
   final VoidCallback? onTryAgain;
 
-  const StoreErrorScreen({Key? key, this.onTryAgain}) : super(key: key);
+  const StoreErrorScreen({super.key, this.onTryAgain});
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +77,7 @@ class StoreErrorScreen extends StatelessWidget {
 class BatchSuccessScreen extends StatelessWidget {
   final VoidCallback? onViewBatch;
 
-  const BatchSuccessScreen({Key? key, this.onViewBatch}) : super(key: key);
+  const BatchSuccessScreen({super.key, this.onViewBatch});
 
   @override
   Widget build(BuildContext context) {
@@ -112,7 +112,7 @@ class BatchSuccessScreen extends StatelessWidget {
 class BatchErrorScreen extends StatelessWidget {
   final VoidCallback? onRetry;
 
-  const BatchErrorScreen({Key? key, this.onRetry}) : super(key: key);
+  const BatchErrorScreen({super.key, this.onRetry});
 
   @override
   Widget build(BuildContext context) {
@@ -148,8 +148,7 @@ class ReportSuccessScreen extends StatelessWidget {
   final VoidCallback? onDone;
   final String? buttonLabel;
 
-  const ReportSuccessScreen({Key? key, this.onDone, this.buttonLabel})
-    : super(key: key);
+  const ReportSuccessScreen({super.key, this.onDone, this.buttonLabel});
 
   @override
   Widget build(BuildContext context) {
@@ -184,7 +183,7 @@ class ReportSuccessScreen extends StatelessWidget {
 class ReportErrorScreen extends StatelessWidget {
   final VoidCallback? onTryAgain;
 
-  const ReportErrorScreen({Key? key, this.onTryAgain}) : super(key: key);
+  const ReportErrorScreen({super.key, this.onTryAgain});
 
   @override
   Widget build(BuildContext context) {

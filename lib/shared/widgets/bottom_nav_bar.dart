@@ -41,7 +41,7 @@ class BottomNavBar extends StatelessWidget {
         BottomNavigationBarItem(
           icon: Icon(Icons.store, color: Colors.grey),
           label: 'my_shop'.tr(),
-          backgroundColor: Colors.grey.withOpacity(0.1),
+          backgroundColor: Colors.grey.withValues(alpha: 0.1),
         ),
         BottomNavigationBarItem(
           icon: Icon(

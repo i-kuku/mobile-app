@@ -108,7 +108,7 @@ class _RecoverySetupPageState extends State<RecoverySetupPage> {
                 ),
                 const SizedBox(height: 8),
                 DropdownButtonFormField<String>(
-                  value: _selectedQuestion,
+                  initialValue: _selectedQuestion,
                   isExpanded: true,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(

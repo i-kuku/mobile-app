@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:xml/xml.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -98,7 +99,7 @@ class RssService {
           }
         }
       } catch (e) {
-        print('Error fetching from ${feed.name}: $e');
+        debugPrint('Error fetching from ${feed.name}: $e');
       }
     }
 
@@ -182,7 +183,7 @@ class RssService {
       final List<dynamic> jsonList = jsonDecode(jsonString);
       return jsonList.map((json) => NewsArticle.fromJson(json)).toList();
     } catch (e) {
-      print('Error reading cached articles: $e');
+      debugPrint('Error reading cached articles: $e');
       return [];
     }
   }

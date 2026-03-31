@@ -80,8 +80,10 @@ class _CreateFarmPageState extends State<CreateFarmPage> {
         'farm_name': _farmNameController.text.trim(),
         'farm_location': _farmLocationController.text.trim(),
       });
+      if(mounted){
 
       context.go('/recovery-setup');
+      }
     } catch (e) {
       setState(() {
         _error = 'failed_to_create_farm'.tr(args: [e.toString()]);

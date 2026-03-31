@@ -38,10 +38,10 @@ final ThemeData appTheme = ThemeData(
     seedColor: CustomColors.primary,
     primary: CustomColors.primary,
     secondary: CustomColors.secondary,
-    background: CustomColors.background,
+    // background: CustomColors.background,
     onPrimary: CustomColors.background,
     onSecondary: CustomColors.text,
-    onBackground: CustomColors.text,
+    // onBackground: CustomColors.text,
     surface: CustomColors.lightYellow,
     onSurface: CustomColors.text,
     brightness: Brightness.light,
@@ -71,7 +71,7 @@ final ThemeData appTheme = ThemeData(
       ), // Use gradient
       elevation: WidgetStateProperty.all(0),
       overlayColor: WidgetStateProperty.all(
-        CustomColors.lightGreen.withOpacity(0.1),
+        CustomColors.lightGreen.withValues(alpha: 0.1),
       ),
     ),
   ),
@@ -82,7 +82,7 @@ final ThemeData appTheme = ThemeData(
     ),
     enabledBorder: OutlineInputBorder(
       borderRadius: BorderRadius.all(Radius.circular(12)),
-      borderSide: BorderSide(color: CustomColors.primary.withOpacity(0.3)),
+      borderSide: BorderSide(color: CustomColors.primary.withValues(alpha: 0.3)),
     ),
     focusedBorder: OutlineInputBorder(
       borderRadius: BorderRadius.all(Radius.circular(12)),
