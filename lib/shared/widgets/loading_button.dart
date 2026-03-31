@@ -65,7 +65,6 @@ class _LoadingButtonState extends State<LoadingButton> {
           autofocus: widget.autofocus,
           child: child,
         );
-      case LoadingButtonType.elevated:
       default:
         return ElevatedButton(
           onPressed: widget.onPressed == null ? null : _handlePressed,

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../app_theme.dart';
+import 'package:ikuku/theme/app_theme.dart';
 
 class FeatureButton extends StatelessWidget {
   final String label;

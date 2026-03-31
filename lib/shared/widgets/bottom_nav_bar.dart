@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../app_theme.dart';
+import 'package:ikuku/theme/app_theme.dart';
 import 'package:easy_localization/easy_localization.dart';
 
 class BottomNavBar extends StatelessWidget {

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ikuku/app_theme.dart';
+import 'package:ikuku/theme/app_theme.dart';
 
 class CustomDialog extends StatelessWidget {
   final String title;

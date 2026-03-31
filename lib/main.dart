@@ -36,15 +36,14 @@ void main() async {
 
   // Initialize offline services
   try {
-    await OfflineService.instance.initialize();
-    await OfflineDataService.instance.initialize();
-    await ConnectivityManager.instance.initialize();
+    // await OfflineService.instance.initialize();
+    // await OfflineDataService.instance.initialize();
+    // await ConnectivityManager.instance.initialize();
   } catch (e) {
     debugPrint('Failed to initialize offline services: $e');
   }
 
-  // Determine the start locale based on saved preference (default to English in-memory
-  // but do NOT write it to preferences so the language selection screen can still show)
+
   final startLocale = Locale(savedLanguage ?? 'en');
 
   runApp(
@@ -61,11 +60,10 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
-      debugShowCheckedModeBanner: false, // Add this line
+      debugShowCheckedModeBanner: false, 
       title: 'Flutter Demo',
       theme: appTheme,
       routerConfig: AppRouter.router,

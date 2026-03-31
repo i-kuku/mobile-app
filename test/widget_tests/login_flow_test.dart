@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:ikuku/core/presentation/components/action_button.dart';
 
 import 'package:ikuku/main.dart';
+import 'package:ikuku/shared/widgets/loading_button.dart';
 
 void main() {
   group('Welcome Screen', () {
@@ -20,7 +20,7 @@ void main() {
       await tester.pumpWidget(const MyApp());
       await tester.pumpAndSettle(const Duration(seconds: 1));
 
-      final getStartedButton = find.byType(ActionButton);
+      final getStartedButton = find.byType(LoadingButton);
       expect(getStartedButton, findsOneWidget);
     });
   });

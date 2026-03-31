@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:ikuku/app_theme.dart';
 import 'package:ikuku/shared/widgets/status_feedback_widget.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:ikuku/theme/app_theme.dart';
 
 /// Store Success Screen
 class StoreSuccessScreen extends StatelessWidget {
   final VoidCallback? onViewStore;
 
-  const StoreSuccessScreen({Key? key, this.onViewStore}) : super(key: key);
+  const StoreSuccessScreen({super.key, this.onViewStore});
 
   @override
   Widget build(BuildContext context) {

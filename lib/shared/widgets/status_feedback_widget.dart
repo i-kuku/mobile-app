@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:ikuku/app_theme.dart';
+import 'package:ikuku/theme/app_theme.dart';
 
 enum StatusType { success, error }
 
@@ -13,14 +13,14 @@ class StatusFeedback extends StatelessWidget {
   final String imagePath;
 
   const StatusFeedback({
-    Key? key,
+    super.key,
     required this.heading,
     required this.bodyText,
     required this.buttonLabel,
     required this.onButtonPressed,
     required this.statusType,
     required this.imagePath,
-  }) : super(key: key);
+  });
 
   Color get _buttonColor {
     return CustomColors.primary; // App green color for all buttons
