@@ -47,6 +47,7 @@ class StatusFeedback extends StatelessWidget {
 
             // Image
             Center(
+              key: Key("image-svg"),
               child: imagePath.endsWith('.svg')
                   ? SvgPicture.asset(imagePath, height: 200, width: 200)
                   : Image.asset(imagePath, height: 200, width: 200),

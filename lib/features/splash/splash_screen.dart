@@ -58,6 +58,7 @@ class _SplashScreenState extends State<SplashScreen>
                     opacity: _fadeAnimation,
                     child: Image.asset(
                       'assets/icons/MAIN LOGO.png',
+                       key: const Key('logo-image'),
                       width: 250,
                       height: 250,
                       fit: BoxFit.contain,
