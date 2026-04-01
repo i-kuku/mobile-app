@@ -3,12 +3,14 @@ import 'package:go_router/go_router.dart';
 import 'package:ikuku/features/onboarding/create_farm_page.dart';
 import 'package:ikuku/features/onboarding/onboarding_page.dart';
 import 'package:ikuku/features/onboarding/recovery_setup_page.dart';
+import 'package:ikuku/features/settings/languages/presentation/language_selection_page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
 
 import '../features/splash/splash_screen.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
+
+GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 class AppRouter {
   static Future<bool> onboardingComplete() async {
@@ -19,6 +21,7 @@ class AppRouter {
   static final GoRouter router = GoRouter(
     debugLogDiagnostics: true,
     initialLocation: '/splash',
+    navigatorKey:navigatorKey,
     routes: [
       GoRoute(
         path: '/splash',
@@ -37,27 +40,29 @@ class AppRouter {
       //   path: '/reset-password',
       //   builder: (context, state) => const ResetPasswordPage(),
       // ),
-      // GoRoute(
-      //   path: '/language',
-      //   builder: (context, state) => LanguageSelectionPage(
-      //     onContinue: () async {
-      //       final fromProfile = (state.extra as Map?)?['fromProfile'] == true;
-      //       if (fromProfile) {
-      //         context.go('/profile');
-      //       } else {
-      //         // Check onboarding status for robustness
-      //         final prefs = await SharedPreferences.getInstance();
-      //         final onboardingComplete =
-      //             prefs.getBool('onboarding_complete') ?? false;
-      //         if (onboardingComplete) {
-      //           context.go('/sign-in');
-      //         } else {
-      //           context.go('/onboarding');
-      //         }
-      //       }
-      //     },
-      //   ),
-      // ),
+      GoRoute(
+        path: '/language',
+        builder: (context, state) => LanguageSelectionPage(
+          onContinue: () async {
+            final fromProfile = (state.extra as Map?)?['fromProfile'] == true;
+            if (fromProfile) {
+              context.go('/profile');
+            } else {
+              // Check onboarding status for robustness
+              final prefs = await SharedPreferences.getInstance();
+              final onboardingComplete =
+                  prefs.getBool('onboarding_complete') ?? false;
+              if (onboardingComplete && context.mounted) {
+                context.go('/sign-in');
+              } else {
+                if (context.mounted) {
+                  context.go('/onboarding');
+                }
+              }
+            }
+          },
+        ),
+      ),
       // GoRoute(path: '/', builder: (context, state) => const DashboardPage()),
       // GoRoute(
       //   path: '/batches',
