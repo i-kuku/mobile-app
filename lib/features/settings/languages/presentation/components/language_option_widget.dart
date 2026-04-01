@@ -1,24 +1,24 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:ikuku/features/settings/languages/model/language.dart';
 import 'package:ikuku/features/settings/languages/provider/language_provider.dart';
 import 'package:ikuku/theme/app_theme.dart';
 import 'package:provider/provider.dart';
 
 class LanguageOptionWidget extends StatelessWidget {
-  final String value;
-  final String label;
+  final Language language;
   const LanguageOptionWidget({
     super.key,
-    required this.value,
-    required this.label,
+    required this.language
   });
 
   @override
   Widget build(BuildContext context) {
     return Consumer<LanguageProvider>(
       builder: (context, provider, child) {
-        final bool selected = provider.selectedLanguage == value;
+        final bool selected = provider.selectedLanguage == language.value;
         return GestureDetector(
-          onTap: () => provider.setLanguage(value),
+          onTap: () => provider.setLanguage(language.value),
           child: Container(
             width: double.infinity,
             padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
@@ -34,7 +34,7 @@ class LanguageOptionWidget extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  label,
+                  language.label.tr(),
                   style: TextStyle(
                     fontSize: 18,
                     color: selected ? CustomColors.primary : Colors.black,

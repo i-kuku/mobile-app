@@ -20,7 +20,7 @@ class AppRouter {
 
   static final GoRouter router = GoRouter(
     debugLogDiagnostics: true,
-    initialLocation: '/splash',
+    initialLocation: '/language',
     navigatorKey:navigatorKey,
     routes: [
       GoRoute(

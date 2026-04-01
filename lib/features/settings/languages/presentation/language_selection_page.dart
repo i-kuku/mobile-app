@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ikuku/features/settings/languages/presentation/components/language_option_widget.dart';
+import 'package:ikuku/features/settings/languages/presentation/components/language_select_option.dart';
 import 'package:ikuku/features/settings/languages/provider/language_provider.dart';
 import 'package:ikuku/theme/app_theme.dart';
 import 'package:provider/provider.dart';
@@ -8,10 +8,6 @@ import 'package:easy_localization/easy_localization.dart';
 class LanguageSelectionPage extends StatelessWidget {
   final VoidCallback? onContinue;
   const LanguageSelectionPage({super.key, this.onContinue});
-
-  void _onContinue() {
-    if (onContinue != null) onContinue!();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +20,7 @@ class LanguageSelectionPage extends StatelessWidget {
       backgroundColor: Colors.white,
       body: Consumer<LanguageProvider>(
         builder: (context, provider, child) {
-          return Padding(
+          return SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 24.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -45,15 +41,13 @@ class LanguageSelectionPage extends StatelessWidget {
                   style: const TextStyle(color: Colors.black54, fontSize: 16),
                 ),
                 const SizedBox(height: 32),
-                LanguageOptionWidget(value: "en", label: 'english'.tr()),
-                const SizedBox(height: 16),
-                LanguageOptionWidget(value: "sw", label: 'swahili'.tr()),
+                LanguageSelectOption(),
 
                 const SizedBox(height: 32),
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: provider.isLoading?null:  _onContinue ,
+                    onPressed: provider.isLoading ? null : onContinue,
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(
