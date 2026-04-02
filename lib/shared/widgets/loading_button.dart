@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:ikuku/theme/app_theme.dart';
 
 enum LoadingButtonType { elevated, outlined, text }
 
-class LoadingButton extends StatefulWidget {
-  final Future<void> Function()? onPressed;
+class LoadingButton extends StatelessWidget {
+  final VoidCallback? onPressed;
   final Widget child;
   final ButtonStyle? style;
   final LoadingButtonType type;
   final bool autofocus;
+  final bool isGradient;
+  final bool isLoading;
 
   const LoadingButton({
     super.key,
@@ -16,31 +19,28 @@ class LoadingButton extends StatefulWidget {
     this.style,
     this.type = LoadingButtonType.elevated,
     this.autofocus = false,
+    this.isGradient = true,
+    this.isLoading = false
+
   });
 
   @override
-  State<LoadingButton> createState() => _LoadingButtonState();
-}
-
-class _LoadingButtonState extends State<LoadingButton> {
-  bool _loading = false;
-
-  Future<void> _handlePressed() async {
-    if (_loading || widget.onPressed == null) return;
-    setState(() => _loading = true);
-    try {
-      await widget.onPressed?.call();
-    } finally {
-      if (mounted) setState(() => _loading = false);
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final child = _loading
+    final buttonStyle =
+        style ??
+        ElevatedButton.styleFrom(
+          backgroundColor: Colors.transparent,
+          shadowColor: Colors.transparent,
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          padding: const EdgeInsets.symmetric(vertical: 16),
+        );
+    final buttonChild = isLoading
         ? SizedBox(
-            width: 18,
-            height: 18,
+            width: 24,
+            height: 24,
             child: CircularProgressIndicator(
               strokeWidth: 2.0,
               valueColor: AlwaysStoppedAnimation<Color>(
@@ -48,30 +48,53 @@ class _LoadingButtonState extends State<LoadingButton> {
               ),
             ),
           )
-        : widget.child;
+        : child;
 
-    switch (widget.type) {
+    switch (type) {
       case LoadingButtonType.outlined:
-        return OutlinedButton(
-          onPressed: widget.onPressed == null ? null : _handlePressed,
-          style: widget.style,
-          autofocus: widget.autofocus,
-          child: child,
+        return showGradient(
+          child: OutlinedButton(
+            onPressed: isLoading
+                ? null
+                : onPressed,
+            style: buttonStyle,
+            autofocus: autofocus,
+            child: buttonChild,
+          ),
         );
       case LoadingButtonType.text:
-        return TextButton(
-          onPressed: widget.onPressed == null ? null : _handlePressed,
-          style: widget.style,
-          autofocus: widget.autofocus,
-          child: child,
+        return showGradient(
+          child: TextButton(
+            onPressed: isLoading
+                ? null
+                : onPressed,
+            style: buttonStyle,
+            autofocus: autofocus,
+            child: buttonChild,
+          ),
         );
       default:
-        return ElevatedButton(
-          onPressed: widget.onPressed == null ? null : _handlePressed,
-          style: widget.style,
-          autofocus: widget.autofocus,
-          child: child,
+        return showGradient(
+          child: ElevatedButton(
+            onPressed:isLoading
+                ? null
+                : onPressed,
+            style: buttonStyle,
+            autofocus: autofocus,
+            child: buttonChild,
+          ),
         );
     }
+  }
+
+  Widget showGradient({required Widget child}) {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        gradient: CustomColors.buttonGradient,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: child,
+    );
   }
 }

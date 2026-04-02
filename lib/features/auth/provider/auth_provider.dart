@@ -21,6 +21,7 @@ class AuthProvider with ChangeNotifier {
 
   void toggleAuthState() {
     _isSignUp = !_isSignUp;
+    _errorMessage = null;
     notifyListeners();
   }
 
@@ -170,6 +171,26 @@ class AuthProvider with ChangeNotifier {
       _errorMessage = 'an_error_occurred'.tr(
         args: [e.toString().split(':').last.trim()],
       );
+    }
+  }
+
+  Future<void> internetTest() async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      final supabaseService = SupabaseService();
+      final isConnected = await supabaseService.testConnection();
+
+      _errorMessage = isConnected
+          ? 'connection_test_successful'.tr()
+          : 'connection_test_failed'.tr();
+    } catch (e) {
+      _errorMessage = 'Connection test error: $e';
+    } finally {
+      _isLoading = false;
+      notifyListeners();
     }
   }
 }

@@ -4,21 +4,19 @@ import 'package:ikuku/features/auth/provider/auth_provider.dart';
 import 'package:ikuku/shared/widgets/text_field_widget.dart';
 import 'package:provider/provider.dart';
 
-class SignUpWidget extends StatefulWidget {
-  const SignUpWidget({super.key});
+class SignInWidget extends StatefulWidget {
+  const SignInWidget({super.key});
 
   @override
-  State<SignUpWidget> createState() => _SignUpWidgetState();
+  State<SignInWidget> createState() => _SignInWidgetState();
 }
 
-class _SignUpWidgetState extends State<SignUpWidget> {
+class _SignInWidgetState extends State<SignInWidget> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _repeatPasswordController = TextEditingController();
 
   final FocusNode _emailFocus = FocusNode();
   final FocusNode _passwordFocus = FocusNode();
-  final FocusNode _repeatPasswordFocus = FocusNode();
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +25,7 @@ class _SignUpWidgetState extends State<SignUpWidget> {
         return Wrap(
           children: [
             Text(
-              "create_account".tr(),
+              "sign_in".tr(),
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.w600,
@@ -36,11 +34,11 @@ class _SignUpWidgetState extends State<SignUpWidget> {
             ),
             SizedBox(height: 12),
             Text(
-              'enter_email_password_create'.tr(),
+              'enter_email_password_signin'.tr(),
               style: TextStyle(fontSize: 16, color: Colors.black54),
             ),
             SizedBox(height: 32),
-       
+
             TextFieldWidget(
               labelText: "Email",
               controller: _emailController,
@@ -49,28 +47,28 @@ class _SignUpWidgetState extends State<SignUpWidget> {
               isEmail: true,
               focusNode: _emailFocus,
               nextFocusNode: _passwordFocus,
-              isLoading: provider.isLoading,
+              isLoading: false,
             ),
             SizedBox(height: 20),
-         
+
             TextFieldWidget(
               labelText: "Password",
               controller: _passwordController,
               isPassword: true,
               hintText: 'type_your_password'.tr(),
               focusNode: _passwordFocus,
-              isLoading: provider.isLoading,
-              nextFocusNode: _repeatPasswordFocus,
+              isLoading: false,
             ),
-            SizedBox(height: 20),
 
-            TextFieldWidget(
-              labelText: 'repeat_password'.tr() ,
-              controller: _repeatPasswordController,
-              isPassword: true,
-              hintText: 'repeat_your_password'.tr(),
-              focusNode: _repeatPasswordFocus,
-              isLoading: provider.isLoading,
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton(
+                onPressed: () {},
+                child: Text(
+                  'forgot_password'.tr(),
+                  style: TextStyle(color: Colors.green[800]),
+                ),
+              ),
             ),
           ],
         );

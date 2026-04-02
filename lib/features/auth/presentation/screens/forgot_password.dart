@@ -1,7 +1,9 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:ikuku/routing/app_router.dart';
 import 'package:ikuku/shared/widgets/loading_button.dart';
+import 'package:ikuku/shared/widgets/text_field_widget.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void handleForgotPassword() async {
@@ -28,10 +30,12 @@ void handleForgotPassword() async {
               if (!isVerifyingAnswer) ...[
                 Text('enter_phone_to_recover'.tr()),
                 const SizedBox(height: 16),
-                TextField(
+                TextFieldWidget(
+                   focusNode: FocusNode(),
+                  isLoading: false,
                   controller: phoneController,
                   keyboardType: TextInputType.phone,
-                  decoration: _inputDecoration('phone_hint'.tr()),
+                  hintText: 'phone_hint'.tr(),
                 ),
               ] else ...[
                 Text(
@@ -41,9 +45,11 @@ void handleForgotPassword() async {
                 const SizedBox(height: 8),
                 Text(recoveryQuestion?.tr() ?? ''),
                 const SizedBox(height: 16),
-                TextField(
+                TextFieldWidget(
+                  focusNode: FocusNode(),
+                  isLoading: false,
                   controller: answerController,
-                  decoration: _inputDecoration('answer_placeholder'.tr()),
+                  hintText: 'answer_placeholder'.tr(),
                 ),
               ],
             ],
@@ -82,7 +88,7 @@ void handleForgotPassword() async {
                       isVerifyingAnswer = true;
                     });
                   } catch (e) {
-                    print('Error fetching question: $e');
+                    debugPrint('Error fetching question: $e');
                   }
                 } else {
                   // Step 2: Verify Answer
@@ -110,7 +116,7 @@ void handleForgotPassword() async {
                       context.go('/reset-password');
                     }
                   } catch (e) {
-                    print('Error verifying answer: $e');
+                    debugPrint('Error verifying answer: $e');
                   }
                 }
               },
