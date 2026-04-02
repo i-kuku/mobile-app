@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:ikuku/features/settings/languages/provider/language_provider.dart';
 import 'package:ikuku/theme/app_theme.dart';
+import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'routing/app_router.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -40,16 +42,20 @@ void main() async {
     debugPrint('Failed to initialize offline services: $e');
   }
 
-
   final startLocale = Locale(savedLanguage ?? 'en');
 
   runApp(
-    EasyLocalization(
-      supportedLocales: const [Locale('en'), Locale('sw')],
-      path: 'assets/translations',
-      fallbackLocale: const Locale('en'),
-      startLocale: startLocale,
-      child: const MyApp(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => LanguageProvider()),
+      ],
+      child: EasyLocalization(
+        supportedLocales: const [Locale('en'), Locale('sw')],
+        path: 'assets/translations',
+        fallbackLocale: const Locale('en'),
+        startLocale: startLocale,
+        child: const MyApp(),
+      ),
     ),
   );
 }
@@ -60,7 +66,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
-      debugShowCheckedModeBanner: false, 
+      debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: appTheme,
       routerConfig: AppRouter.router,
