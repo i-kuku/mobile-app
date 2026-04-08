@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ikuku/features/auth/presentation/screens/auth_page.dart';
+import 'package:ikuku/features/dashboard/presentation/pages/dashboard.dart';
+import 'package:ikuku/features/home/presentation/home_page.dart';
 import 'package:ikuku/features/onboarding/create_farm_page.dart';
 import 'package:ikuku/features/onboarding/onboarding_page.dart';
 import 'package:ikuku/features/onboarding/recovery_setup_page.dart';
+import 'package:ikuku/features/profile/presentation/pages/profile_page.dart';
 import 'package:ikuku/features/settings/languages/presentation/language_selection_page.dart';
+import 'package:ikuku/features/shop/presentation/pages/my_shop_page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../features/splash/splash_screen.dart';
@@ -21,8 +25,8 @@ class AppRouter {
 
   static final GoRouter router = GoRouter(
     debugLogDiagnostics: true,
-    initialLocation: '/language',
-    navigatorKey:navigatorKey,
+    initialLocation: '/splash',
+    navigatorKey: navigatorKey,
     routes: [
       GoRoute(
         path: '/splash',
@@ -63,6 +67,38 @@ class AppRouter {
             }
           },
         ),
+      ),
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) {
+          return Dashboard(navigationShell: navigationShell);
+        },
+        branches: [
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/',
+                builder: (BuildContext context, GoRouterState state) =>
+                    const HomePage(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/my-shop',
+                builder: (context, state) => MyShopPage(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/profile',
+                builder: (context, state) => ProfilePage(),
+              ),
+            ],
+          ),
+        ],
       ),
       // GoRoute(path: '/', builder: (context, state) => const DashboardPage()),
       // GoRoute(
