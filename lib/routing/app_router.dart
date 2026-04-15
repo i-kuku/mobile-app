@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:ikuku/features/auth/presentation/screens/auth_page.dart';
 import 'package:ikuku/features/onboarding/create_farm_page.dart';
 import 'package:ikuku/features/onboarding/onboarding_page.dart';
 import 'package:ikuku/features/onboarding/recovery_setup_page.dart';
@@ -30,12 +31,12 @@ class AppRouter {
       GoRoute(
         path: '/onboarding',
         builder: (context, state) =>
-            OnboardingPage(onFinish: () => context.go('/sign-in')),
+            OnboardingPage(onFinish: () => context.go('/auth')),
       ),
-      // GoRoute(
-      //   path: '/sign-in',
-      //   builder: (context, state) => const SignInPage(),
-      // ),
+      GoRoute(
+        path: '/auth',
+        builder: (context, state) => const AuthPage(),
+      ),
       // GoRoute(
       //   path: '/reset-password',
       //   builder: (context, state) => const ResetPasswordPage(),
@@ -53,7 +54,7 @@ class AppRouter {
               final onboardingComplete =
                   prefs.getBool('onboarding_complete') ?? false;
               if (onboardingComplete && context.mounted) {
-                context.go('/sign-in');
+                context.go('/auth');
               } else {
                 if (context.mounted) {
                   context.go('/onboarding');
@@ -129,7 +130,7 @@ class AppRouter {
     ],
     redirect: (context, state) async {
       final user = Supabase.instance.client.auth.currentUser;
-      final loggingIn = state.matchedLocation == '/sign-in';
+      final loggingIn = state.matchedLocation == '/auth';
       final resettingPassword = state.matchedLocation == '/reset-password';
       final onboarding = state.matchedLocation == '/onboarding';
       final language = state.matchedLocation == '/language';
@@ -148,7 +149,7 @@ class AppRouter {
           !resettingPassword &&
           langSet &&
           onboardingComplete) {
-        return '/sign-in';
+        return '/auth';
       }
       if (user != null && loggingIn) return '/';
       return null;
