@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ikuku/features/auth/provider/auth_provider.dart';
 import 'package:ikuku/features/settings/languages/provider/language_provider.dart';
 import 'package:ikuku/theme/app_theme.dart';
 import 'package:provider/provider.dart';
@@ -48,6 +49,7 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => LanguageProvider()),
+        ChangeNotifierProvider(create: (context) => AuthProvider()),
       ],
       child: EasyLocalization(
         supportedLocales: const [Locale('en'), Locale('sw')],

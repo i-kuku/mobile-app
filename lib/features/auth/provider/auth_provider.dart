@@ -25,11 +25,17 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> register(String email, String password) async {
+  Future<void> register(String email, String password, String cPassword) async {
     _errorMessage = null;
     _isLoading = true;
     notifyListeners();
+
     try {
+      if (cPassword != password) {
+        _errorMessage = "Passwords do not match";
+        notifyListeners();
+        return;
+      }
       final supabaseService = SupabaseService();
       final isConnected = await supabaseService.testConnection();
       if (!isConnected) {

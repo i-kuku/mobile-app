@@ -42,7 +42,7 @@ class _RecoverySetupPageState extends State<RecoverySetupPage> {
 
     final user = Supabase.instance.client.auth.currentUser;
     if (user == null) {
-      context.go('/sign-in');
+      context.go('/auth');
       return;
     }
 

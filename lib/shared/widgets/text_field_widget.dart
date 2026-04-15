@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:icons_plus/icons_plus.dart';
 import 'package:ikuku/shared/utils/validators.dart';
+import 'package:ikuku/theme/app_theme.dart';
 
-class TextFieldWidget extends StatefulWidget {
+class TextFieldWidget extends StatelessWidget {
   final TextEditingController controller;
   final FocusNode focusNode;
   final FocusNode? nextFocusNode;
@@ -19,7 +20,7 @@ class TextFieldWidget extends StatefulWidget {
   final int? minLines;
   final void Function(String text)? onChanged;
 
-  const TextFieldWidget({
+  TextFieldWidget({
     super.key,
     required this.controller,
     required this.focusNode,
@@ -38,42 +39,35 @@ class TextFieldWidget extends StatefulWidget {
     this.onChanged,
   });
 
-  @override
-  State<TextFieldWidget> createState() => _TextFieldWidgetState();
-}
-
-class _TextFieldWidgetState extends State<TextFieldWidget> {
-  bool obscureText = true;
+  final ValueNotifier<bool> obscureText = ValueNotifier(true);
 
   void toggleVisibility() {
-    setState(() {
-      obscureText = !obscureText;
-    });
+    obscureText.value = !obscureText.value;
   }
 
   String? _validator(String? value) {
-    String fieldName = widget.labelText ?? widget.hintText;
+    String fieldName = labelText ?? hintText;
 
-    if (widget.isRequired) {
+    if (isRequired) {
       final requiredCheck = requiredField(value, fieldName: fieldName);
       if (requiredCheck != null) return requiredCheck;
     }
 
-    if (widget.minimumCharacters != null) {
+    if (minimumCharacters != null) {
       final minCheck = minLength(
         value,
-        widget.minimumCharacters!,
+        minimumCharacters!,
         fieldName: fieldName,
       );
       if (minCheck != null) return minCheck;
     }
 
-    if (widget.isEmail) {
+    if (isEmail) {
       final emailCheck = emailValidator(value, fieldName: fieldName);
       if (emailCheck != null) return emailCheck;
     }
 
-    if (widget.isPassword) {
+    if (isPassword) {
       final passCheck = passwordValidator(value, fieldName: fieldName);
       if (passCheck != null) return passCheck;
     }
@@ -83,102 +77,110 @@ class _TextFieldWidgetState extends State<TextFieldWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
-      controller: widget.controller,
-      onChanged: (String text) {
-        if (widget.onChanged != null) {
-          widget.onChanged!(text);
-        }
-      },
-      onTapOutside: (event) {
-        FocusScope.of(context).unfocus();
-      },
-      focusNode: widget.focusNode,
-      keyboardType: widget.isEmail
-          ? TextInputType.emailAddress
-          : widget.maxLines != null
-          ? TextInputType.multiline
-          : widget.keyboardType,
-      maxLines: widget.maxLines ?? 1,
-      minLines: widget.minLines,
-      readOnly: widget.isLoading,
-      obscureText: widget.isPassword ? obscureText : false,
-      textInputAction: widget.nextFocusNode != null
-          ? TextInputAction.next
-          : TextInputAction.done,
-      style: Theme.of(context).textTheme.bodyMedium,
-      validator: _validator,
-      onFieldSubmitted: (_) {
-        if (widget.nextFocusNode != null) {
-          FocusScope.of(context).requestFocus(widget.nextFocusNode);
-        } else {
-          FocusScope.of(context).unfocus();
-        }
-      },
-      cursorColor: Theme.of(context).primaryColor,
-      decoration: InputDecoration(
-        labelText: widget.labelText,
-        floatingLabelBehavior: FloatingLabelBehavior.always, 
-        labelStyle: TextStyle(fontWeight: FontWeight.w500),
-        hintText: widget.hintText,
-        hintStyle: Theme.of(
-          context,
-        ).textTheme.bodySmall!.copyWith(color: Theme.of(context).hintColor),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 12,
-          vertical: 16,
-        ),
-        prefixIcon: widget.isPassword
-            ? Icon(
-                Icons.lock_outline,
-                size: 20,
-                color: Theme.of(context).cardColor,
-              )
-            : widget.isEmail
-            ? Icon(
-                Icons.email_outlined,
-                size: 20,
-                color: Theme.of(context).cardColor,
-              )
-            : widget.isUsername
-            ? Icon(
-                Icons.person_outline_outlined,
-                size: 20,
-                color: Theme.of(context).cardColor,
-              )
-            : null,
-        suffixIcon: widget.isPassword
-            ? GestureDetector(
-                onTap: toggleVisibility,
-                child: Icon(
-                  obscureText ? Iconsax.eye_outline : Iconsax.eye_slash_outline,
-                  color: Theme.of(context).cardColor,
-                ),
-              )
-            : null,
-        enabledBorder:  OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: Colors.grey.shade400),
-        ),
-        focusedBorder:  OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: Colors.green.shade700, width: 2),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(7.0),
-          borderSide: BorderSide(
-            width: 0.5,
-            color: Theme.of(context).colorScheme.error,
+    return ValueListenableBuilder(
+      valueListenable: obscureText,
+      builder: (context, value, child) {
+        return TextFormField(
+          controller: controller,
+          onChanged: (val) {
+            if (onChanged != null) onChanged!(val);
+          },
+
+          onTapOutside: (event) {
+            FocusScope.of(context).unfocus();
+          },
+          focusNode: focusNode,
+          keyboardType: isEmail
+              ? TextInputType.emailAddress
+              : maxLines != null
+              ? TextInputType.multiline
+              : keyboardType,
+          maxLines: maxLines ?? 1,
+          minLines: minLines,
+          onTap: isLoading ? null : () => focusNode.requestFocus(),
+          obscureText: isPassword ? obscureText.value : false,
+          textInputAction: nextFocusNode != null
+              ? TextInputAction.next
+              : TextInputAction.done,
+          style: Theme.of(context).textTheme.bodyMedium,
+          validator: _validator,
+          onFieldSubmitted: (_) {
+            if (nextFocusNode != null) {
+              FocusScope.of(context).requestFocus(nextFocusNode);
+            } else {
+              FocusScope.of(context).unfocus();
+            }
+          },
+          cursorColor: Theme.of(context).primaryColor,
+          decoration: InputDecoration(
+            labelText: labelText,
+            floatingLabelBehavior: FloatingLabelBehavior.always,
+            labelStyle: TextStyle(fontWeight: FontWeight.w500),
+            hintText: hintText,
+            hintStyle: Theme.of(
+              context,
+            ).textTheme.bodySmall!.copyWith(color: Theme.of(context).hintColor),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 12,
+              vertical: 16,
+            ),
+            prefixIcon: isPassword
+                ? Icon(
+                    Icons.lock_outline,
+                    size: 20,
+                    color: CustomColors.primary,
+                  )
+                : isEmail
+                ? Icon(
+                    Icons.email_outlined,
+                    size: 20,
+                    color: CustomColors.primary,
+                  )
+                : isUsername
+                ? Icon(
+                    Icons.person_outline_outlined,
+                    size: 20,
+                    color: CustomColors.primary,
+                  )
+                : null,
+            suffixIcon: isPassword
+                ? GestureDetector(
+                    onTap: toggleVisibility,
+                    child: Icon(
+                      obscureText.value
+                          ? Iconsax.eye_outline
+                          : Iconsax.eye_slash_outline,
+                      color: CustomColors.primary,
+                    ),
+                  )
+                : null,
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(color: Colors.grey.shade400),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(color: Colors.green.shade700, width: 2),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(7.0),
+              borderSide: BorderSide(
+                width: 0.5,
+                color: Theme.of(context).colorScheme.error,
+              ),
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(7.0),
+              borderSide: BorderSide(
+                width: 0.5,
+                color: Theme.of(
+                  context,
+                ).colorScheme.error.withValues(alpha: 0.7),
+              ),
+            ),
           ),
-        ),
-        focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(7.0),
-          borderSide: BorderSide(
-            width: 0.5,
-            color: Theme.of(context).colorScheme.error.withValues(alpha: 0.7),
-          ),
-        ),
-      ),
+        );
+      },
     );
   }
 }
