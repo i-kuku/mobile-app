@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:ikuku/features/batches/presentation/Widgets/batch_card.dart';
-import 'package:ikuku/features/batches/presentation/create_batch_page.dart';
+import 'package:ikuku/features/batches/presentation/screens/create_batch_page.dart';
 import 'package:ikuku/features/batches/provider/batch_provider.dart';
+import 'package:ikuku/shared/widgets/bottom_nav_bar.dart';
 import 'package:provider/provider.dart';
 
 class ManageBatchPage extends StatelessWidget {
@@ -75,6 +76,7 @@ class ManageBatchPage extends StatelessWidget {
           ],
         ),
       ),
+      bottomNavigationBar: BottomNavBar(currentIndex: 1),
     );
   }
 }

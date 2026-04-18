@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:ikuku/features/batches/presentation/create_batch_page.dart';
-import 'package:ikuku/features/batches/presentation/manage_batch_page.dart';
+import 'package:ikuku/features/batches/presentation/screens/create_batch_page.dart';
+import 'package:ikuku/features/batches/presentation/screens/manage_batch_page.dart';
 import 'package:ikuku/features/onboarding/create_farm_page.dart';
 import 'package:ikuku/features/onboarding/onboarding_page.dart';
 import 'package:ikuku/features/onboarding/recovery_setup_page.dart';
