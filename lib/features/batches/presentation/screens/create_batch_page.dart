@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:ikuku/features/batches/provider/batch_provider.dart';
+// import 'package:ikuku/features/batches/provider/batch_provider.dart';
 import 'package:ikuku/shared/widgets/feature_button.dart';
-import 'package:provider/provider.dart';
+// import 'package:provider/provider.dart';
 
 class CreateBatchPage extends StatefulWidget {
   const CreateBatchPage({super.key});
@@ -31,14 +31,22 @@ class _CreateBatchPageState extends State<CreateBatchPage> {
 
   void _saveBatch(){
     if(_formKey.currentState!.validate()){
-
-      context.read<BatchProvider>().addBatch(
-        name:_nameController.text,
-        typeOfBird:_selectedType,
-        initialCount:int.parse(_countController.text),
-        age:int.parse(_ageController.text),
-        ageUnit:_selectedUnit,
-      );
+        
+        final batchData={
+          'name':_nameController.text,
+          'typeOfBird':_selectedType,
+          'initialCount':_countController.text,
+          'age':_ageController.text,
+          'ageUnit':_selectedUnit,
+        };
+        context.push('/confirm-batch',extra: batchData);
+      // context.read<BatchProvider>().addBatch(
+      //   name:_nameController.text,
+      //   typeOfBird:_selectedType,
+      //   initialCount:int.parse(_countController.text),
+      //   age:int.parse(_ageController.text),
+      //   ageUnit:_selectedUnit,
+      // );
     }
   }
 
@@ -49,7 +57,7 @@ class _CreateBatchPageState extends State<CreateBatchPage> {
         elevation: 0,
         leadingWidth: 100,
         leading: InkWell(
-    onTap: () => context.pop(), 
+    onTap: () => context.pop(),
     child: Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -75,14 +83,14 @@ class _CreateBatchPageState extends State<CreateBatchPage> {
         ),
         body: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15),
+            padding: const EdgeInsets.symmetric(horizontal: 8),
             child: Form(
               key:_formKey,
               child:ListView(
                 shrinkWrap: true,
-                padding: EdgeInsets.all(20),
+                padding: EdgeInsets.all(8),
                 children: [
-                  SizedBox(height: 76),
+                  SizedBox(height: 12),
                   Text("Create New Batch",
                   style: TextStyle(fontSize: 22,fontWeight: FontWeight.bold),
                   ),

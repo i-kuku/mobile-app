@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:ikuku/features/batches/presentation/screens/confirm_batch_page.dart';
 import 'package:ikuku/features/batches/presentation/screens/create_batch_page.dart';
 import 'package:ikuku/features/batches/presentation/screens/manage_batch_page.dart';
 import 'package:ikuku/features/onboarding/create_farm_page.dart';
@@ -72,6 +73,13 @@ class AppRouter {
       GoRoute(
         path: '/create-batch',
         builder: (context, state) => const CreateBatchPage(),
+      ),
+      GoRoute(
+        path:'/confirm-batch',
+        builder: (context, state) {
+          final data = state.extra as Map<String,dynamic>;
+          return ConfirmBatchPage(batchData:data);
+        },
       ),
       // GoRoute(path: '/', builder: (context, state) => const DashboardPage()),
       // GoRoute(
