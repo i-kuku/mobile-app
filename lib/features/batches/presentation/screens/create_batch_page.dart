@@ -174,7 +174,7 @@ class _CreateBatchPageState extends State<CreateBatchPage> {
                   FeatureButton(
                     label: "Create Batch", 
                     icon: Icons.add, 
-                    onTap:_saveBatch ,
+                    onTap:_saveBatch,
                     )
                 ],
             

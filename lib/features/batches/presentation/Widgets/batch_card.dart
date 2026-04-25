@@ -18,7 +18,7 @@ class BatchCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 66,
-      width: 328,
+      width: 100,
       margin: EdgeInsets.only(bottom:12),
       decoration: BoxDecoration(
         color: Colors.white,

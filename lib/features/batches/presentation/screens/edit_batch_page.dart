@@ -238,10 +238,10 @@ class _EditBatchPageState extends State<EditBatchPage> {
                  ),
                  SizedBox(height: 48),
                   FeatureButton(
-                    label: "Create Batch", 
+                    label: "Update", 
                     icon: Icons.add, 
-                    onTap:_saveBatch ,
-                    )
+                    onTap:_saveBatch,
+                    ),
                 ],
             
               )
