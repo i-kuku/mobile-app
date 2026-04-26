@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ikuku/features/batches/presentation/screens/confirm_batch_page.dart';
 import 'package:ikuku/features/batches/presentation/screens/create_batch_page.dart';
+// import 'package:ikuku/features/batches/presentation/screens/edit_batch_page.dart';
 import 'package:ikuku/features/batches/presentation/screens/manage_batch_page.dart';
 import 'package:ikuku/features/onboarding/create_farm_page.dart';
 import 'package:ikuku/features/onboarding/onboarding_page.dart';
@@ -71,16 +72,17 @@ class AppRouter {
         builder: (context, state) => const ManageBatchPage(),
       ),
       GoRoute(
-        path: '/create-batch',
+        path: '/create_batch_page',
         builder: (context, state) => const CreateBatchPage(),
       ),
       GoRoute(
-        path:'/confirm-batch',
+        path:'/confirm_batch_page',
         builder: (context, state) {
           final data = state.extra as Map<String,dynamic>;
           return ConfirmBatchPage(batchData:data);
         },
       ),
+    
       // GoRoute(path: '/', builder: (context, state) => const DashboardPage()),
       // GoRoute(
       //   path: '/batches',
@@ -153,7 +155,9 @@ class AppRouter {
       final language = state.matchedLocation == '/language';
       final splash = state.matchedLocation == '/splash';
       final batches=state.matchedLocation=='/batches';
-      final createBatch=state.matchedLocation =='/create-batch';
+      final createBatch=state.matchedLocation =='/create_batch_page';
+      final confirmBatch=state.matchedLocation=='/confirm_batch_page';
+      //  final editBatch=state.matchedLocation=='/edit_batch_page';
       final prefs = await SharedPreferences.getInstance();
       final langSet = prefs.getString('app_language') != null;
       final onboardingComplete = await AppRouter.onboardingComplete();
@@ -167,6 +171,7 @@ class AppRouter {
           !loggingIn &&
           !batches && 
           !createBatch&&
+          !confirmBatch&&
           // !resettingPassword &&
           // langSet &&
           onboardingComplete) {

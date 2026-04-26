@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ikuku/features/batches/model/chicken_batch_model.dart';
 import 'package:ikuku/features/batches/presentation/Widgets/batch_card.dart';
-import 'package:ikuku/features/batches/presentation/screens/create_batch_page.dart';
+// import 'package:ikuku/features/batches/presentation/screens/create_batch_page.dart';
 import 'package:ikuku/features/batches/presentation/widgets/pop_up.dart';
 import 'package:ikuku/features/batches/provider/batch_provider.dart';
 import 'package:ikuku/shared/widgets/bottom_nav_bar.dart';
@@ -79,12 +79,7 @@ class ManageBatchPage extends StatelessWidget {
               alignment: Alignment.centerRight,
               child: TextButton.icon(
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const CreateBatchPage(),
-                    ),
-                  );
+                context.push('/create_batch_page');
                 },
                 icon: Icon(Icons.add_circle, color: Colors.green, size: 30),
                 label: Text(

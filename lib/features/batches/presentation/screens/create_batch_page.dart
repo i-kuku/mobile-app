@@ -39,7 +39,7 @@ class _CreateBatchPageState extends State<CreateBatchPage> {
           'age':_ageController.text,
           'ageUnit':_selectedUnit,
         };
-        context.push('/confirm-batch',extra: batchData);
+        context.push('/confirm_batch_page',extra: batchData);
       // context.read<BatchProvider>().addBatch(
       //   name:_nameController.text,
       //   typeOfBird:_selectedType,

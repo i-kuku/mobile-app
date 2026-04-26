@@ -30,37 +30,42 @@ class PopUp extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
       ),
-      child: SizedBox(
-       width: 333,
-       height: 273,
-       child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Column(
-            children: [
-              icon,
-             SizedBox(height: 24),
-             RichText(
-             textAlign: TextAlign.center,
-             text: TextSpan(
-              style: TextStyle(color: Colors.black,fontSize: 16),
+      child: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: SizedBox(
+         width: 333,
+         height: 273,
+         child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                TextSpan(text:messagebefore),
-                TextSpan(
-                  text:batchName,
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),TextSpan(text: messageAfter),
-              ]
-             ),
-             )
-            ],
-          ),
-          if(mainButtonText!=null|| secondaryButtonText!= null)
-          _buildButtons(context)
-          else
-          SizedBox(height: 48),
-        ],
-       ),
+                icon,
+               SizedBox(height: 24),
+               RichText(
+               textAlign: TextAlign.center,
+               text: TextSpan(
+                style: TextStyle(color: Colors.black,fontSize: 16),
+                children: [
+                  TextSpan(text:messagebefore),
+                  TextSpan(
+                    text:batchName,
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),TextSpan(text: messageAfter),
+                ]
+               ),
+               )
+              ],
+            ),
+            if(mainButtonText!=null|| secondaryButtonText!= null)
+            _buildButtons(context)
+            else
+            SizedBox(height: 48),
+          ],
+         ),
+        ),
       ),
       );   
   }

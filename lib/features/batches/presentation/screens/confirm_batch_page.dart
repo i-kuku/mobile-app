@@ -12,6 +12,8 @@ class ConfirmBatchPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        elevation: 0,
+        leadingWidth: 100,
         leading: InkWell(
           onTap: () => context.pop(),
 
@@ -20,7 +22,7 @@ class ConfirmBatchPage extends StatelessWidget {
               SizedBox(width: 8),
               Icon(Icons.arrow_back, size: 18, color: Colors.black),
               SizedBox(width: 4),
-              Text("Back", style: TextStyle(color: Colors.black, fontSize: 16)),
+              Text("Back", style: TextStyle(color: CustomColors.text, fontSize: 16,fontWeight: FontWeight.w500)),
             ],
           ),
         ),
@@ -30,47 +32,59 @@ class ConfirmBatchPage extends StatelessWidget {
           padding: const EdgeInsets.all(10.0),
           child: Column(
             children: [
+              SizedBox(height: 24),
               Container(
                 height: 46,
                 width: double.infinity,
-                decoration: BoxDecoration(color: CustomColors.lightYellow),
-                child: Text("Confirm Your Batch"),
+                alignment: Alignment.centerLeft,
+                padding: EdgeInsets.only(left: 8),
+                decoration: BoxDecoration(color: CustomColors.secondary),
+                child: Text("Confirm Your Batch",
+                style: TextStyle(fontSize: 15,
+                color: CustomColors.text,
+                ),
+                ),
               ),
               SizedBox(height: 10),
-              GridView.count(
-                shrinkWrap: true,
-                crossAxisCount: 2,
-                childAspectRatio: 3,
-                children: [
-                  _gridItem("Batch Name", batchData['name']),
-                  _gridItem("Type of Bird", batchData['typeOfBird']),
-                  _gridItem("Number of Birds", batchData['initialCount']),
-                  _gridItem(
-                    "Age",
-                    "${batchData['age']} ${batchData['ageUnit']}",
-                  ),
-                ],
+              Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: ListView(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  children: [
+                    _listItem("Batch Name", batchData['name']),
+                    _listItem("Type Of Bird", batchData['typeOfBird']),
+                    _listItem("Number Of Birds", batchData['initialCount']),
+                    _listItem(
+                      "Age",
+                      "${batchData['age']} ${batchData['ageUnit']}",
+                    ),
+                  ],
+                ),
               ),
               SizedBox(height: 40),
               Row(
                 children: [
                   Expanded(
-                    child: OutlinedButton(
+                    child: ElevatedButton(
                       onPressed: () {
-                        context.push('/edit_batch', extra: batchData);
+                        context.push('/edit_batch_page', extra: batchData);
                       },
-                      style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: CustomColors.primary),
+                      style: ElevatedButton.styleFrom(
+                        side: BorderSide(color: CustomColors.secondary),
+                        // shape: RoundedRectangleBorder(
+                        //   borderRadius: BorderRadius.circular(1),
+                        // ),
                         padding: EdgeInsets.symmetric(vertical: 16),
+                        
                       ),
                       child: Text(
                         "Edit",
-                        style: TextStyle(color: CustomColors.primary),
+                        style: TextStyle(color: CustomColors.text),
                       ),
                     ),
                   ),
-
-                  SizedBox(width: 16),
+                  SizedBox(width: 58),
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () {
@@ -79,15 +93,17 @@ class ConfirmBatchPage extends StatelessWidget {
                           barrierDismissible: false,
                           builder: (context) => PopUp(
                             icon: Image.asset(
-                              "assets/icons/add-batch",
-                              height: 120,
+                              "assets/icons/tip-chicken.png",
+                              height: 110,
+                              width: 50,
+                              fit: BoxFit.contain,
                             ),
-                            batchName: batchData['name'],
-                            messageAfter: "has been created successfully",
+                            messagebefore: "You have created\t",
+                             batchName: batchData['name'],
                             mainButtonText: null,
                           ),
                         );
-                        Future.delayed(Duration(milliseconds: 1500), () {
+                        Future.delayed(Duration(milliseconds: 500), () {
                           if (context.mounted) {
                             Navigator.of(context).pop();
                             context.go('/batches');
@@ -114,23 +130,25 @@ class ConfirmBatchPage extends StatelessWidget {
   }
 }
 
-Widget _gridItem(String label, String value) {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    mainAxisAlignment: MainAxisAlignment.center,
-    children: [
-      Text(
-        label,
-        style: TextStyle(color: CustomColors.textColorSecondary, fontSize: 14),
-      ),
-      Text(
-        value,
-        style: TextStyle(
-          color: CustomColors.text,
-          fontWeight: FontWeight.bold,
-          fontSize: 16,
+Widget _listItem(String label, String value) {
+  return Padding(
+    padding: const EdgeInsets.all(8.0),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: TextStyle(color: CustomColors.textColorSecondary, fontSize: 20),
         ),
-      ),
-    ],
+        Text(
+          value,
+          style: TextStyle(
+            color: CustomColors.text,
+            fontWeight: FontWeight.w400,
+            fontSize: 20,
+          ),
+        ),
+      ],
+    ),
   );
 }
