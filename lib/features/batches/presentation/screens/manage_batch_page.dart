@@ -5,7 +5,7 @@ import 'package:ikuku/features/batches/presentation/Widgets/batch_card.dart';
 // import 'package:ikuku/features/batches/presentation/screens/create_batch_page.dart';
 import 'package:ikuku/features/batches/presentation/widgets/pop_up.dart';
 import 'package:ikuku/features/batches/provider/batch_provider.dart';
-import 'package:ikuku/shared/widgets/bottom_nav_bar.dart';
+import 'package:ikuku/theme/app_theme.dart';
 import 'package:provider/provider.dart';
 
 class ManageBatchPage extends StatelessWidget {
@@ -58,7 +58,7 @@ class ManageBatchPage extends StatelessWidget {
         actions: [
           IconButton(
             onPressed: () {},
-            icon: Icon(Icons.notification_add_outlined, color: Colors.black),
+            icon: Icon(Icons.notifications_none, color: Colors.black),
           ),
         ],
         backgroundColor: Colors.white,
@@ -66,7 +66,25 @@ class ManageBatchPage extends StatelessWidget {
       ),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 16),
-        child: Column(
+        child:
+            Expanded(
+              child: Consumer<BatchProvider>(
+                builder: (context, provider, child) {
+                  if (provider.batches.isEmpty) {
+                    return _buildEmptyState(context);
+                  }
+                 else{
+                  return _buildActiveState(context, provider);
+                 }
+                },
+              ),
+            ),
+      ),
+      );
+  }
+
+Widget _buildEmptyState(BuildContext context){
+        return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 16),
@@ -75,30 +93,64 @@ class ManageBatchPage extends StatelessWidget {
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 10),
-            Align(
-              alignment: Alignment.centerRight,
-              child: TextButton.icon(
-                onPressed: () {
-                context.push('/create_batch_page');
-                },
-                icon: Icon(Icons.add_circle, color: Colors.green, size: 30),
-                label: Text(
-                  "Add New Batch",
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.w500,
+            Container(
+              padding: EdgeInsets.all(12),
+              child: Row(
+                children: [
+                  Image.asset('assets/icons/tip-chicken.png'),
+                  SizedBox(width: 10),
+                  Text(
+                    "Tip:A batch is a group of chicken,\n obtained at the same time",
+                    style: TextStyle(color: Colors.grey.shade600),
                   ),
-                ),
+                ],
               ),
             ),
+            SizedBox(height: 20),
+            Text("My Batches", style: TextStyle(color: CustomColors.text)),
+            SizedBox(height: 30),
+            Center(
+              child: Column(
+                children: [
+                  Image.asset('assets/icons/add-batch.svg', width: 150),
+                  Text("You have no batches yet"),
+                  Text('The batches You Create will appear here'),
+                  SizedBox(height: 16),
+                  TextButton(
+                    onPressed: () {
+                      context.push('/create_batch_page');
+                    },
+                    child: Text("CREATE A BATCH"),
+                  ),
+                ],
+              ),
+            ),
+          ],
+       );
+}
+Widget _buildActiveState(BuildContext context,BatchProvider provider){
+    return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
             const SizedBox(height: 16),
-            Expanded(
-              child: Consumer<BatchProvider>(
-                builder: (context, provider, child) {
-                  if (provider.batches.isEmpty) {
-                    return const Center(child: Text("No Batches yet.Add one!"));
-                  }
-                  return ListView.builder(
+            Text(
+              "Manage Batches",
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                IconButton(
+                  onPressed: () => context.push('/create_batch_page'),
+                   icon: Icon(Icons.add_circle,color: CustomColors.primary),
+                   ),
+                  Text("Add New Batch"),
+              ],
+            ),
+            SizedBox(height:10),
+                Expanded(
+              child:ListView.builder(
                     itemCount: provider.batches.length,
                     itemBuilder: (context, index) {
                       final batch = provider.batches[index];
@@ -112,14 +164,10 @@ class ManageBatchPage extends StatelessWidget {
                         },
                       );
                     },
-                  );
-                },
               ),
             ),
           ],
-        ),
-      ),
-      bottomNavigationBar: BottomNavBar(currentIndex: 1),
-    );
-  }
+      );
 }
+}
+
