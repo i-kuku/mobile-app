@@ -5,6 +5,6 @@ class MyShopPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: Center(child: Text("My Shop Page")));
+    return const Center(child: Text("My Shop Page"));
   }
 }

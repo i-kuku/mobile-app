@@ -86,7 +86,7 @@ class AppRouter {
             routes: [
               GoRoute(
                 path: '/my-shop',
-                builder: (context, state) => MyShopPage(),
+                builder: (context, state) =>const MyShopPage(),
               ),
             ],
           ),
@@ -94,7 +94,7 @@ class AppRouter {
             routes: [
               GoRoute(
                 path: '/profile',
-                builder: (context, state) => ProfilePage(),
+                builder: (context, state) =>const ProfilePage(),
               ),
             ],
           ),
