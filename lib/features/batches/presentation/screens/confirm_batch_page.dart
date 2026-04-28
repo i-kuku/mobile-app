@@ -40,8 +40,7 @@ class ConfirmBatchPage extends StatelessWidget {
                 padding: EdgeInsets.only(left: 8),
                 decoration: BoxDecoration(color: CustomColors.secondary),
                 child: Text("Confirm Your Batch",
-                style: TextStyle(fontSize: 15,
-                color: CustomColors.text,
+                style: Theme.of(context).textTheme.titleLarge!.copyWith(color: CustomColors.text
                 ),
                 ),
               ),
@@ -80,7 +79,7 @@ class ConfirmBatchPage extends StatelessWidget {
                       ),
                       child: Text(
                         "Edit",
-                        style: TextStyle(color: CustomColors.text),
+                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: CustomColors.primary,),
                       ),
                     ),
                   ),
@@ -115,8 +114,8 @@ class ConfirmBatchPage extends StatelessWidget {
                         padding: EdgeInsets.symmetric(vertical: 16),
                       ),
                       child: Text(
-                        "confirm",
-                        style: TextStyle(color: Colors.white),
+                        "Confirm",
+                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Colors.white),
                       ),
                     ),
                   ),

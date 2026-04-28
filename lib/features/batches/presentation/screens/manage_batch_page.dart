@@ -54,7 +54,8 @@ class ManageBatchPage extends StatelessWidget {
           icon: Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text("Batches", style: TextStyle(color: Colors.black)),
+        title: Text("Batches", style: Theme.of(context).textTheme.titleLarge!.copyWith(color: CustomColors.text)),
+        centerTitle: true,
         actions: [
           IconButton(
             onPressed: () {},
@@ -87,40 +88,40 @@ Widget _buildEmptyState(BuildContext context){
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 16),
+            const SizedBox(height: 24),
             Text(
               "Manage Batches",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              style: Theme.of(context).textTheme.titleLarge!.copyWith(color: CustomColors.text,fontSize: 30),
             ),
             SizedBox(height: 10),
             Container(
               padding: EdgeInsets.all(12),
               child: Row(
                 children: [
-                  Image.asset('assets/icons/tip-chicken.png'),
+                  Image.asset('assets/icons/tip-chicken.png',height: 50,width: 49.03),
                   SizedBox(width: 10),
                   Text(
                     "Tip:A batch is a group of chicken,\n obtained at the same time",
-                    style: TextStyle(color: Colors.grey.shade600),
+                    style: Theme.of(context).textTheme.titleMedium!.copyWith(color: CustomColors.textDisabled),
                   ),
                 ],
               ),
             ),
             SizedBox(height: 20),
-            Text("My Batches", style: TextStyle(color: CustomColors.text)),
+            Text("My Batches", style: Theme.of(context).textTheme.titleLarge!.copyWith(color: CustomColors.text)),
             SizedBox(height: 30),
             Center(
               child: Column(
                 children: [
-                  Image.asset('assets/icons/add-batch.svg', width: 150),
-                  Text("You have no batches yet"),
-                  Text('The batches You Create will appear here'),
+                  Image.asset('assets/icons/amico.png', width: 130,height: 130),
+                  Text("You have no batches yet",style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: CustomColors.textDisabled,fontWeight:FontWeight.w400,fontSize:16)),
+                  Text('The batches You create will appear here',style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: CustomColors.textDisabled)),
                   SizedBox(height: 16),
                   TextButton(
                     onPressed: () {
                       context.push('/create_batch_page');
                     },
-                    child: Text("CREATE A BATCH"),
+                    child: Text("CREATE A BATCH", style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: CustomColors.primary,fontSize: 16,fontFamily: 'Roboto',decoration: TextDecoration.underline)),
                   ),
                 ],
               ),
@@ -135,7 +136,7 @@ Widget _buildActiveState(BuildContext context,BatchProvider provider){
             const SizedBox(height: 16),
             Text(
               "Manage Batches",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              style: Theme.of(context).textTheme.titleLarge!.copyWith(color: CustomColors.text),
             ),
             SizedBox(height: 10),
             Row(

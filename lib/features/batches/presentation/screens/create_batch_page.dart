@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 // import 'package:ikuku/features/batches/provider/batch_provider.dart';
 import 'package:ikuku/shared/widgets/feature_button.dart';
+import 'package:ikuku/theme/app_theme.dart';
 // import 'package:provider/provider.dart';
 
 class CreateBatchPage extends StatefulWidget {
@@ -40,13 +41,6 @@ class _CreateBatchPageState extends State<CreateBatchPage> {
           'ageUnit':_selectedUnit,
         };
         context.push('/confirm_batch_page',extra: batchData);
-      // context.read<BatchProvider>().addBatch(
-      //   name:_nameController.text,
-      //   typeOfBird:_selectedType,
-      //   initialCount:int.parse(_countController.text),
-      //   age:int.parse(_ageController.text),
-      //   ageUnit:_selectedUnit,
-      // );
     }
   }
 
@@ -92,10 +86,10 @@ class _CreateBatchPageState extends State<CreateBatchPage> {
                 children: [
                   SizedBox(height: 12),
                   Text("Create New Batch",
-                  style: TextStyle(fontSize: 22,fontWeight: FontWeight.bold),
+                  style: Theme.of(context).textTheme.titleLarge!.copyWith(color: CustomColors.text),
                   ),
                   SizedBox(height: 48),
-                  Text("Batch Name"),
+                  Text("Batch Name", style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: CustomColors.text,fontSize:16)),
                   TextFormField(
                     controller:_nameController,
                     decoration: InputDecoration(hintText: "batch 1"),
@@ -109,7 +103,7 @@ class _CreateBatchPageState extends State<CreateBatchPage> {
                           child:Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text("Type Of Bird"),
+                              Text("Type Of Bird", style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: CustomColors.text,fontSize:16)),
                               DropdownButtonFormField<String>(
                                 initialValue:_selectedType,
                                 items:['Layers','Broilers'].map((type){
@@ -125,7 +119,7 @@ class _CreateBatchPageState extends State<CreateBatchPage> {
                                 child: Column(
                                   crossAxisAlignment:CrossAxisAlignment.start,
                                   children: [
-                                    const Text("Number of Birds"),
+                                     Text("Number of Birds", style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: CustomColors.text,fontSize:16)),
                                     TextFormField(
                                       controller: _countController,
                                       keyboardType: TextInputType.number,
@@ -144,7 +138,7 @@ class _CreateBatchPageState extends State<CreateBatchPage> {
                       child:Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text("Age"),
+                          Text("Age", style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: CustomColors.text,fontSize:16)),
                           TextFormField(
                             controller:_ageController,
                             keyboardType: TextInputType.number,
@@ -158,7 +152,7 @@ class _CreateBatchPageState extends State<CreateBatchPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text("Days/Weeks/Months"),
+                            Text("Days/Weeks/Months", style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: CustomColors.text,fontSize:16)),
                             DropdownButtonFormField<String>(
                               initialValue: _selectedUnit,
                               items: ['Days','Weeks','Months'].map((unit){
