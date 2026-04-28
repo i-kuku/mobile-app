@@ -21,10 +21,10 @@ class AppBottomNavbar extends StatelessWidget {
       unselectedItemColor: CustomColors.textDisabled,
       backgroundColor: CustomColors.background,
       items: [
-        BottomNavigationBarItem(icon: Icon(Icons.home), label: "home".tr()),
-        BottomNavigationBarItem(icon: Icon(Icons.store), label: "my_shop".tr()),
+        BottomNavigationBarItem(icon:const Icon(Icons.home), label: "home".tr()),
+        BottomNavigationBarItem(icon:const Icon(Icons.store), label: "my_shop".tr()),
         BottomNavigationBarItem(
-          icon: Icon(Icons.person),
+          icon:const Icon(Icons.person),
           label: "profile".tr(),
         ),
       ],
