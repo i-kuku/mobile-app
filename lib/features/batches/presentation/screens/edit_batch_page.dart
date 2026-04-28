@@ -6,7 +6,8 @@ import 'package:ikuku/theme/app_theme.dart';
 // import 'package:provider/provider.dart';
 
 class EditBatchPage extends StatefulWidget {
-  const EditBatchPage({super.key});
+  final Map<String, dynamic>batchData;
+  const EditBatchPage({super.key,required this.batchData});
 
   @override
   State<EditBatchPage> createState() => _EditBatchPageState();
@@ -15,13 +16,25 @@ class EditBatchPage extends StatefulWidget {
 class _EditBatchPageState extends State<EditBatchPage> {
   final _formKey=GlobalKey<FormState>();
 
-  final _nameController=TextEditingController();
-  final _countController=TextEditingController();
-  final _ageController=TextEditingController();
+  late TextEditingController _nameController;
+  late  TextEditingController _countController;
+  late TextEditingController _ageController;
 
-  String _selectedType='Layers';
-  String _selectedUnit='Days';
+  late String? _selectedType;
+  late String? _selectedUnit;
   
+ @override
+  void initState(){
+    super.initState();
+
+  _nameController=TextEditingController(text: widget.batchData['name']);
+  _countController=TextEditingController(text:widget.batchData['initialCount']?.toString());
+  _ageController=TextEditingController(text:widget.batchData['age']?.toString());
+
+  _selectedType=widget.batchData['typeOfBird'];
+  _selectedUnit=widget.batchData['ageUnit'];
+}
+
   @override
   void dispose(){
     _nameController.dispose();
@@ -29,27 +42,19 @@ class _EditBatchPageState extends State<EditBatchPage> {
      _ageController.dispose();
      super.dispose();
   }
+void _handleUpdate() {
+  if (_formKey.currentState!.validate()) {
+    final updatedData = {
+      'name': _nameController.text,
+      'typeOfBird': _selectedType,
+      'initialCount': _countController.text,
+      'age': _ageController.text,
+      'ageUnit': _selectedUnit,
+    };
 
-  void _saveBatch(){
-    if(_formKey.currentState!.validate()){
-        
-        final batchData={
-          'name':_nameController.text,
-          'typeOfBird':_selectedType,
-          'initialCount':_countController.text,
-          'age':_ageController.text,
-          'ageUnit':_selectedUnit,
-        };
-        context.push('/confirm-batch',extra: batchData);
-      // context.read<BatchProvider>().addBatch(
-      //   name:_nameController.text,
-      //   typeOfBird:_selectedType,
-      //   initialCount:int.parse(_countController.text),
-      //   age:int.parse(_ageController.text),
-      //   ageUnit:_selectedUnit,
-      // );
-    }
+    context.pop(updatedData); 
   }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -92,15 +97,14 @@ class _EditBatchPageState extends State<EditBatchPage> {
                 padding: EdgeInsets.all(8),
                 children: [
                   SizedBox(height: 12),
-                  Text("Create New Batch",
+                  Text("Edit ${widget.batchData['name']}",
                   style: TextStyle(fontSize: 22,fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: 48),
-                  Text("Batch Name"),
                   TextFormField(
                     controller:_nameController,
                     decoration: InputDecoration(
-                      hintText: "batch 1",
+                      labelText: 'Batch Name',
                       border:UnderlineInputBorder(
                         borderSide:BorderSide(color:CustomColors.textDisabled),
                       ),
@@ -123,9 +127,9 @@ class _EditBatchPageState extends State<EditBatchPage> {
                           child:Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text("Type Of Bird"),
                               DropdownButtonFormField<String>(
                                 decoration: InputDecoration(
+                                  labelText: 'Type Of Birds',
                                    border:UnderlineInputBorder(
                                      borderSide:BorderSide(color:CustomColors.textDisabled),
                                        ),
@@ -152,12 +156,11 @@ class _EditBatchPageState extends State<EditBatchPage> {
                                 child: Column(
                                   crossAxisAlignment:CrossAxisAlignment.start,
                                   children: [
-                                    const Text("Number of Birds"),
                                     TextFormField(
                                       controller: _countController,
                                       keyboardType: TextInputType.number,
                                       decoration: const InputDecoration(
-                                        hintText:"0",
+                                        labelText: 'Number Of Birds',
                                          border:UnderlineInputBorder(
                                             borderSide:BorderSide(color:CustomColors.textDisabled),
                                                  ),
@@ -184,12 +187,11 @@ class _EditBatchPageState extends State<EditBatchPage> {
                       child:Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text("Age"),
                           TextFormField(
                             controller:_ageController,
                             keyboardType: TextInputType.number,
                             decoration: InputDecoration(
-                              hintText: "3",
+                              labelText: 'Age',
                                border:UnderlineInputBorder(
                         borderSide:BorderSide(color:CustomColors.textDisabled),
                       ),
@@ -240,7 +242,7 @@ class _EditBatchPageState extends State<EditBatchPage> {
                   FeatureButton(
                     label: "Update", 
                     icon: Icons.add, 
-                    onTap:_saveBatch,
+                    onTap:_handleUpdate,
                     ),
                 ],
             

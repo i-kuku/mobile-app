@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ikuku/features/batches/presentation/screens/confirm_batch_page.dart';
 import 'package:ikuku/features/batches/presentation/screens/create_batch_page.dart';
-// import 'package:ikuku/features/batches/presentation/screens/edit_batch_page.dart';
+import 'package:ikuku/features/batches/presentation/screens/edit_batch_page.dart';
 import 'package:ikuku/features/batches/presentation/screens/manage_batch_page.dart';
 import 'package:ikuku/features/onboarding/create_farm_page.dart';
 import 'package:ikuku/features/onboarding/onboarding_page.dart';
@@ -82,6 +82,13 @@ class AppRouter {
           return ConfirmBatchPage(batchData:data);
         },
       ),
+      GoRoute(
+        path:'/edit_batch_page',
+        builder: (context, state) {
+          final data = state.extra as Map<String,dynamic>;
+          return EditBatchPage(batchData:data);
+        },
+      ),
     
       // GoRoute(path: '/', builder: (context, state) => const DashboardPage()),
       // GoRoute(
@@ -157,7 +164,7 @@ class AppRouter {
       final batches=state.matchedLocation=='/batches';
       final createBatch=state.matchedLocation =='/create_batch_page';
       final confirmBatch=state.matchedLocation=='/confirm_batch_page';
-      //  final editBatch=state.matchedLocation=='/edit_batch_page';
+      final editBatch=state.matchedLocation=='/edit_batch_page';
       final prefs = await SharedPreferences.getInstance();
       final langSet = prefs.getString('app_language') != null;
       final onboardingComplete = await AppRouter.onboardingComplete();
@@ -172,6 +179,7 @@ class AppRouter {
           !batches && 
           !createBatch&&
           !confirmBatch&&
+          !editBatch&&
           // !resettingPassword &&
           // langSet &&
           onboardingComplete) {
