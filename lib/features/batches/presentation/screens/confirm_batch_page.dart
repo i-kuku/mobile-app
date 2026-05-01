@@ -93,8 +93,8 @@ class ConfirmBatchPage extends StatelessWidget {
                         Provider.of<BatchProvider>(context, listen: false).addBatch(
                           name: batchData['name'],
                           typeOfBird: batchData['typeOfBird'],
-                          initialCount: int.parse(batchData['initialCount']),
-                          age: int.parse(batchData['age']),
+                          initialCount: int.tryParse(batchData['initialCount']) ?? 0,
+                          age: int.tryParse(batchData['age']) ?? 0,
                           ageUnit: batchData['ageUnit'],
                         );
                         showDialog(
@@ -107,7 +107,7 @@ class ConfirmBatchPage extends StatelessWidget {
                               width: 151,
                               fit: BoxFit.contain,
                             ),
-                            messagebefore: "you_have_created\t".tr(),
+                            messagebefore: "you_have_created ".tr(),
                              batchName: batchData['name'],
                             mainButtonText: null,
                           ),

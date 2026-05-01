@@ -4,7 +4,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ikuku/features/batches/model/chicken_batch_model.dart';
 import 'package:ikuku/features/batches/presentation/Widgets/batch_card.dart';
-// import 'package:ikuku/features/batches/presentation/screens/create_batch_page.dart';
 import 'package:ikuku/features/batches/presentation/widgets/pop_up.dart';
 import 'package:ikuku/features/batches/provider/batch_provider.dart';
 import 'package:ikuku/theme/app_theme.dart';
@@ -25,7 +24,7 @@ class ManageBatchPage extends StatelessWidget {
           fit: BoxFit.contain,
         ),
         messagebefore: "Are_you_sure_you_want_to \nremove_this_batch?".tr(),
-        mainButtonText: "YES_I'M_SURE".tr(),
+        mainButtonText: "yes_i'm_sure".tr(),
         secondaryButtonText: "cancel".tr(),
         onMainAction: () {
           Navigator.pop(context);
@@ -69,7 +68,7 @@ class ManageBatchPage extends StatelessWidget {
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.black),
           onPressed: (){
-            context.push('/confirm_batch_page');
+            context.pop();
           },
         ),
         title: Text(
@@ -128,7 +127,7 @@ class ManageBatchPage extends StatelessWidget {
               ),
               SizedBox(width: 10),
               Text(
-                "Tip:A batch is a group of chicken,\n obtained at the same time",
+                "tip_batch_definition".tr(),
                 style: Theme.of(context).textTheme.titleMedium!.copyWith(
                   color: CustomColors.textDisabled,fontSize: 18,
                 ),
@@ -169,7 +168,7 @@ class ManageBatchPage extends StatelessWidget {
                   context.push('/create_batch_page');
                 },
                 child: Text(
-                  "CREATE_A_BATCH".tr(),
+                  "create_a_batch".tr(),
                   style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                     color: CustomColors.primary,
                     fontSize: 20,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ikuku/features/batches/model/chicken_batch_model.dart';
+import 'package:uuid/uuid.dart';
 
 class BatchProvider extends ChangeNotifier{
   final List<ChickenBatch> _batches=[];
@@ -14,7 +15,7 @@ class BatchProvider extends ChangeNotifier{
     required String ageUnit,
   }){
     final newBatch=ChickenBatch(
-      id: DateTime.now().toString(), 
+      id: const Uuid().v4(), 
       name: name, 
       typeOfBird: typeOfBird, 
       initialNumberOfBirds: initialCount, 

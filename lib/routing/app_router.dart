@@ -59,7 +59,7 @@ class AppRouter {
               final prefs = await SharedPreferences.getInstance();
               final onboardingComplete =
                   prefs.getBool('onboarding_complete') ?? false;
-                  final user = Supabase.instance.client.auth.currentUser;
+              final user = Supabase.instance.client.auth.currentUser;
               if (onboardingComplete && context.mounted) {
                 context.go(user != null ? '/batches' : '/auth');
               } else {
@@ -192,16 +192,11 @@ class AppRouter {
     ],
     redirect: (context, state) async {
       final user = Supabase.instance.client.auth.currentUser;
-      // final resettingPassword = state.matchedLocation == '/reset-password';
       final loggingIn = state.matchedLocation == '/auth';
       final onboarding = state.matchedLocation == '/onboarding';
       final language = state.matchedLocation == '/language';
       final splash = state.matchedLocation == '/splash';
       final root = state.matchedLocation == '/';
-      final batches = state.matchedLocation == '/batches';
-      final createBatch = state.matchedLocation == '/create_batch_page';
-      final confirmBatch = state.matchedLocation == '/confirm_batch_page';
-      final editBatch = state.matchedLocation == '/edit_batch_page';
       final prefs = await SharedPreferences.getInstance();
       final langSet = prefs.getString('app_language') != null;
       final onboardingComplete = await AppRouter.onboardingComplete();
@@ -211,19 +206,16 @@ class AppRouter {
 
       if (!langSet && !language) return '/language';
       if (!onboardingComplete && !onboarding && langSet) return '/onboarding';
-      if (user == null &&
-          !loggingIn &&
-          !batches &&
-          !createBatch &&
-          !confirmBatch &&
-          !editBatch &&
-          // !resettingPassword &&
-          // langSet &&
-          onboardingComplete) {
-        return '/auth';
+      if (user == null) {
+        if (!loggingIn && onboardingComplete) {
+          return '/auth';
+        }
+      } else {
+        if (loggingIn || root) {
+          return '/batches';
+        }
       }
-      // if (user != null && loggingIn) return '/batches';
-        if (root || loggingIn) return '/batches';
+
       return null;
     },
     errorBuilder: (context, state) => Scaffold(

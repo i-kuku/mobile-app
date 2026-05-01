@@ -215,6 +215,15 @@ class _EditBatchPageState extends State<EditBatchPage> {
                               ),
                               contentPadding: EdgeInsets.zero,
                             ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return "enter_a_number".tr();
+                              }
+                              if (int.tryParse(value) == null) {
+                                return 'please_enter_a_valid_number'.tr();
+                              }
+                              return null;
+                            },
                           ),
                         ],
                       ),
@@ -258,6 +267,8 @@ class _EditBatchPageState extends State<EditBatchPage> {
                                 ),
                               ),
                             ),
+                            validator: (value) =>
+                      value!.isEmpty ? "Enter_the_age".tr() : null,
                           ),
                         ],
                       ),
@@ -311,7 +322,7 @@ class _EditBatchPageState extends State<EditBatchPage> {
                   ],
                 ),
                 SizedBox(height: 48),
-                FeatureButton(label: 'UPDATE'.tr(), onTap: _handleUpdate),
+                FeatureButton(label: 'update'.tr(), onTap: _handleUpdate),
               ],
             ),
           ),
