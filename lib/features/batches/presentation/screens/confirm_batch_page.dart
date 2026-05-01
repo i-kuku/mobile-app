@@ -1,7 +1,10 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ikuku/features/batches/presentation/widgets/pop_up.dart';
+import 'package:ikuku/features/batches/provider/batch_provider.dart';
 import 'package:ikuku/theme/app_theme.dart';
+import 'package:provider/provider.dart';
 
 class ConfirmBatchPage extends StatelessWidget {
   final Map<String, dynamic> batchData;
@@ -22,7 +25,7 @@ class ConfirmBatchPage extends StatelessWidget {
               SizedBox(width: 8),
               Icon(Icons.arrow_back, size: 18, color: Colors.black),
               SizedBox(width: 4),
-              Text("Back", style: TextStyle(color: CustomColors.text, fontSize: 16,fontWeight: FontWeight.w500)),
+              Text("Back".tr(), style: TextStyle(color: CustomColors.text, fontSize: 16,fontWeight: FontWeight.w500)),
             ],
           ),
         ),
@@ -39,7 +42,7 @@ class ConfirmBatchPage extends StatelessWidget {
                 alignment: Alignment.centerLeft,
                 padding: EdgeInsets.only(left: 8),
                 decoration: BoxDecoration(color: CustomColors.secondary),
-                child: Text("Confirm Your Batch",
+                child: Text("Confirm_your_batch".tr(),
                 style: Theme.of(context).textTheme.titleLarge!.copyWith(color: CustomColors.text
                 ),
                 ),
@@ -51,12 +54,12 @@ class ConfirmBatchPage extends StatelessWidget {
                   shrinkWrap: true,
                   physics: NeverScrollableScrollPhysics(),
                   children: [
-                    _listItem("Batch Name", batchData['name']),
-                    _listItem("Type Of Bird", batchData['typeOfBird']),
-                    _listItem("Number Of Birds", batchData['initialCount']),
+                    _listItem("Batch_Name".tr(), batchData['name']),
+                    _listItem("type_of_bird".tr(), batchData['typeOfBird']),
+                    _listItem("number_of_birds".tr(), batchData['initialCount']),
                     _listItem(
-                      "Age",
-                      "${batchData['age']} ${batchData['ageUnit']}",
+                      "Age".tr(),
+                      "${batchData['age']} ${batchData['ageUnit'].toString().tr()}",
                     ),
                   ],
                 ),
@@ -78,7 +81,7 @@ class ConfirmBatchPage extends StatelessWidget {
                         
                       ),
                       child: Text(
-                        "Edit",
+                        "edit".tr(),
                         style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: CustomColors.primary,),
                       ),
                     ),
@@ -87,22 +90,29 @@ class ConfirmBatchPage extends StatelessWidget {
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () {
+                        Provider.of<BatchProvider>(context, listen: false).addBatch(
+                          name: batchData['name'],
+                          typeOfBird: batchData['typeOfBird'],
+                          initialCount: int.parse(batchData['initialCount']),
+                          age: int.parse(batchData['age']),
+                          ageUnit: batchData['ageUnit'],
+                        );
                         showDialog(
                           context: context,
                           barrierDismissible: false,
                           builder: (context) => PopUp(
                             icon: Image.asset(
                               "assets/icons/tip-chicken.png",
-                              height: 110,
-                              width: 50,
+                              height: 154,
+                              width: 151,
                               fit: BoxFit.contain,
                             ),
-                            messagebefore: "You have created\t",
+                            messagebefore: "you_have_created\t".tr(),
                              batchName: batchData['name'],
                             mainButtonText: null,
                           ),
                         );
-                        Future.delayed(Duration(milliseconds: 500), () {
+                        Future.delayed(Duration(seconds: 1), () {
                           if (context.mounted) {
                             Navigator.of(context).pop();
                             context.go('/batches');
@@ -114,7 +124,7 @@ class ConfirmBatchPage extends StatelessWidget {
                         padding: EdgeInsets.symmetric(vertical: 16),
                       ),
                       child: Text(
-                        "Confirm",
+                        "confirm".tr(),
                         style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Colors.white),
                       ),
                     ),

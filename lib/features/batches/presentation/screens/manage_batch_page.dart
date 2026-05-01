@@ -1,4 +1,6 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ikuku/features/batches/model/chicken_batch_model.dart';
 import 'package:ikuku/features/batches/presentation/Widgets/batch_card.dart';
@@ -16,10 +18,15 @@ class ManageBatchPage extends StatelessWidget {
       context: context,
       barrierDismissible: false,
       builder: (context) => PopUp(
-        icon: Icon(Icons.error_outline_outlined),
-        messagebefore: "Are you sure you want to \nremove this batch?",
-        mainButtonText: "YES,I'M SURE",
-        secondaryButtonText: "CANCEL",
+        icon: SvgPicture.asset(
+          'assets/icons/remove-alert.svg',
+          height: 150,
+          width: 150,
+          fit: BoxFit.contain,
+        ),
+        messagebefore: "Are_you_sure_you_want_to \nremove_this_batch?".tr(),
+        mainButtonText: "YES_I'M_SURE".tr(),
+        secondaryButtonText: "cancel".tr(),
         onMainAction: () {
           Navigator.pop(context);
           _showsuccessRemoved(context, batch);
@@ -29,20 +36,29 @@ class ManageBatchPage extends StatelessWidget {
   }
 
   void _showsuccessRemoved(BuildContext context, ChickenBatch batch) {
+    Provider.of<BatchProvider>(context, listen: false).removeBatch(batch.id);
     showDialog(
       context: context,
-      builder: (context) => PopUp(
-        icon: Image.asset('assets/images/farmer.svg'),
-        batchName: batch.name,
-        messageAfter: "has been removed",
-        mainButtonText: 'null',
-      ),
+      barrierDismissible: false,
+      builder: (dialogContext) {
+        Future.delayed(const Duration(seconds: 1), () {
+          if (dialogContext.mounted) {
+            Navigator.pop(dialogContext);
+          }
+        });
+
+        return PopUp(
+          icon: Image.asset(
+            'assets/icons/tip-chicken.png',
+            height: 154,
+            width: 151,
+            fit: BoxFit.contain,
+          ),
+          batchName: batch.name,
+          messageAfter: " has_been_removed".tr(),
+        );
+      },
     );
-    Future.delayed(Duration(milliseconds: 1500), () {
-      if (context.mounted) {
-        Navigator.pop(context);
-      }
-    });
   }
 
   @override
@@ -52,9 +68,16 @@ class ManageBatchPage extends StatelessWidget {
       appBar: AppBar(
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
+          onPressed: (){
+            context.pop('/confirm_batch_page');
+          },
         ),
-        title: Text("Batches", style: Theme.of(context).textTheme.titleLarge!.copyWith(color: CustomColors.text)),
+        title: Text(
+          "Batches".tr(),
+          style: Theme.of(
+            context,
+          ).textTheme.titleLarge!.copyWith(color: CustomColors.text),
+        ),
         centerTitle: true,
         actions: [
           IconButton(
@@ -67,108 +90,158 @@ class ManageBatchPage extends StatelessWidget {
       ),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 16),
-        child:
-            Expanded(
-              child: Consumer<BatchProvider>(
-                builder: (context, provider, child) {
-                  if (provider.batches.isEmpty) {
-                    return _buildEmptyState(context);
-                  }
-                 else{
-                  return _buildActiveState(context, provider);
-                 }
-                },
-              ),
-            ),
+          child: Consumer<BatchProvider>(
+            builder: (context, provider, child) {
+              if (provider.batches.isEmpty) {
+                return _buildEmptyState(context);
+              } else {
+                return _buildActiveState(context, provider);
+              }
+            },
+          ),
+        
       ),
-      );
+    );
   }
 
-Widget _buildEmptyState(BuildContext context){
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 24),
-            Text(
-              "Manage Batches",
-              style: Theme.of(context).textTheme.titleLarge!.copyWith(color: CustomColors.text,fontSize: 30),
-            ),
-            SizedBox(height: 10),
-            Container(
-              padding: EdgeInsets.all(12),
-              child: Row(
-                children: [
-                  Image.asset('assets/icons/tip-chicken.png',height: 50,width: 49.03),
-                  SizedBox(width: 10),
-                  Text(
-                    "Tip:A batch is a group of chicken,\n obtained at the same time",
-                    style: Theme.of(context).textTheme.titleMedium!.copyWith(color: CustomColors.textDisabled),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(height: 20),
-            Text("My Batches", style: Theme.of(context).textTheme.titleLarge!.copyWith(color: CustomColors.text)),
-            SizedBox(height: 30),
-            Center(
-              child: Column(
-                children: [
-                  Image.asset('assets/icons/amico.png', width: 130,height: 130),
-                  Text("You have no batches yet",style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: CustomColors.textDisabled,fontWeight:FontWeight.w400,fontSize:16)),
-                  Text('The batches You create will appear here',style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: CustomColors.textDisabled)),
-                  SizedBox(height: 16),
-                  TextButton(
-                    onPressed: () {
-                      context.push('/create_batch_page');
-                    },
-                    child: Text("CREATE A BATCH", style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: CustomColors.primary,fontSize: 16,fontFamily: 'Roboto',decoration: TextDecoration.underline)),
-                  ),
-                ],
-              ),
-            ),
-          ],
-       );
-}
-Widget _buildActiveState(BuildContext context,BatchProvider provider){
+  Widget _buildEmptyState(BuildContext context) {
     return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 24),
+        Text(
+          "manage_batches".tr(),
+          style: Theme.of(context).textTheme.titleLarge!.copyWith(
+            color: CustomColors.text,
+            fontSize: 30,
+          ),
+        ),
+        SizedBox(height: 10),
+        Container(
+          padding: EdgeInsets.all(12),
+          child: Row(
+            children: [
+              Image.asset(
+                'assets/icons/tip-chicken.png',
+                height: 50,
+                width: 49.03,
+              ),
+              SizedBox(width: 10),
+              Text(
+                "Tip:A batch is a group of chicken,\n obtained at the same time",
+                style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                  color: CustomColors.textDisabled,fontSize: 18,
+                ),
+              ),
+            ],
+          ),
+        ),
+        SizedBox(height: 20),
+        Text(
+          "my_batches".tr(),
+          style: Theme.of(
+            context,
+          ).textTheme.titleLarge!.copyWith(color: CustomColors.text, fontSize: 20),
+        ),
+        SizedBox(height: 30),
+        Center(
+          child: Column(
+            children: [
+              Image.asset('assets/icons/amico.png', width: 130, height: 130),
+              Text(
+                "you_have_no_batches_yet".tr(),
+                style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                  color: CustomColors.textDisabled,
+                  fontWeight: FontWeight.w400,
+                  fontSize: 18,
+                ),
+              ),
+              Text(
+                "the_batches_You_create_will_appear_here".tr(),
+                style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                  color: CustomColors.textDisabled,
+                  fontSize: 18,
+                ),
+              ),
+              SizedBox(height: 16),
+              TextButton(
+                onPressed: () {
+                  context.push('/create_batch_page');
+                },
+                child: Text(
+                  "CREATE_A_BATCH".tr(),
+                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                    color: CustomColors.primary,
+                    fontSize: 20,
+                    fontFamily: 'Roboto',
+                    fontWeight: FontWeight.bold,
+                    decoration: TextDecoration.underline,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildActiveState(BuildContext context, BatchProvider provider) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 16),
+        Text(
+          "manage_batches".tr(),
+          style: Theme.of(
+            context,
+          ).textTheme.titleLarge!.copyWith(color: CustomColors.text,fontSize: 30),
+        ),
+        SizedBox(height: 10),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            const SizedBox(height: 16),
+            IconButton(
+              onPressed: () => context.push('/create_batch_page'),
+              icon: Icon(Icons.add_circle, color: CustomColors.text, size: 30),
+            ),
             Text(
-              "Manage Batches",
-              style: Theme.of(context).textTheme.titleLarge!.copyWith(color: CustomColors.text),
-            ),
-            SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                IconButton(
-                  onPressed: () => context.push('/create_batch_page'),
-                   icon: Icon(Icons.add_circle,color: CustomColors.primary),
-                   ),
-                  Text("Add New Batch"),
-              ],
-            ),
-            SizedBox(height:10),
-                Expanded(
-              child:ListView.builder(
-                    itemCount: provider.batches.length,
-                    itemBuilder: (context, index) {
-                      final batch = provider.batches[index];
-                      return BatchCard(
-                        batch: batch,
-                        onEdit: () {
-                          context.push('/edit_batch_page', extra: batch);
-                        },
-                        onDelete: () {
-                          _handleremovebatchsequence(context, batch);
-                        },
-                      );
-                    },
+              "add_new_batch".tr(),
+              style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                color: CustomColors.primary,
+                fontSize: 18,
               ),
             ),
           ],
-      );
+        ),
+        SizedBox(height: 10),
+        Expanded(
+          child: ListView.builder(
+            itemCount: provider.batches.length,
+            itemBuilder: (context, index) {
+              final batch = provider.batches[index];
+              return BatchCard(
+                batch: batch,
+                onEdit: () {
+                  context.push(
+                    '/edit_batch_page',
+                    extra: {
+                      'name': batch.name,
+                      'typeOfBird': batch.typeOfBird,
+                      'initialCount': batch.initialNumberOfBirds.toString(),
+                      'age': batch.age.toString(),
+                      'ageUnit': batch.ageUnit,
+                    },
+                  );
+                },
+                onDelete: () {
+                  _handleremovebatchsequence(context, batch);
+                },
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
 }
-}
-

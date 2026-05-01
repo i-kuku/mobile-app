@@ -6,7 +6,6 @@ class BatchProvider extends ChangeNotifier{
 
   List <ChickenBatch> get batches => _batches;
 
-  // to add a new batch
   void addBatch({
     required String name,
     required String typeOfBird,
