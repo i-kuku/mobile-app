@@ -69,7 +69,7 @@ class ManageBatchPage extends StatelessWidget {
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.black),
           onPressed: (){
-            context.pop('/confirm_batch_page');
+            context.push('/confirm_batch_page');
           },
         ),
         title: Text(

@@ -396,7 +396,7 @@
   "Edit_Batch": "Edit Batch",
   "Batch_Name": "Batch Name",
   "type_of_bird": "Type of bird",
-  "layer": "Leya",
+  "layer": "Layer",
   "Age": "Age",
   "UPDATE": "UPDATE",
   "age_unit":"Age Unit",
@@ -420,5 +420,6 @@
   "Edit": "Edit",
   "Remove": "Remove",
   "Are_you_sure_you_want_to \nremove_this_batch?": "Are you sure you want to \nremove this batch?",
-  "YES_I'M_SURE": "YES, I'M SURE"
+  "YES_I'M_SURE": "YES, I'M SURE",
+  "add_new_batch": "Add New Batch"
 }
