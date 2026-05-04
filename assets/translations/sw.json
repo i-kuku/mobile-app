@@ -420,5 +420,12 @@
   "user_not_found": "Hakuna akaunti iliyopatikana na nambari hii ya simu.",
   "cannot_see_items": "Huwezi kuona vitu kwenye orodha?",
   "add_item_to_store": "Ongeza kipengele kwenye stoo",
-  "tip_batch_definition":"Kidokezo: Kundi(batch) ni mkusanyiko wa kuku,\n waliopatikana kwa wakati mmoja"
+  "tip_batch_definition":"Kidokezo: Kundi(batch) ni mkusanyiko wa kuku,\n waliopatikana kwa wakati mmoja",
+  "my_inventory": "Stoo Yangu",
+  "feeds_description": "Chakula kilichopo kwenye stoo yako",
+  "medicines_description": "chanjo zilizopo kwenye stoo yako",
+  "others_description": "Vituo vingine kwenye stoo yako",
+  "feed": "Chakula",
+  "medicine": "Chanjo",
+  "other": "Vingine"
 }

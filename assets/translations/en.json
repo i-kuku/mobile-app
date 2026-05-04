@@ -417,5 +417,12 @@
   "yes_i'm_sure": "YES, I'M SURE",
   "add_new_batch": "Add New Batch",
   "please_enter_a_valid_number":"Please enter a valid number",
-  "tip_batch_definition":"Tip:A batch is a group of chicken,\n obtained at the same time"
+  "tip_batch_definition":"Tip:A batch is a group of chicken,\n obtained at the same time",
+  "my_inventory": "My Inventory",
+  "feeds_description": "Feeds available in your inventory",
+  "medicines_description": "Medicines available in your inventory",
+  "others_description": "Other items in your inventory",
+  "feed": "Feeds",
+  "medicine": "Medicines",
+  "other": "Others"
 }

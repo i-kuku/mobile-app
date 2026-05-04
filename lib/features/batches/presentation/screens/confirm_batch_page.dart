@@ -74,9 +74,6 @@ class ConfirmBatchPage extends StatelessWidget {
                       },
                       style: ElevatedButton.styleFrom(
                         side: BorderSide(color: CustomColors.secondary),
-                        // shape: RoundedRectangleBorder(
-                        //   borderRadius: BorderRadius.circular(1),
-                        // ),
                         padding: EdgeInsets.symmetric(vertical: 16),
                         
                       ),

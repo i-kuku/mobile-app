@@ -1,0 +1,176 @@
+import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:ikuku/theme/app_theme.dart';
+
+void addItemDialog(BuildContext context, String category) {
+  showDialog(
+    context: context,
+    builder: (context) => Dialog(
+      backgroundColor: Colors.white,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+      child: SizedBox(
+        width: MediaQuery.of(context).size.width * 0.9,
+        height: 602,
+        child: AddItemForm(category: category),
+      ),
+    ),
+  );
+}
+
+class AddItemForm extends StatefulWidget {
+  final String category;
+  const AddItemForm({super.key,required this.category});
+
+  @override
+  State<AddItemForm> createState() => _AddItemFormState();
+}
+
+class _AddItemFormState extends State<AddItemForm> {
+  final _nameController = TextEditingController();
+  final _quantityController = TextEditingController();
+  final _priceController = TextEditingController();
+  String? _selectedUnit = "Kg";
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _quantityController.dispose();
+    _priceController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 28, vertical: 30),
+          child: Text(
+            "add_item_to_store".tr(),
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.w400,
+              fontSize: 20,
+              color: CustomColors.text,
+            ),
+          ),
+        ),
+        Expanded(
+          child: ListView(
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            children: [
+              _buildLabel("name_of_item".tr()),
+              _buildTextField(_nameController),
+
+              _buildLabel("quantity".tr()),
+              _buildTextField(_quantityController, isNumber: true),
+
+              _buildLabel("unit".tr()),
+              DropdownButtonFormField<String>(
+                initialValue: _selectedUnit,
+                decoration: _inputDecoration(),
+                icon: const Icon(Icons.keyboard_arrow_down),
+                items: ['Kg', 'L', 'g', 'Mifuko']
+                    .map((u) => DropdownMenuItem(value: u, child: Text(u)))
+                    .toList(),
+                onChanged: (val) => setState(() => _selectedUnit = val!),
+              ),
+              _buildLabel("price_per_unit".tr()),
+              _buildTextField(_priceController, isNumber: true),
+            ],
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.all(16),
+          child: Column(
+            children: [
+              SizedBox(
+                width: double.infinity,
+                height: 42,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: CustomColors.primary,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  onPressed: () {
+                    context.pop();
+                  },
+                  child: Text(
+                    "add_item".tr(),
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      color: Colors.white,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
+                height: 42,
+                child: ElevatedButton(
+                  onPressed: () {
+                    context.push("");
+                  },
+                  style: ElevatedButton.styleFrom(
+                    side: BorderSide(color: CustomColors.secondary),
+                    padding: EdgeInsets.symmetric(vertical: 16),
+                  ),
+                  child: Text(
+                    "cancel".tr(),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodyLarge!.copyWith(color: CustomColors.text),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLabel(String text) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: 6),
+      child: Text(
+        text,
+        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+          color: CustomColors.text,
+          fontSize: 18,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTextField(
+    TextEditingController controller, {
+    bool isNumber = false,
+  }) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: 16),
+      child: TextField(
+        controller: controller,
+        keyboardType: isNumber ? TextInputType.number : TextInputType.text,
+        decoration: _inputDecoration(),
+      ),
+    );
+  }
+
+  InputDecoration _inputDecoration() {
+    return InputDecoration(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(4),
+        borderSide: BorderSide(color: Colors.grey.shade300),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(4),
+        borderSide: BorderSide(color: CustomColors.primary),
+      ),
+    );
+  }
+}
