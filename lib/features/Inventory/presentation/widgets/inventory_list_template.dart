@@ -112,5 +112,5 @@ Widget _buildEmptyState(BuildContext context) {
       separatorBuilder: (context, index) => const SizedBox(height: 12),
       itemBuilder: (context, index) => InventoryItemCard(item: items[index]),
     );
-  }
+      }
 }

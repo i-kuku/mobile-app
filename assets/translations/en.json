@@ -424,5 +424,7 @@
   "others_description": "Other items in your inventory",
   "feed": "Feeds",
   "medicine": "Medicines",
-  "other": "Others"
+  "other": "Others",
+  "no_feeds_title":"Add Feeds To Your Store", 
+  "feeds_adjust_tip":"Tip:You can adjust feed amounts when \n recording daily farm reports."
 }

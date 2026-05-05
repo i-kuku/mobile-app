@@ -427,5 +427,7 @@
   "others_description": "Vituo vingine kwenye stoo yako",
   "feed": "Chakula",
   "medicine": "Chanjo",
-  "other": "Vingine"
+  "other": "Vingine",
+  "no_feeds_title":"Ongeza chakula kwenye stoo yako", 
+  "feeds_adjust_tip":"Kidokezo:Unaweza kurekebisha kiasi\n cha chakula unapoweka ripoti ya shamba."
 }

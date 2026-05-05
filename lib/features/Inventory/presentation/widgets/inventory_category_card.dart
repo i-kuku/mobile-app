@@ -39,7 +39,7 @@ class InventoryCategoryCard extends StatelessWidget {
               SizedBox(height: 8),
               Text(
                 category.description,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(color:CustomColors.text,fontSize:20,fontWeight: FontWeight.w400),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(color:CustomColors.text,fontSize:14,fontWeight: FontWeight.w400),
               ),
             ]
           )
