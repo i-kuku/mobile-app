@@ -62,6 +62,7 @@ dependencies:
   build_runner: ^2.4.13
   provider: ^6.1.5+1
   icons_plus: ^5.0.0
+  delightful_toast: ^1.1.0
 
 dev_dependencies:
   flutter_test:
