@@ -15,11 +15,14 @@ class InventoryCategoryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      elevation: 0,
       child: InkWell(
         onTap:onTap,
         borderRadius: BorderRadius.circular(8),
         child:Container(
           padding: EdgeInsets.all(16),
+          height:120,
+          width: 110,
           decoration: BoxDecoration(
           border:Border.all(color: Colors.grey.shade300,width: 0.43),
           borderRadius: BorderRadius.circular(8),

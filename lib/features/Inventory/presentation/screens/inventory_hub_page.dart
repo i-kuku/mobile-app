@@ -25,19 +25,19 @@ class InventoryHubPage extends StatelessWidget {
       name: 'feed'.tr(),
       description: 'feeds_description'.tr(),
       icon: SvgPicture.asset('assets/icons/feeds.svg'),
-      route: '/feeds',
+      route: '/inventory/feedspage',
     ),
     InventoryCategory(
       name: 'medicine'.tr(),
       description: 'medicines_description'.tr(),
       icon: SvgPicture.asset('assets/icons/vaccines.svg'),
-      route: '/medicines',
+      route: '/inventory/medicines',
     ),
     InventoryCategory(
       name: 'other'.tr(),
-      description: 'others_description'.tr(),
+      description: 'items_description'.tr(),
       icon: SvgPicture.asset('assets/icons/others.svg'),
-      route: '/others',
+      route: '/inventory/others',
     ),
   ];
 

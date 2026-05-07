@@ -1,9 +1,13 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:ikuku/features/Inventory/model/inventoryitem.dart';
+import 'package:ikuku/features/Inventory/provider/inventory_provider.dart';
 import 'package:ikuku/theme/app_theme.dart';
+import 'package:provider/provider.dart';
+import 'package:uuid/uuid.dart';
 
-void addItemDialog(BuildContext context, String category) {
+void addItemDialog(BuildContext context, String category,{InventoryItem? itemToEdit}) {
   showDialog(
     context: context,
     builder: (context) => Dialog(
@@ -11,7 +15,7 @@ void addItemDialog(BuildContext context, String category) {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
       child: SizedBox(
         width: MediaQuery.of(context).size.width * 0.9,
-        height: 602,
+        height: 630,
         child: AddItemForm(category: category),
       ),
     ),
@@ -20,17 +24,47 @@ void addItemDialog(BuildContext context, String category) {
 
 class AddItemForm extends StatefulWidget {
   final String category;
-  const AddItemForm({super.key,required this.category});
+  final InventoryItem? itemToEdit;
+
+  const AddItemForm({
+    super.key,
+    required this.category,
+    this.itemToEdit,
+    });
 
   @override
   State<AddItemForm> createState() => _AddItemFormState();
 }
 
 class _AddItemFormState extends State<AddItemForm> {
-  final _nameController = TextEditingController();
-  final _quantityController = TextEditingController();
-  final _priceController = TextEditingController();
-  String? _selectedUnit = "Kg";
+  late TextEditingController  _nameController=TextEditingController(
+      text: widget.itemToEdit?.name ?? ""
+    );
+  late TextEditingController _quantityController = TextEditingController(
+      text: widget.itemToEdit?.quantity.toString() ?? ""
+    ); 
+  late TextEditingController _priceController = TextEditingController(
+      text: widget.itemToEdit?.price.toString() ?? ""
+    );
+
+ late String? _selectedUnit = widget.itemToEdit?.unit ?? "Kg";
+
+  @override
+  void initState() {
+    super.initState();
+
+    _nameController = TextEditingController(
+      text: widget.itemToEdit?.name ?? ""
+    );
+    _quantityController = TextEditingController(
+      text: widget.itemToEdit?.quantity.toString() ?? ""
+    );
+    _priceController = TextEditingController(
+      text: widget.itemToEdit?.price.toString() ?? ""
+    );
+    
+    _selectedUnit = widget.itemToEdit?.unit ?? "Kg";
+  }
 
   @override
   void dispose() {
@@ -86,7 +120,7 @@ class _AddItemFormState extends State<AddItemForm> {
             children: [
               SizedBox(
                 width: double.infinity,
-                height: 42,
+                height: 50,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: CustomColors.primary,
@@ -95,7 +129,17 @@ class _AddItemFormState extends State<AddItemForm> {
                     ),
                   ),
                   onPressed: () {
-                    context.pop();
+                    var uuid= const Uuid();
+                    final newItem=InventoryItem(
+                      id: uuid.v4(),
+                      name: _nameController.text,
+                      quantity: int.tryParse(_quantityController.text) ?? 0,
+                      unit: _selectedUnit?? "kg",
+                      price: double.tryParse(_priceController.text) ?? 0,
+                      category: widget.category,
+                    );
+                    context.read<InventoryProvider>().addInventoryItem(newItem);
+                    context.pop(context);
                   },
                   child: Text(
                     "add_item".tr(),
@@ -109,10 +153,10 @@ class _AddItemFormState extends State<AddItemForm> {
               SizedBox(height: 16),
               SizedBox(
                 width: double.infinity,
-                height: 42,
+                height: 50,
                 child: ElevatedButton(
                   onPressed: () {
-                    context.push("");
+                    context.pop(context);
                   },
                   style: ElevatedButton.styleFrom(
                     side: BorderSide(color: CustomColors.secondary),

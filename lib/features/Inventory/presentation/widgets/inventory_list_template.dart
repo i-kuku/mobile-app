@@ -46,7 +46,7 @@ class InventoryListTemplate extends StatelessWidget{
               Icon(Icons.arrow_back, color: Colors.black, size: 18),
                SizedBox(width: 4),
               Text(
-                "Back".tr(),
+                "back".tr(),
                 style: TextStyle(
                   color: Colors.black,
                   fontSize: 16,
@@ -64,7 +64,7 @@ class InventoryListTemplate extends StatelessWidget{
           children: [
             SizedBox(height: 26),
             Text(isEmpty? emptyTitle :title,
-            style:Theme.of(context).textTheme.titleLarge?.copyWith(color:CustomColors.text,fontSize: 20),
+            style:Theme.of(context).textTheme.titleLarge?.copyWith(color:CustomColors.text,fontSize: 25),
             ),
              SizedBox(height: 16),
              InventoryTip(message: tiptext),

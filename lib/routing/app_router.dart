@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:ikuku/features/Inventory/presentation/screens/feeds_page.dart';
+import 'package:ikuku/features/Inventory/presentation/screens/inventory_hub_page.dart';
+import 'package:ikuku/features/Inventory/presentation/screens/items_page.dart';
+import 'package:ikuku/features/Inventory/presentation/screens/medicines_page.dart';
 import 'package:ikuku/features/batches/presentation/screens/confirm_batch_page.dart';
 import 'package:ikuku/features/batches/presentation/screens/create_batch_page.dart';
 import 'package:ikuku/features/batches/presentation/screens/edit_batch_page.dart';
@@ -12,7 +16,7 @@ import 'package:ikuku/features/onboarding/onboarding_page.dart';
 import 'package:ikuku/features/onboarding/recovery_setup_page.dart';
 import 'package:ikuku/features/profile/presentation/pages/profile_page.dart';
 import 'package:ikuku/features/settings/languages/presentation/language_selection_page.dart';
-import 'package:ikuku/features/shop/presentation/pages/my_shop_page.dart';
+// import 'package:ikuku/features/shop/presentation/pages/my_shop_page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../features/splash/splash_screen.dart';
@@ -111,9 +115,27 @@ class AppRouter {
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: '/my-shop',
-                builder: (context, state) => const MyShopPage(),
+                path: '/inventory',
+                builder: (context, state) => InventoryHubPage(),
+                routes: [
+                  GoRoute(
+                    path: 'feedspage',
+                    builder: (context, state) => const FeedsPage()
+                  ),
+                  GoRoute(
+                    path: 'medicines',
+                    builder: (context, state) => const MedicinesPage()
+                  ),
+                  GoRoute(
+                    path: 'others',
+                    builder: (context, state) => const ItemsPage()
+                  ),
+                ],
               ),
+              // GoRoute(
+              //   path: '/my-shop',
+              //   builder: (context, state) => const MyShopPage(),
+              // ),
             ],
           ),
           StatefulShellBranch(
@@ -212,7 +234,8 @@ class AppRouter {
         }
       } else {
         if (loggingIn || root) {
-          return '/batches';
+          // return '/batches';
+          return '/inventory';
         }
       }
 

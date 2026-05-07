@@ -32,4 +32,28 @@ class InventoryProvider extends ChangeNotifier {
     _inventory.clear();
     notifyListeners();
   }
+  void updateInventoryItem(InventoryItem updatedItem){
+    final index=_inventory.indexWhere((item)=> item.id ==updatedItem.id);
+    if(index != -1){
+    _inventory[index]=updatedItem;
+    notifyListeners();
+    }
+  }
+  void incrementQuantity(String id) {
+    final index = _inventory.indexWhere((item) => item.id == id);
+    if (index != -1) {
+      final currentItem = _inventory[index];
+      
+      _inventory[index] = InventoryItem(
+        id: currentItem.id,
+        name: currentItem.name,
+        quantity: currentItem.quantity + 1,
+        unit: currentItem.unit,
+        price: currentItem.price,
+        category: currentItem.category,
+      );
+      
+      notifyListeners();
+    }
+  }
 }

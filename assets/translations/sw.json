@@ -424,10 +424,16 @@
   "my_inventory": "Stoo Yangu",
   "feeds_description": "Chakula kilichopo kwenye stoo yako",
   "medicines_description": "chanjo zilizopo kwenye stoo yako",
-  "others_description": "Vituo vingine kwenye stoo yako",
+  "items_description": "Vitu vingine kwenye stoo yako",
   "feed": "Chakula",
   "medicine": "Chanjo",
   "other": "Vingine",
   "no_feeds_title":"Ongeza chakula kwenye stoo yako", 
-  "feeds_adjust_tip":"Kidokezo:Unaweza kurekebisha kiasi\n cha chakula unapoweka ripoti ya shamba."
+  "feeds_adjust_tip":"Kidokezo:Unaweza kurekebisha kiasi\n cha chakula unapoweka ripoti ya shamba.",
+  "no_medicine_title":"Ongeza chanjo kwenye stoo yako",
+  "medicine_adjust_tip":"Kidokezo:Unaweza kurekebisha kiasi\n cha chanjo unapoweka ripoti ya shamba.",
+  "no_items_title":"Ongeza vitu kwenye stoo yako",
+  "items_adjust_tip":"Kidokezo:Unaweza kurekebisha kiasi cha \nvitu unapoweka ripoti ya shamba.",
+  "back":"Rudi"
+
 }

@@ -52,7 +52,7 @@
   "edit_farm_store_item": "Edit Farm Store Item",
   "item_name": "Item Name",
   "category": "Category",
-  "cancel": "Cancel",
+  "cancel": "CANCEL",
   "save": "Save",
   "add_item": "Add Item",
   "feeds_available_inventory": "Feeds available in your inventory",
@@ -392,6 +392,7 @@
   "type_of_bird": "Type of bird",
   "layer": "Layer",
   "Age": "Age",
+  "quantity":"Quantity",
   "update": "UPDATE",
   "age_unit":"Age Unit",
   " has_been_removed": " has been removed",
@@ -421,10 +422,16 @@
   "my_inventory": "My Inventory",
   "feeds_description": "Feeds available in your inventory",
   "medicines_description": "Medicines available in your inventory",
-  "others_description": "Other items in your inventory",
+  "items_description": "Other items in your inventory",
   "feed": "Feeds",
   "medicine": "Medicines",
   "other": "Others",
   "no_feeds_title":"Add Feeds To Your Store", 
-  "feeds_adjust_tip":"Tip:You can adjust feed amounts when \n recording daily farm reports."
+  "feeds_adjust_tip":"Tip:You can adjust feed amounts when \n recording daily farm reports.",
+  "no_medicine_title":"Add medicine to your store",
+  "medicine_adjust_tip":"Tip:A farmers best practice is to update\n feeds on the day you receive them.",
+  "no_items_title":"Add Other Items to your store",
+  "items_adjust_tip":"Tip:You can adjust item amounts when \nrecording daily farm reports",
+  "price_per_unit":"Price Per Unit"
+
 }
