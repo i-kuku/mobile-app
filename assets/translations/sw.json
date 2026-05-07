@@ -442,6 +442,7 @@
   "name_of_medicines":"Jina la dawa",
   "name_of_feeds":"Jina la chakula",
   "add_feeds":"Ongeza chakula",
-  "add_medicines":"Ongeza dawa",
-  "add_others":"Ongeza kipengele"
+  "add_medicines":"Ongeza chanjo",
+  "add_others":"Ongeza kipengele",
+  "field_required":"Inahitajika"
 }

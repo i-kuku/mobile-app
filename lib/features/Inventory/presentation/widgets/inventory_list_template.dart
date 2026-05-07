@@ -108,7 +108,7 @@ Widget _buildEmptyState(BuildContext context) {
           ),
           onPressed: () => addItemDialog(context, category),
           child: Text(
-            'add ${category.toUpperCase()}'.tr(),
+            'add_$category'.tr().toUpperCase(),
             style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
           ),
         ),

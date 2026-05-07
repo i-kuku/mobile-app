@@ -22,7 +22,7 @@ class InventoryTip extends StatelessWidget {
           Image.asset(
             imagePath,
             width: 40,
-            height: 40,
+            height: 50,
           ),
           const SizedBox(width: 12),
           // The Tip Text
