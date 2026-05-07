@@ -1,10 +1,66 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:ikuku/features/Inventory/model/inventoryitem.dart';
 import 'package:ikuku/features/Inventory/presentation/widgets/add_item_dialog.dart';
 import 'package:ikuku/features/Inventory/provider/inventory_provider.dart';
 import 'package:ikuku/theme/app_theme.dart';
 import 'package:provider/provider.dart';
+
+void addDialog(BuildContext context, InventoryItem item) {
+  final TextEditingController amountController = TextEditingController();
+
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      // Title Label
+      title: Text(
+        "${'add'.tr()} ${item.name}",
+        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+      ),
+      content: TextField(
+        controller: amountController,
+        decoration: InputDecoration(
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+        ),
+      ),
+      actionsPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      actions: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            TextButton(
+              onPressed: () => context.pop(context),
+              child: Text(
+                'cancel'.tr(),
+                style: const TextStyle(color: Colors.grey),
+              ),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: CustomColors.primary,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              ),
+              onPressed: () {
+                final int? addedVal = int.tryParse(amountController.text);
+                if (addedVal != null && addedVal > 0) {
+                  context.read<InventoryProvider>().incrementQuantity(item.id, addedVal);
+                  context.pop(context);
+                }
+              },
+              child: Text(
+                'add'.tr(),
+                style: const TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        ),
+      ],
+    ),
+  );
+}
 
 class InventoryItemCard extends StatelessWidget {
   final InventoryItem item;
@@ -67,7 +123,7 @@ class InventoryItemCard extends StatelessWidget {
                       color:CustomColors.secondary, 
                       size: 28,
                     ),
-                    onPressed: () => context.read<InventoryProvider>().incrementQuantity(item.id),
+                    onPressed: () => addDialog(context, item),
                 ),
                 SizedBox(
                     height: 32,

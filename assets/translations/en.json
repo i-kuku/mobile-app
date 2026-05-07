@@ -437,5 +437,10 @@
   "add_feeds_to_store":"Add feeds to store",
   "add_medicines_to_store":"Add medicines to store",
   "edit_feeds":"Edit Feeds",
-  "edit_medicines":"Edit Medicines"
+  "edit_medicines":"Edit Medicines",
+  "name_of_medicines":"Name of medicine",
+  "name_of_feeds":"Name of feeds",
+  "add_others":"Add items",
+  "add_medicine":"Add medicine",
+  "add_feeds":"Add feeds"
 }

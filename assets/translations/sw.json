@@ -438,5 +438,10 @@
   "items_adjust_tip":"Kidokezo:Unaweza kurekebisha kiasi cha \nvitu unapoweka ripoti ya shamba.",
   "back":"Rudi",
   "edit_feeds":"Hariri chakula",
-  "edit_medicines":"Hariri chanjo"
+  "edit_medicines":"Hariri chanjo",
+  "name_of_medicines":"Jina la dawa",
+  "name_of_feeds":"Jina la chakula",
+  "add_feeds":"Ongeza chakula",
+  "add_medicines":"Ongeza dawa",
+  "add_others":"Ongeza kipengele"
 }

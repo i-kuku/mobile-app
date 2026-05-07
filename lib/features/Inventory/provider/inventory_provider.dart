@@ -39,7 +39,7 @@ class InventoryProvider extends ChangeNotifier {
     notifyListeners();
     }
   }
-  void incrementQuantity(String id) {
+  void incrementQuantity(String id,int amount) {
     final index = _inventory.indexWhere((item) => item.id == id);
     if (index != -1) {
       final currentItem = _inventory[index];
@@ -47,7 +47,7 @@ class InventoryProvider extends ChangeNotifier {
       _inventory[index] = InventoryItem(
         id: currentItem.id,
         name: currentItem.name,
-        quantity: currentItem.quantity + 1,
+        quantity: currentItem.quantity + amount,
         unit: currentItem.unit,
         price: currentItem.price,
         category: currentItem.category,
