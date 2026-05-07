@@ -79,7 +79,7 @@ class ConfirmBatchPage extends StatelessWidget {
                       ),
                       child: Text(
                         "edit".tr(),
-                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: CustomColors.primary,),
+                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: CustomColors.primary),
                       ),
                     ),
                   ),

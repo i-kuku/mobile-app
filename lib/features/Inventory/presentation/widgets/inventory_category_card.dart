@@ -21,10 +21,11 @@ class InventoryCategoryCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
         child:Container(
           padding: EdgeInsets.all(16),
-          height:120,
+          height:150,
           width: 110,
           decoration: BoxDecoration(
-          border:Border.all(color: Colors.grey.shade300,width: 0.43),
+          color: Colors.white,
+          border:Border.all(color: Colors.grey.shade600,width: 0.43),
           borderRadius: BorderRadius.circular(8),
           ),
           child: Column(

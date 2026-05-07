@@ -62,7 +62,7 @@ class InventoryHubPage extends StatelessWidget {
         ]
       ),
       body: ListView.separated(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(horizontal: 16,vertical: 50),
         itemCount: categories.length,
         separatorBuilder:(context,index) => const SizedBox(height: 16),
         itemBuilder:(context, index) {

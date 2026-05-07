@@ -82,7 +82,17 @@ class InventoryListTemplate extends StatelessWidget{
         onPressed: () {
           addItemDialog(context, category);
         },
-        child: const Icon(Icons.add,color: Colors.white),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        child: Container(
+          height: 56,
+          width: 56,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: CustomColors.buttonGradient,
+          ),
+        
+          child: const Icon(Icons.add,color: Colors.black)),
       )
      );
 }

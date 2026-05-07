@@ -19,7 +19,7 @@ class InventoryItemCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.shade400, width: 0.43),
+        border: Border.all(color: Colors.grey.shade600, width: 0.43),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -38,9 +38,9 @@ class InventoryItemCard extends StatelessWidget {
               Text(
                 '${item.quantity} ${item.unit}',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.grey,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w400,
+                  color: CustomColors.primary,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ],

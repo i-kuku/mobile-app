@@ -14,9 +14,12 @@ void addItemDialog(BuildContext context, String category,{InventoryItem? itemToE
       backgroundColor: Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
       child: SizedBox(
-        width: MediaQuery.of(context).size.width * 0.9,
-        height: 630,
-        child: AddItemForm(category: category),
+        width: MediaQuery.of(context).size.width * 1.0,
+        height: 650,
+        child: AddItemForm(
+          category: category,
+          itemToEdit: itemToEdit,
+          ),
       ),
     ),
   );
@@ -36,18 +39,12 @@ class AddItemForm extends StatefulWidget {
   State<AddItemForm> createState() => _AddItemFormState();
 }
 
-class _AddItemFormState extends State<AddItemForm> {
-  late TextEditingController  _nameController=TextEditingController(
-      text: widget.itemToEdit?.name ?? ""
-    );
-  late TextEditingController _quantityController = TextEditingController(
-      text: widget.itemToEdit?.quantity.toString() ?? ""
-    ); 
-  late TextEditingController _priceController = TextEditingController(
-      text: widget.itemToEdit?.price.toString() ?? ""
-    );
-
- late String? _selectedUnit = widget.itemToEdit?.unit ?? "Kg";
+class _AddItemFormState extends State<AddItemForm>{
+  final _formKey = GlobalKey<FormState>();
+  late TextEditingController _nameController;
+  late TextEditingController _quantityController;
+  late TextEditingController _priceController;
+  String? _selectedUnit = "Kg";
 
   @override
   void initState() {
@@ -81,7 +78,9 @@ class _AddItemFormState extends State<AddItemForm> {
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 28, vertical: 30),
           child: Text(
-            "add_item_to_store".tr(),
+            widget.itemToEdit !=null
+            ?"edit_${widget.category}".tr()
+            : "add_${widget.category}_to_store".tr(),
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
               fontWeight: FontWeight.w400,
               fontSize: 20,
@@ -90,32 +89,36 @@ class _AddItemFormState extends State<AddItemForm> {
           ),
         ),
         Expanded(
-          child: ListView(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            children: [
-              _buildLabel("name_of_item".tr()),
-              _buildTextField(_nameController),
-
-              _buildLabel("quantity".tr()),
-              _buildTextField(_quantityController, isNumber: true),
-
-              _buildLabel("unit".tr()),
-              DropdownButtonFormField<String>(
-                initialValue: _selectedUnit,
-                decoration: _inputDecoration(),
-                icon: const Icon(Icons.keyboard_arrow_down),
-                items: ['Kg', 'L', 'g', 'Mifuko']
-                    .map((u) => DropdownMenuItem(value: u, child: Text(u)))
-                    .toList(),
-                onChanged: (val) => setState(() => _selectedUnit = val!),
-              ),
-              _buildLabel("price_per_unit".tr()),
-              _buildTextField(_priceController, isNumber: true),
-            ],
+          child: Form(
+            key: _formKey,
+            child: ListView(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              children: [
+                _buildLabel("name_of_item".tr()),
+                _buildTextField(_nameController),
+            
+                _buildLabel("quantity".tr()),
+                _buildTextField(_quantityController, isNumber: true),
+            
+                _buildLabel("unit".tr()),
+                DropdownButtonFormField<String>(
+                  initialValue: _selectedUnit,
+                  decoration: _inputDecoration(),
+                  icon: const Icon(Icons.keyboard_arrow_down),
+                  items: ['Kg', 'L', 'g', 'Mifuko']
+                      .map((u) => DropdownMenuItem(value: u, child: Text(u)))
+                      .toList(),
+                  onChanged: (val) => setState(() => _selectedUnit = val!),
+                ),
+               SizedBox(height: 16),
+                _buildLabel("price_per_unit".tr()),
+                _buildTextField(_priceController, isNumber: true),
+              ],
+            ),
           ),
         ),
         Padding(
-          padding: EdgeInsets.all(16),
+          padding: EdgeInsets.fromLTRB(16,0,16,16),
           child: Column(
             children: [
               SizedBox(
@@ -129,20 +132,27 @@ class _AddItemFormState extends State<AddItemForm> {
                     ),
                   ),
                   onPressed: () {
-                    var uuid= const Uuid();
-                    final newItem=InventoryItem(
-                      id: uuid.v4(),
+                    if(_formKey.currentState!.validate()){
+                    final item=InventoryItem(
+                      id: widget.itemToEdit?.id ?? const Uuid().v4(),
                       name: _nameController.text,
                       quantity: int.tryParse(_quantityController.text) ?? 0,
                       unit: _selectedUnit?? "kg",
                       price: double.tryParse(_priceController.text) ?? 0,
                       category: widget.category,
                     );
-                    context.read<InventoryProvider>().addInventoryItem(newItem);
+                    final provider= context.read<InventoryProvider>();
+                    if(widget.itemToEdit!=null){
+                      provider.updateInventoryItem(item);
+                    }
+                    else{
+                      provider.addInventoryItem(item);
+                    }
                     context.pop(context);
+                  }
                   },
                   child: Text(
-                    "add_item".tr(),
+                    widget.itemToEdit != null ? "update".tr(): "add_item".tr(),
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                       color: Colors.white,
                       fontSize: 16,
@@ -193,13 +203,20 @@ class _AddItemFormState extends State<AddItemForm> {
   Widget _buildTextField(
     TextEditingController controller, {
     bool isNumber = false,
+    String? Function(String?)? validator,
   }) {
     return Padding(
       padding: EdgeInsets.only(bottom: 16),
-      child: TextField(
+      child: TextFormField(
         controller: controller,
         keyboardType: isNumber ? TextInputType.number : TextInputType.text,
         decoration: _inputDecoration(),
+        validator:validator ?? (value){
+          if(value == null || value.trim().isEmpty){
+            return "field_required".tr();
+          }
+          return null;
+        }
       ),
     );
   }
@@ -207,11 +224,11 @@ class _AddItemFormState extends State<AddItemForm> {
   InputDecoration _inputDecoration() {
     return InputDecoration(
       contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(4),
-        borderSide: BorderSide(color: Colors.grey.shade300),
-      ),
       enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(4),
+        borderSide: BorderSide(color: Colors.grey.shade600),
+      ),
+        focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(4),
         borderSide: BorderSide(color: CustomColors.primary),
       ),

@@ -419,7 +419,9 @@
   "incorrect_answer": "Jibu si sahihi. Tafadhali jaribu tena.",
   "user_not_found": "Hakuna akaunti iliyopatikana na nambari hii ya simu.",
   "cannot_see_items": "Huwezi kuona vitu kwenye orodha?",
-  "add_item_to_store": "Ongeza kipengele kwenye stoo",
+  "add_others_to_store": "Ongeza kipengele kwenye stoo",
+  "add_feeds_to_store":"Ongeza chakula kwenye stoo",
+  "add_medicines_to_store":"Ongeza chanjo kwenye stoo",
   "tip_batch_definition":"Kidokezo: Kundi(batch) ni mkusanyiko wa kuku,\n waliopatikana kwa wakati mmoja",
   "my_inventory": "Stoo Yangu",
   "feeds_description": "Chakula kilichopo kwenye stoo yako",
@@ -434,6 +436,7 @@
   "medicine_adjust_tip":"Kidokezo:Unaweza kurekebisha kiasi\n cha chanjo unapoweka ripoti ya shamba.",
   "no_items_title":"Ongeza vitu kwenye stoo yako",
   "items_adjust_tip":"Kidokezo:Unaweza kurekebisha kiasi cha \nvitu unapoweka ripoti ya shamba.",
-  "back":"Rudi"
-
+  "back":"Rudi",
+  "edit_feeds":"Hariri chakula",
+  "edit_medicines":"Hariri chanjo"
 }
