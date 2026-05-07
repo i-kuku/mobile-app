@@ -13,7 +13,7 @@ class AnalyticSummary {
     required this.userName,
   });
 
-  factory AnalyticSummary.fromJson(Map json) {
+  factory AnalyticSummary.fromJson(Map<String,dynamic> json) {
     return AnalyticSummary(
       totalBirds: json['total_birds'] ?? 0,
       totalFeeds: json['total_feeds'] ?? 0,

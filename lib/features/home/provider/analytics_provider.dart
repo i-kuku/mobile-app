@@ -11,8 +11,7 @@ class AnalyticsProvider with ChangeNotifier {
 
   final _supabase = Supabase.instance.client;
 
-  final user = Supabase.instance.client.auth.currentUser;
-
+  User? get user => _supabase.auth.currentUser;
   void toggleLoadingState() {
     _isLoading = !_isLoading;
     notifyListeners();

@@ -38,7 +38,7 @@ class _HomePageState extends State<HomePage> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         spacing: 15,
-        children: [SalutationWidget(), Analytics(), QuickActionsContainer()],
+        children:const [SalutationWidget(), Analytics(), QuickActionsContainer()],
       ),
     );
   }
