@@ -11,20 +11,28 @@ class AnalyticsProvider with ChangeNotifier {
 
   final _supabase = Supabase.instance.client;
 
+  final user = Supabase.instance.client.auth.currentUser;
+
   void toggleLoadingState() {
     _isLoading = !_isLoading;
     notifyListeners();
   }
 
   Future<void> fetchSummary() async {
-    final user = _supabase.auth.currentUser;
+    try {
+      toggleLoadingState();
+      if (user == null) throw Exception("Unauthorized user");
+      final data = await _supabase
+          .from('user_dashboard_stats')
+          .select()
+          .eq('user_id', user!.id)
+          .single();
 
-    final response = await _supabase
-        .from('batches')
-        .select()
-        .eq('user_id', user!.id)
-        .order('created_at', ascending: false);
-
-    debugPrint(response.toString());
+      _summary = AnalyticSummary.fromJson(data);
+    } catch (e) {
+      debugPrint(e.toString());
+    } finally {
+      toggleLoadingState();
+    }
   }
 }
