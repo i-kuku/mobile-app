@@ -18,10 +18,10 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {});
+   
 
     Future.microtask(() async {
-      if (context.mounted) {
+      if (mounted) {
         Provider.of<TutorialProvider>(
           context,
           listen: false,
