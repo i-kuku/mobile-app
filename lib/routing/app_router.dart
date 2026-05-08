@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:ikuku/features/batches/presentation/screens/confirm_batch_page.dart';
+import 'package:ikuku/features/batches/presentation/screens/create_batch_page.dart';
+import 'package:ikuku/features/batches/presentation/screens/edit_batch_page.dart';
+import 'package:ikuku/features/batches/presentation/screens/manage_batch_page.dart';
 import 'package:ikuku/features/auth/presentation/screens/auth_page.dart';
 import 'package:ikuku/features/dashboard/presentation/pages/dashboard.dart';
 import 'package:ikuku/features/home/presentation/home_page.dart';
@@ -35,12 +39,10 @@ class AppRouter {
       GoRoute(
         path: '/onboarding',
         builder: (context, state) =>
+            // OnboardingPage(onFinish: () => context.go('/batches')),
             OnboardingPage(onFinish: () => context.go('/auth')),
       ),
-      GoRoute(
-        path: '/auth',
-        builder: (context, state) => const AuthPage(),
-      ),
+      GoRoute(path: '/auth', builder: (context, state) => const AuthPage()),
       // GoRoute(
       //   path: '/reset-password',
       //   builder: (context, state) => const ResetPasswordPage(),
@@ -57,8 +59,9 @@ class AppRouter {
               final prefs = await SharedPreferences.getInstance();
               final onboardingComplete =
                   prefs.getBool('onboarding_complete') ?? false;
+              final user = Supabase.instance.client.auth.currentUser;
               if (onboardingComplete && context.mounted) {
-                context.go('/auth');
+                context.go(user != null ? '/batches' : '/auth');
               } else {
                 if (context.mounted) {
                   context.go('/onboarding');
@@ -68,6 +71,29 @@ class AppRouter {
           },
         ),
       ),
+      GoRoute(
+        path: '/batches',
+        builder: (context, state) => const ManageBatchPage(),
+      ),
+      GoRoute(
+        path: '/create_batch_page',
+        builder: (context, state) => const CreateBatchPage(),
+      ),
+      GoRoute(
+        path: '/confirm_batch_page',
+        builder: (context, state) {
+          final data = state.extra as Map<String, dynamic>;
+          return ConfirmBatchPage(batchData: data);
+        },
+      ),
+      GoRoute(
+        path: '/edit_batch_page',
+        builder: (context, state) {
+          final data = state.extra as Map<String, dynamic>;
+          return EditBatchPage(batchData: data);
+        },
+      ),
+
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
           return Dashboard(navigationShell: navigationShell);
@@ -86,7 +112,7 @@ class AppRouter {
             routes: [
               GoRoute(
                 path: '/my-shop',
-                builder: (context, state) =>const MyShopPage(),
+                builder: (context, state) => const MyShopPage(),
               ),
             ],
           ),
@@ -94,7 +120,7 @@ class AppRouter {
             routes: [
               GoRoute(
                 path: '/profile',
-                builder: (context, state) =>const ProfilePage(),
+                builder: (context, state) => const ProfilePage(),
               ),
             ],
           ),
@@ -106,7 +132,7 @@ class AppRouter {
       //   builder: (context, state) {
       //     final fromReportsPage =
       //         (state.extra as Map?)?['fromReportsPage'] == true;
-      //     return BatchesPage(fromReportsPage: fromReportsPage);
+      //     return CreateBatchPage(fromReportsPage: fromReportsPage);
       //   },
       // ),
       // GoRoute(
@@ -167,10 +193,10 @@ class AppRouter {
     redirect: (context, state) async {
       final user = Supabase.instance.client.auth.currentUser;
       final loggingIn = state.matchedLocation == '/auth';
-      final resettingPassword = state.matchedLocation == '/reset-password';
       final onboarding = state.matchedLocation == '/onboarding';
       final language = state.matchedLocation == '/language';
       final splash = state.matchedLocation == '/splash';
+      final root = state.matchedLocation == '/';
       final prefs = await SharedPreferences.getInstance();
       final langSet = prefs.getString('app_language') != null;
       final onboardingComplete = await AppRouter.onboardingComplete();
@@ -180,14 +206,16 @@ class AppRouter {
 
       if (!langSet && !language) return '/language';
       if (!onboardingComplete && !onboarding && langSet) return '/onboarding';
-      if (user == null &&
-          !loggingIn &&
-          !resettingPassword &&
-          langSet &&
-          onboardingComplete) {
-        return '/auth';
+      if (user == null) {
+        if (!loggingIn && onboardingComplete) {
+          return '/auth';
+        }
+      } else {
+        if (loggingIn || root) {
+          return '/batches';
+        }
       }
-      if (user != null && loggingIn) return '/';
+
       return null;
     },
     errorBuilder: (context, state) => Scaffold(
