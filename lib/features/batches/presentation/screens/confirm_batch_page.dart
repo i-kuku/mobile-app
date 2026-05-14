@@ -74,12 +74,22 @@ class ConfirmBatchPage extends StatelessWidget {
                       },
                       style: ElevatedButton.styleFrom(
                         side: BorderSide(color: CustomColors.secondary),
+<<<<<<< HEAD
+=======
+                        // shape: RoundedRectangleBorder(
+                        //   borderRadius: BorderRadius.circular(1),
+                        // ),
+>>>>>>> develop
                         padding: EdgeInsets.symmetric(vertical: 16),
                         
                       ),
                       child: Text(
                         "edit".tr(),
+<<<<<<< HEAD
                         style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: CustomColors.primary),
+=======
+                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: CustomColors.primary,),
+>>>>>>> develop
                       ),
                     ),
                   ),

@@ -419,6 +419,7 @@
   "incorrect_answer": "Jibu si sahihi. Tafadhali jaribu tena.",
   "user_not_found": "Hakuna akaunti iliyopatikana na nambari hii ya simu.",
   "cannot_see_items": "Huwezi kuona vitu kwenye orodha?",
+<<<<<<< HEAD
   "add_others_to_store": "Ongeza kipengele kwenye stoo",
   "add_feeds_to_store":"Ongeza chakula kwenye stoo",
   "add_medicines_to_store":"Ongeza chanjo kwenye stoo",
@@ -445,4 +446,8 @@
   "add_medicines":"Ongeza chanjo",
   "add_others":"Ongeza kipengele",
   "field_required":"Inahitajika"
+=======
+  "add_item_to_store": "Ongeza kipengele kwenye stoo",
+  "tip_batch_definition":"Kidokezo: Kundi(batch) ni mkusanyiko wa kuku,\n waliopatikana kwa wakati mmoja"
+>>>>>>> develop
 }

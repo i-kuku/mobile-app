@@ -386,13 +386,20 @@
   "incorrect_answer": "Incorrect answer. Please try again.",
   "user_not_found": "No account found with this phone number.",
   "cannot_see_items": "Cannot see the items in the list?",
+<<<<<<< HEAD
   "add_others_to_store": "Add item to store",
+=======
+  "add_item_to_store": "Add item to store",
+>>>>>>> develop
   "Edit_Batch": "Edit Batch",
   "Batch_Name": "Batch Name",
   "type_of_bird": "Type of bird",
   "layer": "Layer",
   "Age": "Age",
+<<<<<<< HEAD
   "quantity":"Quantity",
+=======
+>>>>>>> develop
   "update": "UPDATE",
   "age_unit":"Age Unit",
   " has_been_removed": " has been removed",
@@ -418,6 +425,7 @@
   "yes_i'm_sure": "YES, I'M SURE",
   "add_new_batch": "Add New Batch",
   "please_enter_a_valid_number":"Please enter a valid number",
+<<<<<<< HEAD
   "tip_batch_definition":"Tip:A batch is a group of chicken,\n obtained at the same time",
   "my_inventory": "My Inventory",
   "feeds_description": "Feeds available in your inventory",
@@ -444,4 +452,7 @@
   "add_medicines":"Add medicine",
   "add_feeds":"Add feeds",
   "field_required":"Field required"
+=======
+  "tip_batch_definition":"Tip:A batch is a group of chicken,\n obtained at the same time"
+>>>>>>> develop
 }
