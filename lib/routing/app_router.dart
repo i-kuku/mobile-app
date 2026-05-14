@@ -16,6 +16,7 @@ import 'package:ikuku/features/onboarding/onboarding_page.dart';
 import 'package:ikuku/features/onboarding/recovery_setup_page.dart';
 import 'package:ikuku/features/profile/presentation/pages/profile_page.dart';
 import 'package:ikuku/features/settings/languages/presentation/language_selection_page.dart';
+import 'package:ikuku/features/shop/presentation/pages/my_shop_page.dart';
 // import 'package:ikuku/features/shop/presentation/pages/my_shop_page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -75,6 +76,41 @@ class AppRouter {
           },
         ),
       ),
+
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) {
+          return Dashboard(navigationShell: navigationShell);
+        },
+        branches: [
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/',
+                builder: (BuildContext context, GoRouterState state) =>
+                    const HomePage(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/my-shop',
+                builder: (context, state) => const MyShopPage(),
+              ),
+            ],
+          ),
+
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/profile',
+                builder: (context, state) => const ProfilePage(),
+              ),
+            ],
+          ),
+        ],
+      ),
+      // GoRoute(path: '/', builder: (context, state) => const DashboardPage()),
       GoRoute(
         path: '/batches',
         builder: (context, state) => const ManageBatchPage(),
@@ -97,81 +133,25 @@ class AppRouter {
           return EditBatchPage(batchData: data);
         },
       ),
-
-      StatefulShellRoute.indexedStack(
-        builder: (context, state, navigationShell) {
-          return Dashboard(navigationShell: navigationShell);
-        },
-        branches: [
-          StatefulShellBranch(
-            routes: [
-              GoRoute(
-                path: '/',
-                builder: (BuildContext context, GoRouterState state) =>
-                    const HomePage(),
-              ),
-            ],
+      GoRoute(
+        path: '/inventory',
+        builder: (context, state) => InventoryHubPage(),
+        routes: [
+          GoRoute(
+            path: 'feedspage',
+            builder: (context, state) => const FeedsPage(),
           ),
-          StatefulShellBranch(
-            routes: [
-              GoRoute(
-                path: '/inventory',
-                builder: (context, state) => InventoryHubPage(),
-                routes: [
-                  GoRoute(
-                    path: 'feedspage',
-                    builder: (context, state) => const FeedsPage()
-                  ),
-                  GoRoute(
-                    path: 'medicines',
-                    builder: (context, state) => const MedicinesPage()
-                  ),
-                  GoRoute(
-                    path: 'others',
-                    builder: (context, state) => const ItemsPage()
-                  ),
-                ],
-              ),
-              // GoRoute(
-              //   path: '/my-shop',
-              //   builder: (context, state) => const MyShopPage(),
-              // ),
-            ],
+          GoRoute(
+            path: 'medicines',
+            builder: (context, state) => const MedicinesPage(),
           ),
-          StatefulShellBranch(
-            routes: [
-              GoRoute(
-                path: '/profile',
-                builder: (context, state) => const ProfilePage(),
-              ),
-            ],
+          GoRoute(
+            path: 'others',
+            builder: (context, state) => const ItemsPage(),
           ),
         ],
       ),
-      // GoRoute(path: '/', builder: (context, state) => const DashboardPage()),
-      // GoRoute(
-      //   path: '/batches',
-      //   builder: (context, state) {
-      //     final fromReportsPage =
-      //         (state.extra as Map?)?['fromReportsPage'] == true;
-      //     return CreateBatchPage(fromReportsPage: fromReportsPage);
-      //   },
-      // ),
-      // GoRoute(
-      //   path: '/inventory-categories',
-      //   builder: (context, state) => const CategorySelectionPage(),
-      // ),
-      // GoRoute(
-      //   path: '/inventory',
-      //   builder: (context, state) => const CategorySelectionPage(),
-      // ),
-      // GoRoute(
-      //   path: '/inventory-items/:category',
-      //   builder: (context, state) {
-      //     final category = state.pathParameters['category'] ?? 'feed';
-      //     return InventoryPage(category: category);
-      //   },
-      // ),
+
       // GoRoute(
       //   path: '/records',
       //   builder: (context, state) => const RecordsPage(),
@@ -232,12 +212,13 @@ class AppRouter {
         if (!loggingIn && onboardingComplete) {
           return '/auth';
         }
-      } else {
-        if (loggingIn || root) {
-          // return '/batches';
-          return '/inventory';
-        }
-      }
+      } 
+       else {
+         if (loggingIn || root) {
+           return '/';
+          //  return '/inventory';
+       }
+       }
 
       return null;
     },
