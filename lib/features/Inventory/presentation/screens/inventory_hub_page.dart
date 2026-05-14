@@ -48,7 +48,7 @@ class InventoryHubPage extends StatelessWidget {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            context.pop(context);
+            context.pop();
           }
         ),
         title: Text('my_inventory'.tr(),

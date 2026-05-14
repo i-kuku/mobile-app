@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-<<<<<<< HEAD
 import 'package:ikuku/features/Inventory/presentation/screens/feeds_page.dart';
 import 'package:ikuku/features/Inventory/presentation/screens/inventory_hub_page.dart';
 import 'package:ikuku/features/Inventory/presentation/screens/items_page.dart';
 import 'package:ikuku/features/Inventory/presentation/screens/medicines_page.dart';
-=======
->>>>>>> develop
 import 'package:ikuku/features/batches/presentation/screens/confirm_batch_page.dart';
 import 'package:ikuku/features/batches/presentation/screens/create_batch_page.dart';
 import 'package:ikuku/features/batches/presentation/screens/edit_batch_page.dart';
@@ -79,31 +76,6 @@ class AppRouter {
           },
         ),
       ),
-<<<<<<< HEAD
-=======
-      GoRoute(
-        path: '/batches',
-        builder: (context, state) => const ManageBatchPage(),
-      ),
-      GoRoute(
-        path: '/create_batch_page',
-        builder: (context, state) => const CreateBatchPage(),
-      ),
-      GoRoute(
-        path: '/confirm_batch_page',
-        builder: (context, state) {
-          final data = state.extra as Map<String, dynamic>;
-          return ConfirmBatchPage(batchData: data);
-        },
-      ),
-      GoRoute(
-        path: '/edit_batch_page',
-        builder: (context, state) {
-          final data = state.extra as Map<String, dynamic>;
-          return EditBatchPage(batchData: data);
-        },
-      ),
->>>>>>> develop
 
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
@@ -139,7 +111,6 @@ class AppRouter {
         ],
       ),
       // GoRoute(path: '/', builder: (context, state) => const DashboardPage()),
-<<<<<<< HEAD
       GoRoute(
         path: '/batches',
         builder: (context, state) => const ManageBatchPage(),
@@ -181,31 +152,6 @@ class AppRouter {
         ],
       ),
 
-=======
-      // GoRoute(
-      //   path: '/batches',
-      //   builder: (context, state) {
-      //     final fromReportsPage =
-      //         (state.extra as Map?)?['fromReportsPage'] == true;
-      //     return CreateBatchPage(fromReportsPage: fromReportsPage);
-      //   },
-      // ),
-      // GoRoute(
-      //   path: '/inventory-categories',
-      //   builder: (context, state) => const CategorySelectionPage(),
-      // ),
-      // GoRoute(
-      //   path: '/inventory',
-      //   builder: (context, state) => const CategorySelectionPage(),
-      // ),
-      // GoRoute(
-      //   path: '/inventory-items/:category',
-      //   builder: (context, state) {
-      //     final category = state.pathParameters['category'] ?? 'feed';
-      //     return InventoryPage(category: category);
-      //   },
-      // ),
->>>>>>> develop
       // GoRoute(
       //   path: '/records',
       //   builder: (context, state) => const RecordsPage(),
@@ -266,7 +212,6 @@ class AppRouter {
         if (!loggingIn && onboardingComplete) {
           return '/auth';
         }
-<<<<<<< HEAD
       } 
        else {
          if (loggingIn || root) {
@@ -274,13 +219,6 @@ class AppRouter {
           //  return '/inventory';
        }
        }
-=======
-      } else {
-        if (loggingIn || root) {
-          return '/batches';
-        }
-      }
->>>>>>> develop
 
       return null;
     },
