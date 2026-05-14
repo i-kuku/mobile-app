@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-<<<<<<< HEAD
 import 'package:ikuku/features/Inventory/provider/inventory_provider.dart';
-=======
->>>>>>> develop
 import 'package:ikuku/features/batches/provider/batch_provider.dart';
 import 'package:ikuku/features/auth/provider/auth_provider.dart';
 import 'package:ikuku/features/home/provider/analytics_provider.dart';
@@ -58,12 +55,9 @@ void main() async {
         ChangeNotifierProvider(create: (context) => LanguageProvider()),
         ChangeNotifierProvider(create: (context) => BatchProvider()),
         ChangeNotifierProvider(create: (context) => AuthProvider()),
-<<<<<<< HEAD
         ChangeNotifierProvider(create: (context) =>InventoryProvider()),
-=======
         ChangeNotifierProvider(create: (context) => AnalyticsProvider()),
         ChangeNotifierProvider(create: (context) => TutorialProvider()),
->>>>>>> develop
       ],
       child: EasyLocalization(
         supportedLocales: const [Locale('en'), Locale('sw')],
