@@ -422,7 +422,6 @@
   "add_others_to_store": "Ongeza kipengele kwenye stoo",
   "add_feeds_to_store":"Ongeza chakula kwenye stoo",
   "add_medicines_to_store":"Ongeza chanjo kwenye stoo",
-  "tip_batch_definition":"Kidokezo: Kundi(batch) ni mkusanyiko wa kuku,\n waliopatikana kwa wakati mmoja",
   "my_inventory": "Stoo Yangu",
   "feeds_description": "Chakula kilichopo kwenye stoo yako",
   "medicines_description": "chanjo zilizopo kwenye stoo yako",
@@ -445,5 +444,7 @@
   "add_medicines":"Ongeza chanjo",
   "add_others":"Ongeza kipengele",
   "field_required":"Inahitajika",
-  "add_item_to_store": "Ongeza kipengele kwenye stoo"
+  "add_item_to_store": "Ongeza kipengele kwenye stoo",
+  "tip_batch_definition":"Kidokezo: Kundi(batch) ni mkusanyiko wa kuku,\n waliopatikana kwa wakati mmoja",
+  "educational_resources":"Rasilimali za kielimu"
 }
