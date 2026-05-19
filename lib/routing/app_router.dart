@@ -16,6 +16,7 @@ import 'package:ikuku/features/onboarding/onboarding_page.dart';
 import 'package:ikuku/features/onboarding/recovery_setup_page.dart';
 import 'package:ikuku/features/profile/presentation/pages/profile_page.dart';
 import 'package:ikuku/features/settings/languages/presentation/language_selection_page.dart';
+import 'package:ikuku/features/smart_tips/presentation/screens/tip_detail_page.dart';
 // import 'package:ikuku/features/shop/presentation/pages/my_shop_page.dart';
 import 'package:ikuku/features/smart_tips/presentation/screens/tips_hub.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -151,7 +152,20 @@ class AppRouter {
           ),
         ],
       ),
-
+      GoRoute(
+  path: '/tips-hub',
+  builder: (context, state) => const TipsHub(),
+  routes: [
+    GoRoute(
+      path: 'tip_detail', 
+      builder: (context, state) {
+        final rawData = state.extra;
+        final selectedBlogData = rawData as Map<String, String>;
+        return TipDetailPage(blogDataMap: selectedBlogData);
+      },
+    ),
+  ],
+),
       // GoRoute(
       //   path: '/records',
       //   builder: (context, state) => const RecordsPage(),
@@ -215,7 +229,7 @@ class AppRouter {
       } 
        else {
          if (loggingIn || root) {
-           return '/';
+           return '/tips-hub';
           //  return '/inventory';
        }
        }

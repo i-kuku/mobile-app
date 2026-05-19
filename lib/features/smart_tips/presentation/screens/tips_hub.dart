@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ikuku/features/smart_tips/model/smart_tips_model.dart';
+import 'package:ikuku/features/smart_tips/presentation/widgets/news_article_card.dart';
 import 'package:ikuku/features/smart_tips/presentation/widgets/tip_card.dart';
 import 'package:ikuku/services/rss_service.dart';
 import 'package:ikuku/theme/app_theme.dart';
@@ -47,6 +48,44 @@ final List<SmartTips> poultryTips = [
     emoji: '💰',
   ),
 ];
+final Map<String, Map<String, String>> blogDataMap={
+  '1':{
+    'emoji':'🐔',
+    'title': 'farm_records_blog_title'.tr(),
+    'summary': 'farm_records_blog_summary'.tr(),
+    'content':"farm_records_blog_content".tr(),
+  },
+  '2':{
+    'emoji':'🧫',
+    'title':'disease_management_blog_title'.tr(),
+     'summary':'disease_management_blog_summary'.tr(),
+     'content':'disease_management_blog_content'.tr(),
+  },
+  '3':{
+    'emoji':'🏠',
+    'title':'housing_biosecurity_blog_title'.tr(),
+    'summary':'housing_biosecurity_blog_summary'.tr(),
+    'content':'housing_biosecurity_blog_content'.tr(),
+  },
+  '4':{
+    'emoji':'🐣',
+    'title':'chicken_breed_blog_title'.tr(),
+    'summary':'chicken_breed_blog_summary'.tr(),
+    'content':'chicken_breed_blog_content'.tr(),
+  },
+  '5':{
+    'emoji':'🌾',
+    'title':'climate_smart_blog_title'.tr(),
+    'summary':'climate_smart_blog_summary'.tr(),
+    'content':'climate_smart_blog_content'.tr(),
+  },
+  '6':{
+    'emoji':'💰',
+    'title':'finance_management_blog_title'.tr(),
+    'summary':'finance_management_blog_summary'.tr(),
+    'content':'finance_management_blog_content'.tr(),
+  }
+};
 
 class TipsHub extends StatefulWidget {
   
@@ -127,7 +166,15 @@ class _TipsHubState extends State<TipsHub> {
 
               ...educationaltips.map(
                 (currentTip) =>
-                    TipCard(tip: currentTip, onReadMorePressed: () {}),
+                    TipCard(
+                      tip: currentTip, 
+                    onReadMorePressed: () {
+                      final selectedBlog = blogDataMap[currentTip.id];
+                      if(selectedBlog != null){
+                        context.push('/tips-hub/tip_detail',extra: selectedBlog);
+                      }
+                    }
+                    ),
               ),
               SizedBox(height: 16),
               Text(
@@ -169,93 +216,24 @@ class _TipsHubState extends State<TipsHub> {
                   );
                 }
 
-                return Column(
-                  children: snapshot.data!.map((article) {
-                    return GestureDetector(
-                      onTap: () => _openArticle(article.link),
-                      child: Card(
-                        margin: const EdgeInsets.only(bottom: 16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            if (article.imageUrl != null)
-                              ClipRRect(
-                                borderRadius: const BorderRadius.vertical(
-                                  top: Radius.circular(12),
-                                ),
-                                child: Image.network(
-                                  article.imageUrl!,
-                                  height: 200,
-                                  width: double.infinity,
-                                  fit: BoxFit.cover,
-                                  loadingBuilder:
-                                      (context, child, loadingProgress) {
-                                        if (loadingProgress == null) {
-                                          return child;
-                                        }
-                                        return Container(
-                                          height: 200,
-                                          color: Colors.grey[200],
-                                          child: const Center(
-                                            child: CircularProgressIndicator(),
-                                          ),
-                                        );
-                                      },
-                                  errorBuilder: (context, error, stackTrace) =>
-                                      const SizedBox(),
-                                ),
-                              ),
-                            Padding(
-                              padding: const EdgeInsets.all(16),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    article.title,
-                                    style: const TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    '${article.source} • ${DateFormat.yMMMd().format(article.publishDate)}',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: CustomColors.text,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 12),
-                                  Text(
-                                    article.description,
-                                    style: TextStyle(
-                                      color: CustomColors.text,
-                                      height: 1.5,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 16),
-                                  ElevatedButton(
-                                    onPressed: () => _openArticle(article.link),
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: CustomColors.primary,
-                                      foregroundColor: Colors.white,
-                                    ),
-                                    child: const Text('Read Full Article'),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  }).toList(),
-                );
-              },
-            ),
+                  return Column(
+                    children: snapshot.data!.map((currentArticle) {
+                      return NewsArticleCard(
+                        article: currentArticle,
+                        onTap: () { _openArticle(currentArticle.link);}
+                      );
+                    }).toList(),
+                  );
+                },
+              ),
               ...poultryTips.map(
                 (currentTip) =>
-                    TipCard(tip: currentTip, onReadMorePressed: () {}),
+                    TipCard(tip: currentTip, onReadMorePressed: () {
+                       final selectedBlog = blogDataMap[currentTip.id];
+                      if(selectedBlog != null){
+                        context.push('/tips-hub/tip_detail',extra: selectedBlog);
+                      }
+                    }),
               ),
               SizedBox(height: 10),
               Text(
