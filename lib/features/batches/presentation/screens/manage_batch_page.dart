@@ -6,6 +6,7 @@ import 'package:ikuku/features/batches/model/chicken_batch_model.dart';
 import 'package:ikuku/features/batches/presentation/Widgets/batch_card.dart';
 import 'package:ikuku/features/batches/presentation/widgets/pop_up.dart';
 import 'package:ikuku/features/batches/provider/batch_provider.dart';
+import 'package:ikuku/shared/widgets/feature_button.dart';
 import 'package:ikuku/theme/app_theme.dart';
 import 'package:provider/provider.dart';
 
@@ -150,8 +151,8 @@ class ManageBatchPage extends StatelessWidget {
               Text(
                 "you_have_no_batches_yet".tr(),
                 style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                  color: CustomColors.textDisabled,
-                  fontWeight: FontWeight.w400,
+                  color: CustomColors.text,
+                  fontWeight: FontWeight.bold,
                   fontSize: 18,
                 ),
               ),
@@ -163,21 +164,12 @@ class ManageBatchPage extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 16),
-              TextButton(
-                onPressed: () {
+              FeatureButton(
+                label: "create_a_batch".tr(), 
+                onTap: () { 
                   context.push('/create_batch_page');
-                },
-                child: Text(
-                  "create_a_batch".tr(),
-                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                    color: CustomColors.primary,
-                    fontSize: 20,
-                    fontFamily: 'Roboto',
-                    fontWeight: FontWeight.bold,
-                    decoration: TextDecoration.underline,
-                  ),
-                ),
-              ),
+                }, 
+               ),
             ],
           ),
         ),
