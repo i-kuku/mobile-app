@@ -27,7 +27,7 @@ class TipCard extends StatelessWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(tip.emoji, style: TextStyle(fontSize: 24)),
+                Text(tip.emoji, style: TextStyle(fontSize: 35)),
                 SizedBox(width: 16),
                 Expanded(
                   child: Text(
@@ -45,7 +45,7 @@ class TipCard extends StatelessWidget {
               tip.description,
               style: Theme.of(
                 context,
-              ).textTheme.bodyLarge!.copyWith(color: CustomColors.text),
+              ).textTheme.bodyLarge!.copyWith(color: CustomColors.text, fontSize: 16),
               maxLines: 5,
               overflow: TextOverflow.ellipsis,
             ),
@@ -58,6 +58,7 @@ class TipCard extends StatelessWidget {
                 label: Text('read_more'.tr()),
                 style: TextButton.styleFrom(
                   foregroundColor: CustomColors.primary,
+                  iconSize: 14,
                 ),
               ),
             ),

@@ -128,7 +128,7 @@ class _TipsHubState extends State<TipsHub> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.grey[400],
+        backgroundColor: Colors.white,
         elevation: 0,
         leading: InkWell(
           onTap: () => context.pop(),
@@ -138,7 +138,7 @@ class _TipsHubState extends State<TipsHub> {
           "smart_tips_title".tr(),
           style: Theme.of(context).textTheme.titleMedium!.copyWith(
             color: CustomColors.primary,
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.bold,
             fontSize: 20,
           ),
         ),
@@ -191,7 +191,7 @@ class _TipsHubState extends State<TipsHub> {
                 "latest_Poultry_news_summary".tr(),
                 style: Theme.of(
                   context,
-                ).textTheme.bodyLarge!.copyWith(color: CustomColors.text),
+                ).textTheme.bodyLarge!.copyWith(color: CustomColors.text,fontSize: 16),
               ),
               SizedBox(height: 16),
               FutureBuilder<List<NewsArticle>>(
@@ -246,6 +246,7 @@ class _TipsHubState extends State<TipsHub> {
                 style: Theme.of(context).textTheme.titleMedium!.copyWith(
                   color: CustomColors.text,
                   fontWeight: FontWeight.w600,
+                  fontSize: 18,
                 ),
               ),
               const SizedBox(height: 8),

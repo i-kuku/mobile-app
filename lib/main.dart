@@ -30,8 +30,6 @@ void main() async {
     anonKey:
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZyaHVqaWxraHRlZHZraHlidGR4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE4MDY2ODEsImV4cCI6MjA2NzM4MjY4MX0.NLxRGmM4F6ckDcvbGW6SFvLKEd9Dn-8bieInZO6aPYs',
   );
-
-  // Fix database constraints on app startup
   try {
     await SupabaseService().fixDatabaseConstraints();
   } catch (e) {
