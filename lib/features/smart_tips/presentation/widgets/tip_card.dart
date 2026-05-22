@@ -17,11 +17,8 @@ class TipCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       elevation: 2,
-      margin: EdgeInsets.symmetric(vertical: 10,horizontal: 8),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      
+      margin: EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -35,9 +32,10 @@ class TipCard extends StatelessWidget {
                 Expanded(
                   child: Text(
                     tip.title,
-                    style: Theme.of(
-                      context,
-                    ).textTheme.titleLarge!.copyWith(color: CustomColors.text,fontWeight: FontWeight.bold),
+                    style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                      color: CustomColors.text,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ],
@@ -51,17 +49,17 @@ class TipCard extends StatelessWidget {
               maxLines: 5,
               overflow: TextOverflow.ellipsis,
             ),
-            SizedBox(height:16),
+            SizedBox(height: 16),
             Align(
               alignment: Alignment.bottomRight,
               child: TextButton.icon(
-                onPressed: onReadMorePressed, 
-                icon: Icon(Icons.arrow_forward,size: 16),
-                label: Text('read_more'.tr()),   
-                style:TextButton.styleFrom(
+                onPressed: onReadMorePressed,
+                icon: Icon(Icons.arrow_forward, size: 16),
+                label: Text('read_more'.tr()),
+                style: TextButton.styleFrom(
                   foregroundColor: CustomColors.primary,
                 ),
-                ),
+              ),
             ),
           ],
         ),

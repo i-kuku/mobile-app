@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ikuku/features/smart_tips/model/smart_tips_model.dart';
+import 'package:ikuku/features/smart_tips/presentation/widgets/external_tip_card.dart';
 import 'package:ikuku/features/smart_tips/presentation/widgets/news_article_card.dart';
 import 'package:ikuku/features/smart_tips/presentation/widgets/tip_card.dart';
 import 'package:ikuku/services/rss_service.dart';
@@ -48,47 +49,46 @@ final List<SmartTips> poultryTips = [
     emoji: '💰',
   ),
 ];
-final Map<String, Map<String, String>> blogDataMap={
-  '1':{
-    'emoji':'🐔',
+final Map<String, Map<String, String>> blogDataMap = {
+  '1': {
+    'emoji': '🐔',
     'title': 'farm_records_blog_title'.tr(),
     'summary': 'farm_records_blog_summary'.tr(),
-    'content':"farm_records_blog_content".tr(),
+    'content': "farm_records_blog_content".tr(),
   },
-  '2':{
-    'emoji':'🧫',
-    'title':'disease_management_blog_title'.tr(),
-     'summary':'disease_management_blog_summary'.tr(),
-     'content':'disease_management_blog_content'.tr(),
+  '2': {
+    'emoji': '🧫',
+    'title': 'disease_management_blog_title'.tr(),
+    'summary': 'disease_management_blog_summary'.tr(),
+    'content': 'disease_management_blog_content'.tr(),
   },
-  '3':{
-    'emoji':'🏠',
-    'title':'housing_biosecurity_blog_title'.tr(),
-    'summary':'housing_biosecurity_blog_summary'.tr(),
-    'content':'housing_biosecurity_blog_content'.tr(),
+  '3': {
+    'emoji': '🏠',
+    'title': 'housing_biosecurity_blog_title'.tr(),
+    'summary': 'housing_biosecurity_blog_summary'.tr(),
+    'content': 'housing_biosecurity_blog_content'.tr(),
   },
-  '4':{
-    'emoji':'🐣',
-    'title':'chicken_breed_blog_title'.tr(),
-    'summary':'chicken_breed_blog_summary'.tr(),
-    'content':'chicken_breed_blog_content'.tr(),
+  '4': {
+    'emoji': '🐣',
+    'title': 'chicken_breed_blog_title'.tr(),
+    'summary': 'chicken_breed_blog_summary'.tr(),
+    'content': 'chicken_breed_blog_content'.tr(),
   },
-  '5':{
-    'emoji':'🌾',
-    'title':'climate_smart_blog_title'.tr(),
-    'summary':'climate_smart_blog_summary'.tr(),
-    'content':'climate_smart_blog_content'.tr(),
+  '5': {
+    'emoji': '🌾',
+    'title': 'climate_smart_blog_title'.tr(),
+    'summary': 'climate_smart_blog_summary'.tr(),
+    'content': 'climate_smart_blog_content'.tr(),
   },
-  '6':{
-    'emoji':'💰',
-    'title':'finance_management_blog_title'.tr(),
-    'summary':'finance_management_blog_summary'.tr(),
-    'content':'finance_management_blog_content'.tr(),
-  }
+  '6': {
+    'emoji': '💰',
+    'title': 'finance_management_blog_title'.tr(),
+    'summary': 'finance_management_blog_summary'.tr(),
+    'content': 'finance_management_blog_content'.tr(),
+  },
 };
 
 class TipsHub extends StatefulWidget {
-  
   const TipsHub({super.key});
 
   @override
@@ -96,8 +96,7 @@ class TipsHub extends StatefulWidget {
 }
 
 class _TipsHubState extends State<TipsHub> {
-
-   Future<void> _openArticle(String url) async {
+  Future<void> _openArticle(String url) async {
     if (url.isEmpty) {
       ScaffoldMessenger.of(
         context,
@@ -124,28 +123,28 @@ class _TipsHubState extends State<TipsHub> {
       }
     }
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-  backgroundColor: Colors.grey[400],
-  elevation: 0,
-  leading: InkWell(
-    onTap: () => context.pop(),
-    child: const Icon(Icons.arrow_back, size: 18, color: Colors.black),
-  ),
-  title: Text(
-    "smart_tips_title".tr(),
-    style: Theme.of(context).textTheme.titleMedium!.copyWith(
-          color: CustomColors.primary,
-          fontWeight: FontWeight.w600,
-          fontSize: 20,
+        backgroundColor: Colors.grey[400],
+        elevation: 0,
+        leading: InkWell(
+          onTap: () => context.pop(),
+          child: const Icon(Icons.arrow_back, size: 18, color: CustomColors.primary),
         ),
-  ),
-  centerTitle: false, 
-  titleSpacing: 0, 
-),
+        title: Text(
+          "smart_tips_title".tr(),
+          style: Theme.of(context).textTheme.titleMedium!.copyWith(
+            color: CustomColors.primary,
+            fontWeight: FontWeight.w600,
+            fontSize: 20,
+          ),
+        ),
+        centerTitle: false,
+        titleSpacing: 0,
+      ),
       body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsetsGeometry.all(8),
@@ -154,31 +153,34 @@ class _TipsHubState extends State<TipsHub> {
             children: [
               Text(
                 "educational_resources".tr(),
-                style: Theme.of(
-                  context,
-                ).textTheme.titleLarge!.copyWith(color: CustomColors.text,fontSize: 25),
+                style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                  color: CustomColors.text,
+                  fontSize: 25,
+                ),
               ),
               SizedBox(height: 16),
-              Text("educational_blog_subtitle".tr(),
-              style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: CustomColors.text),
+              Text(
+                "educational_blog_subtitle".tr(),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyLarge!.copyWith(color: CustomColors.text),
               ),
               SizedBox(height: 16),
 
               ...educationaltips.map(
-                (currentTip) =>
-                    TipCard(
-                      tip: currentTip, 
-                    onReadMorePressed: () {
-                      final selectedBlog = blogDataMap[currentTip.id];
-                      if(selectedBlog != null){
-                        context.push('/tips-hub/tip_detail',extra: selectedBlog);
-                      }
+                (currentTip) => TipCard(
+                  tip: currentTip,
+                  onReadMorePressed: () {
+                    final selectedBlog = blogDataMap[currentTip.id];
+                    if (selectedBlog != null) {
+                      context.push('/tips-hub/tip_detail', extra: selectedBlog);
                     }
-                    ),
+                  },
+                ),
               ),
               SizedBox(height: 16),
               Text(
-                "Latest Poultry News",
+                "latest_poultry_news".tr(),
                 style: Theme.of(context).textTheme.titleLarge!.copyWith(
                   fontSize: 20,
                   color: CustomColors.text,
@@ -186,64 +188,68 @@ class _TipsHubState extends State<TipsHub> {
               ),
               SizedBox(height: 4),
               Text(
-                "Stay updated with the latest poultry farming news and insights",
-                style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: CustomColors.text),
+                "latest_Poultry_news_summary".tr(),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyLarge!.copyWith(color: CustomColors.text),
               ),
               SizedBox(height: 16),
-               FutureBuilder<List<NewsArticle>>(
-              future: RssService().fetchLatestNews(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(16.0),
-                      child: CircularProgressIndicator(),
-                    ),
-                  );
-                }
+              FutureBuilder<List<NewsArticle>>(
+                future: RssService().fetchLatestNews(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(16.0),
+                        child: CircularProgressIndicator(),
+                      ),
+                    );
+                  }
 
-                if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Text(
-                        'No news articles available',
-                        style: TextStyle(
-                          color: CustomColors.text,
+                  if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Text(
+                          'no_news_articles_available'.tr(),
+                          style: TextStyle(color: CustomColors.text),
                         ),
                       ),
-                    ),
-                  );
-                }
-
+                    );
+                  }
                   return Column(
                     children: snapshot.data!.map((currentArticle) {
                       return NewsArticleCard(
                         article: currentArticle,
-                        onTap: () { _openArticle(currentArticle.link);}
+                        onTap: () {
+                          _openArticle(currentArticle.link);
+                        },
                       );
                     }).toList(),
                   );
                 },
               ),
               ...poultryTips.map(
-                (currentTip) =>
-                    TipCard(tip: currentTip, onReadMorePressed: () {
-                       final selectedBlog = blogDataMap[currentTip.id];
-                      if(selectedBlog != null){
-                        context.push('/tips-hub/tip_detail',extra: selectedBlog);
-                      }
-                    }),
+                (currentTip) => TipCard(
+                  tip: currentTip,
+                  onReadMorePressed: () {
+                    final selectedBlog = blogDataMap[currentTip.id];
+                    if (selectedBlog != null) {
+                      context.push('/tips-hub/tip_detail', extra: selectedBlog);
+                    }
+                  },
+                ),
               ),
               SizedBox(height: 10),
               Text(
-                "More tips from trusted African poultry farmers",
+                "more_tips_from_trusted_African_poultry_farmers".tr(),
                 style: Theme.of(context).textTheme.titleMedium!.copyWith(
                   color: CustomColors.text,
                   fontWeight: FontWeight.w600,
                 ),
               ),
-            
+              const SizedBox(height: 8),
+              ExternalTipCard(),
             ],
           ),
         ),

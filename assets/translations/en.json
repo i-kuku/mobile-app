@@ -444,5 +444,9 @@
   "add_feeds":"Add feeds",
   "field_required":"Field required",
   "tip_batch_definition":"Tip:A batch is a group of chicken,\n obtained at the same time",
-  "educational_resources":"Educational Resources"
+  "educational_resources":"Educational Resources",
+  "latest_poultry_news": "Latest Poultry News",
+  "latest_Poultry_news_summary": "Stay updated with the latest poultry farming news and insights",
+  "more_tips_from_trusted_African_poultry_farmers": "More tips from trusted African poultry farmers",
+  "no_news_articles_available": "No news articles available"
 }

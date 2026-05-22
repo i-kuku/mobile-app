@@ -446,5 +446,9 @@
   "field_required":"Inahitajika",
   "add_item_to_store": "Ongeza kipengele kwenye stoo",
   "tip_batch_definition":"Kidokezo: Kundi(batch) ni mkusanyiko wa kuku,\n waliopatikana kwa wakati mmoja",
-  "educational_resources":"Rasilimali za kielimu"
+  "educational_resources":"Rasilimali za kielimu",
+   "latest_poultry_news": "Habari za hivi punde za kuku",
+  "latest_Poultry_news_summary": "Pata habari mpya na miongozo ya hivi punde kuhusu ufugaji wa kuku",
+  "more_tips_from_trusted_African_poultry_farmers": "Mbinu zaidi kutoka kwa wafugaji wa kuku Waafrika wanaoaminika",
+  "no_news_articles_available": "Hakuna makala za habari zinazopatikana"
 }
