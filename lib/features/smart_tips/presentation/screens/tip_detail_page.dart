@@ -19,15 +19,13 @@ class TipDetailPage extends StatelessWidget {
         leading: IconButton(
           onPressed: () => context.pop(),
           icon: Icon(Icons.arrow_back),
-          style: IconButton.styleFrom(
-            foregroundColor: CustomColors.primary,
-          ),
+          style: IconButton.styleFrom(foregroundColor: CustomColors.primary),
         ),
         title: Text(
           blogDataMap['title'] ?? '',
           style: Theme.of(context).textTheme.titleLarge!.copyWith(
             fontWeight: FontWeight.bold,
-            fontSize: 18,
+            fontSize: 22,
             color: CustomColors.primary,
           ),
         ),
@@ -42,7 +40,7 @@ class TipDetailPage extends StatelessWidget {
               children: [
                 Text(
                   blogDataMap['emoji'] ?? '',
-                  style: TextStyle(fontSize: 32),
+                  style: TextStyle(fontSize: 40),
                 ),
 
                 SizedBox(width: 16),
@@ -59,21 +57,23 @@ class TipDetailPage extends StatelessWidget {
               ],
             ),
             SizedBox(height: 16),
-            Card(
-              margin: EdgeInsets.all(16),
-              shape: RoundedRectangleBorder(
+            Container(
+              margin: EdgeInsets.all(8),
+              padding: EdgeInsets.all(10),
+              decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
+                color: Colors.grey[400],
+                border: Border.all(color: CustomColors.primary),
               ),
               child: Text(
                 blogDataMap['summary'] ?? '',
                 style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                   color: CustomColors.text,
-                  fontStyle: FontStyle.italic,
                   fontSize: 18,
                 ),
               ),
             ),
-            SizedBox(height: 16),
+            
             MarkdownBody(
               data: blogDataMap['content'] ?? '',
               styleSheet: MarkdownStyleSheet(
@@ -98,7 +98,7 @@ class TipDetailPage extends StatelessWidget {
                   Icon(Icons.close, size: 16, color: Colors.white),
                   SizedBox(width: 8),
                   Text(
-                    'close article'.tr(),
+                    'close_article'.tr(),
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                       color: Colors.white,
                       fontSize: 16,

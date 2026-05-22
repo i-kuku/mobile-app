@@ -41,7 +41,7 @@ class ExternalTipCard extends StatelessWidget {
       itemBuilder: (context, index) {
         final externalTip = externalTips[index];
         return Card(
-          margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 18),
+          margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
           child: ListTile(
             leading: Icon(Icons.public, color: Colors.blueGrey),
             title: Text(externalTip.title),
