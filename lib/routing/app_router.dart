@@ -153,7 +153,7 @@ class AppRouter {
         ],
       ),
       GoRoute(
-  path: '/tips-hub',
+  path: '/smart-tips',
   builder: (context, state) => const TipsHub(),
   routes: [
     GoRoute(
@@ -229,8 +229,8 @@ class AppRouter {
       } 
        else {
          if (loggingIn || root) {
-           return '/tips-hub';
-          //  return '/inventory';
+          //  return '/tips-hub';
+           return '/';
        }
        }
 

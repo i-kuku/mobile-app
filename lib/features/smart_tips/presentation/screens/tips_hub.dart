@@ -173,7 +173,7 @@ class _TipsHubState extends State<TipsHub> {
                   onReadMorePressed: () {
                     final selectedBlog = blogDataMap[currentTip.id];
                     if (selectedBlog != null) {
-                      context.push('/tips-hub/tip_detail', extra: selectedBlog);
+                      context.push('/smart-tips/tip_detail', extra: selectedBlog);
                     }
                   },
                 ),
@@ -235,7 +235,7 @@ class _TipsHubState extends State<TipsHub> {
                   onReadMorePressed: () {
                     final selectedBlog = blogDataMap[currentTip.id];
                     if (selectedBlog != null) {
-                      context.push('/tips-hub/tip_detail', extra: selectedBlog);
+                      context.push('/smart-tips/tip_detail', extra: selectedBlog);
                     }
                   },
                 ),

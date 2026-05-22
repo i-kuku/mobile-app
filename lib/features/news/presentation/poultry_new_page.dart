@@ -29,7 +29,6 @@ class _PoultryNewsPageState extends State<PoultryNewsPage> {
     }
 
     try {
-      // First load cached articles
       final cachedArticles = await _rssService.getCachedArticles();
       if (mounted) {
         setState(() {
@@ -37,8 +36,6 @@ class _PoultryNewsPageState extends State<PoultryNewsPage> {
           _isLoading = cachedArticles.isEmpty;
         });
       }
-
-      // Then fetch fresh articles
       final freshArticles = await _rssService.fetchLatestNews();
       if (mounted) {
         setState(() {
