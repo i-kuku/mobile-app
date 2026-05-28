@@ -96,6 +96,14 @@ class TipsHub extends StatefulWidget {
 }
 
 class _TipsHubState extends State<TipsHub> {
+  late Future<List<NewsArticle>> _newsFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _newsFuture = RssService().fetchLatestNews();
+  }
+
   Future<void> _openArticle(String url) async {
     if (url.isEmpty) {
       ScaffoldMessenger.of(
@@ -147,7 +155,7 @@ class _TipsHubState extends State<TipsHub> {
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: EdgeInsetsGeometry.all(8),
+          padding: EdgeInsets.all(8),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -195,7 +203,7 @@ class _TipsHubState extends State<TipsHub> {
               ),
               SizedBox(height: 16),
               FutureBuilder<List<NewsArticle>>(
-                future: RssService().fetchLatestNews(),
+                future: _newsFuture,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(

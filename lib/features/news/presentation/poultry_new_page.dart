@@ -103,7 +103,6 @@ class _PoultryNewsPageState extends State<PoultryNewsPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          if (article.imageUrl != null)
                             if (article.imageUrl != null)
                               ClipRRect(
                                 borderRadius: const BorderRadius.vertical(
