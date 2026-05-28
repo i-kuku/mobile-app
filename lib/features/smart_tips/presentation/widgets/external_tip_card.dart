@@ -57,11 +57,6 @@ class ExternalTipCard extends StatelessWidget {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('Could not open link')),
                   );
-                  if (!launched && context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Could not open link')),
-                    );
-                  }
                 } else {
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(

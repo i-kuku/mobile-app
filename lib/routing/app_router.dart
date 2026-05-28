@@ -160,7 +160,7 @@ class AppRouter {
       path: 'tip_detail', 
       builder: (context, state) {
         final rawData = state.extra;
-        final selectedBlogData = rawData as Map<String, String>;
+        final selectedBlogData = rawData is Map<String, String>?rawdata:<String, String>{};
         return TipDetailPage(blogDataMap: selectedBlogData);
       },
     ),
