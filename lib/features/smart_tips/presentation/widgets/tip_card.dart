@@ -40,7 +40,7 @@ class TipCard extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 10),
+           SizedBox(height: 10),
             Text(
               tip.description,
               style: Theme.of(

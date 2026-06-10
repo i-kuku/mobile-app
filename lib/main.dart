@@ -53,7 +53,7 @@ void main() async {
         ChangeNotifierProvider(create: (context) => LanguageProvider()),
         ChangeNotifierProvider(create: (context) => BatchProvider()),
         ChangeNotifierProvider(create: (context) => AuthProvider()),
-        ChangeNotifierProvider(create: (context) =>InventoryProvider()),
+        ChangeNotifierProvider(create: (context) => InventoryProvider()),
         ChangeNotifierProvider(create: (context) => AnalyticsProvider()),
         ChangeNotifierProvider(create: (context) => TutorialProvider()),
       ],
