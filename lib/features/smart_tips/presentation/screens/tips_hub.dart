@@ -140,7 +140,11 @@ class _TipsHubState extends State<TipsHub> {
         elevation: 0,
         leading: InkWell(
           onTap: () => context.pop(),
-          child: const Icon(Icons.arrow_back, size: 18, color: CustomColors.primary),
+          child: const Icon(
+            Icons.arrow_back,
+            size: 18,
+            color: CustomColors.primary,
+          ),
         ),
         title: Text(
           "smart_tips_title".tr(),
@@ -181,7 +185,10 @@ class _TipsHubState extends State<TipsHub> {
                   onReadMorePressed: () {
                     final selectedBlog = blogDataMap[currentTip.id];
                     if (selectedBlog != null) {
-                      context.push('/smart-tips/tip_detail', extra: selectedBlog);
+                      context.push(
+                        '/smart-tips/tip_detail',
+                        extra: selectedBlog,
+                      );
                     }
                   },
                 ),
@@ -197,9 +204,10 @@ class _TipsHubState extends State<TipsHub> {
               SizedBox(height: 4),
               Text(
                 "latest_Poultry_news_summary".tr(),
-                style: Theme.of(
-                  context,
-                ).textTheme.bodyLarge!.copyWith(color: CustomColors.text,fontSize: 16),
+                style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                  color: CustomColors.text,
+                  fontSize: 16,
+                ),
               ),
               SizedBox(height: 16),
               FutureBuilder<List<NewsArticle>>(
@@ -243,7 +251,10 @@ class _TipsHubState extends State<TipsHub> {
                   onReadMorePressed: () {
                     final selectedBlog = blogDataMap[currentTip.id];
                     if (selectedBlog != null) {
-                      context.push('/smart-tips/tip_detail', extra: selectedBlog);
+                      context.push(
+                        '/smart-tips/tip_detail',
+                        extra: selectedBlog,
+                      );
                     }
                   },
                 ),

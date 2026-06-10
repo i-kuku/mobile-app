@@ -3,6 +3,7 @@ import 'package:ikuku/features/batches/model/chicken_batch_model.dart';
 import 'package:uuid/uuid.dart';
 
 class BatchProvider extends ChangeNotifier{
+  // final SupabaseClient _supabase = Supabase.instance.client;
   final List<ChickenBatch> _batches=[];
 
   List <ChickenBatch> get batches => _batches;

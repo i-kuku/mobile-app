@@ -10,7 +10,7 @@ class FeatureButton extends StatelessWidget {
     super.key,
     required this.label,
     this.icon,
-    required this.onTap,
+    required this.onTap, required TextStyle style,
   });
 
   @override

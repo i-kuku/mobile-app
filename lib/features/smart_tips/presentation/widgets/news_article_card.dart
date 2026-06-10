@@ -42,6 +42,7 @@ class _NewsArticleCardState extends State<NewsArticleCard> {
       });
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -99,6 +100,7 @@ class _NewsArticleCardState extends State<NewsArticleCard> {
                   ),
                   const SizedBox(height: 16),
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       ElevatedButton(
                         onPressed: widget.onTap,
@@ -108,7 +110,7 @@ class _NewsArticleCardState extends State<NewsArticleCard> {
                         ),
                         child: const Text('Read Full Article'),
                       ),
-                  OutlinedButton.icon(
+                      OutlinedButton.icon(
                         onPressed: _getOfflineSummary,
                         style: OutlinedButton.styleFrom(
                           foregroundColor: CustomColors.primary,
@@ -119,7 +121,7 @@ class _NewsArticleCardState extends State<NewsArticleCard> {
                       ),
                     ],
                   ),
-            
+
                   if (_showAiSummary) ...[
                     const SizedBox(height: 16),
                     Container(
@@ -133,13 +135,18 @@ class _NewsArticleCardState extends State<NewsArticleCard> {
                       child: _isAiThinking
                           ? Column(
                               children: [
-                                LinearProgressIndicator(color: CustomColors.primary),
+                                LinearProgressIndicator(
+                                  color: CustomColors.primary,
+                                ),
                                 SizedBox(height: 8),
-                                Text("On-Device AI is analyzing...", style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                      color: CustomColors.text,
-                      fontWeight: FontWeight.bold,
-                                )
-                      ),
+                                Text(
+                                  "On-Device AI is analyzing...",
+                                  style: Theme.of(context).textTheme.titleLarge!
+                                      .copyWith(
+                                        color: CustomColors.text,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                ),
                               ],
                             )
                           : Text(
@@ -152,16 +159,12 @@ class _NewsArticleCardState extends State<NewsArticleCard> {
                             ),
                     ),
                   ],
-                  ],
-                
+                ],
               ),
-      
-              
             ),
-            ]
+          ],
         ),
-    )
+      ),
     );
-    
   }
 }
