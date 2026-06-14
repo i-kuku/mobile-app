@@ -4,6 +4,7 @@ import 'package:ikuku/theme/app_theme.dart';
 
 class PopUp extends StatelessWidget {
   final String title;
+  final Widget icon;
   final String message;
   final String mainButtonText;
   final String secondaryButtonText;
@@ -13,17 +14,17 @@ class PopUp extends StatelessWidget {
   const PopUp({
     super.key,
     required this.title,
+    required this.icon,
     required this.message,
     required this.mainButtonText,
     required this.secondaryButtonText,
-    required this.onMainAction,
-    required this.onsecondaryAction,
+    this.onMainAction,
+    this.onsecondaryAction,
   });
 
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      // backgroundColor: Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Container(
         padding: EdgeInsets.all(24),
@@ -42,7 +43,11 @@ class PopUp extends StatelessWidget {
                 fontSize: 20,
               ),
             ),
-            SizedBox(height: 12),
+            SizedBox(
+              height: 100,
+              width: 100,
+              child: icon,
+              ),
             Text(
               message,
               style: Theme.of(context).textTheme.bodyLarge!.copyWith(
@@ -51,13 +56,14 @@ class PopUp extends StatelessWidget {
               ),
             ),
             SizedBox(height: 12),
+            
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 OutlinedButton(
                   onPressed: onMainAction ?? () => context.pop(),
                   style: OutlinedButton.styleFrom(
-                    side: BorderSide(color: CustomColors.primary),
+                    side: BorderSide(color: CustomColors.secondary),
                     padding: EdgeInsets.all(12),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -66,7 +72,7 @@ class PopUp extends StatelessWidget {
                   child: Text(
                     mainButtonText,
                     style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                      color: CustomColors.primary,
+                      color: CustomColors.text,
                     ),
                   ),
                 ),
@@ -84,7 +90,7 @@ class PopUp extends StatelessWidget {
                     secondaryButtonText,
                     style: Theme.of(
                       context,
-                    ).textTheme.bodyMedium!.copyWith(color: CustomColors.text),
+                    ).textTheme.bodyMedium!.copyWith(color:Colors.white),
                   ),
                 ),
               ],
