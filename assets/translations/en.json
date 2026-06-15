@@ -453,5 +453,6 @@
   "confirm_deletion":"Going for good?",
   "deletion_message":"Are you sure you want to delete your account?",
   "delete":"Delete",
-  "recovery_phone_numbers":"Recovery Phone "
+  "add_recovery_number":"Add recovery number",
+  "recovery_phone_numbers":"Recovery phone numbers"
 }

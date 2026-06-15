@@ -43,7 +43,7 @@ class _ProfilePageState extends State<ProfilePage> {
           .select()
           .eq('id', user.id)
           .maybeSingle();
-      // Fetch farm info from 'farms' table
+      
       final farmResponse = await Supabase.instance.client
           .from('farms')
           .select()
@@ -204,7 +204,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     icon: Icons.phone,
                     title: 'add_recovery_phone'.tr(),
                     onTap: () {
-                      // context.push(RecoveryPhonePage())
+                      context.push('/profile/recovery_phone_page');
                     },
                   ),
                   MenuCard(

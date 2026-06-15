@@ -454,5 +454,7 @@
   "close_news": "Funga Habari",
   "confirm_deletion":"Thibitisha ufutaji wa account",
   "deletion_message":"Je, una uhakika unataka kufuta akaunti yako?",
-  "delete":"Futa"
+  "delete":"Futa",
+  "add_recovery_number":"Ongeza nambari ya kurejeshea",
+  "recovery_phone_numbers":"Nambari za kurejeshea"
 }

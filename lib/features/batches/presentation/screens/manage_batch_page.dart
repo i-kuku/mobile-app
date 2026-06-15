@@ -69,7 +69,7 @@ class ManageBatchPage extends StatelessWidget {
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.black),
           onPressed: (){
-            context.pop();
+            context.go('/');
           },
         ),
         title: Text(
@@ -126,7 +126,7 @@ class ManageBatchPage extends StatelessWidget {
                 height: 50,
                 width: 49.03,
               ),
-              SizedBox(width: 10),
+              SizedBox(width: 5),
               Text(
                 "tip_batch_definition".tr(),
                 style: Theme.of(context).textTheme.titleMedium!.copyWith(

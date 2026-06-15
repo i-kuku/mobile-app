@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:go_router/go_router.dart'; // Added missing import
 import 'package:ikuku/features/Inventory/presentation/screens/feeds_page.dart';
 import 'package:ikuku/features/Inventory/presentation/screens/inventory_hub_page.dart';
 import 'package:ikuku/features/Inventory/presentation/screens/items_page.dart';
@@ -14,15 +14,16 @@ import 'package:ikuku/features/home/presentation/home_page.dart';
 import 'package:ikuku/features/onboarding/create_farm_page.dart';
 import 'package:ikuku/features/onboarding/onboarding_page.dart';
 import 'package:ikuku/features/onboarding/recovery_setup_page.dart';
+import 'package:ikuku/features/profile/presentation/pages/edit_profile_page.dart';
 import 'package:ikuku/features/profile/presentation/pages/profile_page.dart';
+import 'package:ikuku/features/profile/presentation/pages/recovery_phone_page.dart';
 import 'package:ikuku/features/settings/languages/presentation/language_selection_page.dart';
 import 'package:ikuku/features/smart_tips/presentation/screens/tip_detail_page.dart';
 // import 'package:ikuku/features/shop/presentation/pages/my_shop_page.dart';
 import 'package:ikuku/features/smart_tips/presentation/screens/tips_hub.dart';
+import 'package:ikuku/features/shop/presentation/pages/my_shop_page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
 import '../features/splash/splash_screen.dart';
-
 import 'package:shared_preferences/shared_preferences.dart';
 
 GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -44,15 +45,11 @@ class AppRouter {
       ),
       GoRoute(
         path: '/onboarding',
-        builder: (context, state) =>
-            // OnboardingPage(onFinish: () => context.go('/batches')),
-            OnboardingPage(onFinish: () => context.go('/auth')),
+        builder: (context, state) => OnboardingPage(
+          onFinish: () => context.go('/auth'),
+        ),
       ),
       GoRoute(path: '/auth', builder: (context, state) => const AuthPage()),
-      // GoRoute(
-      //   path: '/reset-password',
-      //   builder: (context, state) => const ResetPasswordPage(),
-      // ),
       GoRoute(
         path: '/language',
         builder: (context, state) => LanguageSelectionPage(
@@ -61,10 +58,8 @@ class AppRouter {
             if (fromProfile) {
               context.go('/profile');
             } else {
-              // Check onboarding status for robustness
               final prefs = await SharedPreferences.getInstance();
-              final onboardingComplete =
-                  prefs.getBool('onboarding_complete') ?? false;
+              final onboardingComplete = prefs.getBool('onboarding_complete') ?? false;
               final user = Supabase.instance.client.auth.currentUser;
               if (onboardingComplete && context.mounted) {
                 context.go(user != null ? '/batches' : '/auth');
@@ -78,6 +73,7 @@ class AppRouter {
         ),
       ),
 
+      // --- FIXED: Properly nested StatefulShellRoute.indexedStack ---
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
           return Dashboard(navigationShell: navigationShell);
@@ -87,8 +83,7 @@ class AppRouter {
             routes: [
               GoRoute(
                 path: '/',
-                builder: (BuildContext context, GoRouterState state) =>
-                    const HomePage(),
+                builder: (BuildContext context, GoRouterState state) => const HomePage(),
               ),
             ],
           ),
@@ -96,22 +91,31 @@ class AppRouter {
             routes: [
               GoRoute(
                 path: '/my-shop',
-                builder: (context, state) => const TipsHub(),
+                builder: (context, state) => const MyShopPage(),
               ),
             ],
           ),
-
           StatefulShellBranch(
             routes: [
               GoRoute(
                 path: '/profile',
                 builder: (context, state) => const ProfilePage(),
+                routes: [ // FIXED: Nested profile sub-routes correctly with closing parentheses
+                  GoRoute(
+                    path: 'edit_profile_page',
+                    builder: (context, state) => const EditProfilePage(),
+                  ),
+                  GoRoute(
+                    path: 'recovery_phone_page',
+                    builder: (context, state) => const RecoveryPhonePage(),
+                  ),
+                ],
               ),
             ],
-          ),
-        ],
-      ),
-      // GoRoute(path: '/', builder: (context, state) => const DashboardPage()),
+          ), 
+        ], 
+      ), 
+
       GoRoute(
         path: '/batches',
         builder: (context, state) => const ManageBatchPage(),
@@ -217,7 +221,6 @@ class AppRouter {
       final langSet = prefs.getString('app_language') != null;
       final onboardingComplete = await AppRouter.onboardingComplete();
 
-      // If on splash screen, let it handle its own navigation
       if (splash) return null;
 
       if (!langSet && !language) return '/language';
@@ -226,13 +229,11 @@ class AppRouter {
         if (!loggingIn && onboardingComplete) {
           return '/auth';
         }
-      } 
-       else {
-         if (loggingIn || root) {
-          //  return '/tips-hub';
-           return '/';
-       }
-       }
+      } else {
+        if (loggingIn || root) {
+          return '/';
+        }
+      }
 
       return null;
     },

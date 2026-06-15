@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:ikuku/shared/widgets/loading_button.dart';
 import 'package:ikuku/theme/app_theme.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -10,12 +13,14 @@ class EditProfilePage extends StatefulWidget {
   final String? initialName;
   final String? initialLocation;
   final String? initialPhone;
+  final String? initialAvatarUrl;
 
   const EditProfilePage({
     super.key,
     this.initialName,
     this.initialLocation,
     this.initialPhone,
+    this.initialAvatarUrl,
   });
 
   @override
@@ -28,6 +33,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
   late TextEditingController _phoneController;
   final _formKey = GlobalKey<FormState>();
   // bool _loading = false;
+  final ImagePicker _picker = ImagePicker();
+  File? _localImageFile;
+  String? _uploadedAvatarUrl;
+  bool _isUploadingImage = false;
 
   @override
   void initState() {
@@ -37,6 +46,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       text: widget.initialLocation ?? '',
     );
     _phoneController = TextEditingController(text: widget.initialPhone ?? '');
+    _uploadedAvatarUrl = widget.initialAvatarUrl;
   }
 
   @override
@@ -45,6 +55,78 @@ class _EditProfilePageState extends State<EditProfilePage> {
     _locationController.dispose();
     _phoneController.dispose();
     super.dispose();
+  }
+  Future<void> _pickAndUploadImage(ImageSource source) async {
+    try {
+      final XFile? pickedFile = await _picker.pickImage(
+        source: source,
+        imageQuality: 70,
+        maxWidth: 400,
+      );
+
+      if (pickedFile == null) return;
+
+      setState(() {
+        _localImageFile = File(pickedFile.path);
+        _isUploadingImage = true;
+      });
+
+      final user = Supabase.instance.client.auth.currentUser;
+      if (user == null) return;
+
+      final fileExtension = pickedFile.path.split('.').last;
+      final filePath = '${user.id}/avatar_${DateTime.now().millisecondsSinceEpoch}.$fileExtension';
+
+      await Supabase.instance.client.storage.from('avatars').upload(
+            filePath,
+            _localImageFile!,
+            fileOptions: const FileOptions(cacheControl: '3600', upsert: true),
+          );
+
+      final String publicUrl = Supabase.instance.client.storage.from('avatars').getPublicUrl(filePath);
+
+      setState(() {
+        _uploadedAvatarUrl = publicUrl;
+        _isUploadingImage = false;
+      });
+    } catch (e) {
+      setState(() => _isUploadingImage = false);
+      debugPrint('Storage Upload Failed: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to upload image: $e')),
+        );
+      }
+    }
+  }
+
+  void _showImageSourceOptions() {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
+      builder: (context) => SafeArea(
+        child: Wrap(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.photo_library, color: CustomColors.primary),
+              title: const Text('Choose from Gallery'),
+              onTap: () {
+                context.pop();
+                _pickAndUploadImage(ImageSource.gallery);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_camera, color: CustomColors.primary),
+              title: const Text('Take a Photo'),
+              onTap: () {
+                context.pop();
+                _pickAndUploadImage(ImageSource.camera);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Future<void> _saveProfile() async {
@@ -59,6 +141,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
           'id': user.id,
           'full_name': _nameController.text.trim(),
           'phone_number': _phoneController.text.trim(),
+          'avatar_url':_uploadedAvatarUrl,
         });
       } catch (e) {
         debugPrint('Error updating users table: $e');
@@ -91,6 +174,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
           'name': _nameController.text.trim(),
           'location': _locationController.text.trim(),
           'phone': _phoneController.text.trim(),
+          'avatar_url':_uploadedAvatarUrl,
         });
       }
     } catch (e) {
@@ -106,12 +190,18 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+  ImageProvider? avatarImage;
+    if (_localImageFile != null) {
+      avatarImage = FileImage(_localImageFile!);
+    } else if (_uploadedAvatarUrl != null && _uploadedAvatarUrl!.isNotEmpty) {
+      avatarImage = NetworkImage(_uploadedAvatarUrl!);
+    }
     return Scaffold(
       appBar: AppBar(
         title: Text('edit_profile'.tr()),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.pop(context),
+          onPressed: () => context.pop(),
         ),
       ),
       body: SingleChildScrollView(
@@ -121,6 +211,38 @@ class _EditProfilePageState extends State<EditProfilePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              const SizedBox(height: 16),
+    // --- DESIGN SPEC MATCHING AVATAR VIEW ---
+    Center(
+      child: Column(
+        children: [
+          CircleAvatar(
+            radius: 55,
+            backgroundColor: Colors.grey[400],
+            backgroundImage: avatarImage,
+            child: avatarImage == null
+                ? Text(
+                   _nameController.text.trim().isNotEmpty
+                                      ? _nameController.text.trim()[0].toUpperCase()
+                                      : 'O',
+
+                    style: const TextStyle(fontSize: 48, color: Colors.black38),
+                  )
+                : null,
+          ),
+          const SizedBox(height: 8),
+          TextButton.icon(
+            onPressed: _isUploadingImage ? null : _showImageSourceOptions,
+            icon: const Icon(Icons.edit, size: 16, color: Colors.green),
+            label: const Text(
+              'Edit profile picture',
+              style: TextStyle(color: Colors.green, fontWeight: FontWeight.w600, fontSize: 14),
+            ),
+          ),
+        ],
+      ),
+    ),
+    const SizedBox(height: 16),
               Text(
                 'full_name_label'.tr(),
                 style: const TextStyle(
@@ -223,7 +345,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
               ),
               const SizedBox(height: 32),
 
-              // Save Button
+            
               SizedBox(
                 width: double.infinity,
                 child: Container(
