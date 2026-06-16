@@ -169,7 +169,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('profile_updated_successfully'.tr())),
         );
-        // Pop and pass back updated data
         Navigator.pop(context, {
           'name': _nameController.text.trim(),
           'location': _locationController.text.trim(),
@@ -212,7 +211,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 16),
-    // --- DESIGN SPEC MATCHING AVATAR VIEW ---
     Center(
       child: Column(
         children: [
