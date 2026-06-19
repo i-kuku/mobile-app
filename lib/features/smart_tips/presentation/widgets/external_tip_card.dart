@@ -57,6 +57,7 @@ class ExternalTipCard extends StatelessWidget {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('Could not open link')),
                   );
+                }
                 } else {
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -66,7 +67,6 @@ class ExternalTipCard extends StatelessWidget {
                     );
                   }
                 }
-              }
             },
           ),
         );

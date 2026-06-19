@@ -68,7 +68,7 @@ class ManageBatchPage extends StatelessWidget {
       appBar: AppBar(
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: (){
+          onPressed: () {
             context.pop();
           },
         ),
@@ -90,16 +90,15 @@ class ManageBatchPage extends StatelessWidget {
       ),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 16),
-          child: Consumer<BatchProvider>(
-            builder: (context, provider, child) {
-              if (provider.batches.isEmpty) {
-                return _buildEmptyState(context);
-              } else {
-                return _buildActiveState(context, provider);
-              }
-            },
-          ),
-        
+        child: Consumer<BatchProvider>(
+          builder: (context, provider, child) {
+            if (provider.batches.isEmpty) {
+              return _buildEmptyState(context);
+            } else {
+              return _buildActiveState(context, provider);
+            }
+          },
+        ),
       ),
     );
   }
@@ -130,7 +129,8 @@ class ManageBatchPage extends StatelessWidget {
               Text(
                 "tip_batch_definition".tr(),
                 style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                  color: CustomColors.textDisabled,fontSize: 18,
+                  color: CustomColors.textDisabled,
+                  fontSize: 18,
                 ),
               ),
             ],
@@ -139,9 +139,10 @@ class ManageBatchPage extends StatelessWidget {
         SizedBox(height: 20),
         Text(
           "my_batches".tr(),
-          style: Theme.of(
-            context,
-          ).textTheme.titleLarge!.copyWith(color: CustomColors.text, fontSize: 20),
+          style: Theme.of(context).textTheme.titleLarge!.copyWith(
+            color: CustomColors.text,
+            fontSize: 20,
+          ),
         ),
         SizedBox(height: 30),
         Center(
@@ -168,21 +169,20 @@ class ManageBatchPage extends StatelessWidget {
                 onTap: () {
                   context.push('/create_batch_page');
                 },
-                label:"create_a_batch".tr(),
-                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                    color: CustomColors.primary,
-                    fontSize: 20,
-                    fontFamily: 'Roboto',
-                    fontWeight: FontWeight.bold,
-                    decoration: TextDecoration.underline,
-                  ),
+                label: "create_a_batch".tr(),
+                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                  color: CustomColors.primary,
+                  fontSize: 20,
+                  fontFamily: 'Roboto',
+                  fontWeight: FontWeight.bold,
+                  decoration: TextDecoration.underline,
                 ),
-            ],
               ),
+            ],
+          ),
         ),
-        
-      ]
-          );
+      ],
+    );
   }
 
   Widget _buildActiveState(BuildContext context, BatchProvider provider) {
@@ -192,9 +192,10 @@ class ManageBatchPage extends StatelessWidget {
         const SizedBox(height: 16),
         Text(
           "manage_batches".tr(),
-          style: Theme.of(
-            context,
-          ).textTheme.titleLarge!.copyWith(color: CustomColors.text,fontSize: 30),
+          style: Theme.of(context).textTheme.titleLarge!.copyWith(
+            color: CustomColors.text,
+            fontSize: 30,
+          ),
         ),
         SizedBox(height: 10),
         Row(

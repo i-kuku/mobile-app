@@ -5,6 +5,7 @@ import 'package:ikuku/features/auth/provider/auth_provider.dart';
 import 'package:ikuku/features/home/provider/analytics_provider.dart';
 import 'package:ikuku/features/home/provider/tutorial_provider.dart';
 import 'package:ikuku/features/settings/languages/provider/language_provider.dart';
+import 'package:ikuku/features/smart_tips/presentation/widgets/local_ai_service.dart';
 import 'package:ikuku/theme/app_theme.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -30,6 +31,7 @@ void main() async {
     anonKey:
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZyaHVqaWxraHRlZHZraHlidGR4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE4MDY2ODEsImV4cCI6MjA2NzM4MjY4MX0.NLxRGmM4F6ckDcvbGW6SFvLKEd9Dn-8bieInZO6aPYs',
   );
+  LocalAiService().initLocalAi();
   try {
     await SupabaseService().fixDatabaseConstraints();
   } catch (e) {
@@ -46,7 +48,6 @@ void main() async {
   }
 
   final startLocale = Locale(savedLanguage ?? 'en');
-
   runApp(
     MultiProvider(
       providers: [

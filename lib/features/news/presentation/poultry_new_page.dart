@@ -1,7 +1,8 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:ikuku/services/rss_service.dart';
 import 'package:ikuku/theme/app_theme.dart';
-import 'package:intl/intl.dart';
+// import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class PoultryNewsPage extends StatefulWidget {
@@ -86,7 +87,7 @@ class _PoultryNewsPageState extends State<PoultryNewsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Poultry News')),
+      appBar: AppBar(title: Text('poultry_news'.tr())),
       body: RefreshIndicator(
         onRefresh: _loadNews,
         child: _isLoading

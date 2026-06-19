@@ -5,12 +5,14 @@ class FeatureButton extends StatelessWidget {
   final String label;
   final IconData? icon;
   final VoidCallback onTap;
+  final TextStyle style;
 
   const FeatureButton({
     super.key,
     required this.label,
     this.icon,
-    required this.onTap, required TextStyle style,
+    required this.onTap,
+    required this.style,
   });
 
   @override

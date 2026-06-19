@@ -31,6 +31,7 @@ android {
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = 24
         targetSdk = 35
+        multiDexEnabled true
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
@@ -40,6 +41,9 @@ android {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.getByName("debug")
+            minifyEnabled true
+        useProguard true // Ensure proguard config is checked
+        proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 }
