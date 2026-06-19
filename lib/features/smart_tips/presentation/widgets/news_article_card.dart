@@ -1,9 +1,10 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:ikuku/features/smart_tips/presentation/widgets/local_ai_service.dart';
 import 'package:ikuku/services/rss_service.dart';
 import 'package:ikuku/theme/app_theme.dart';
 
-class NewsArticleCard extends StatelessWidget {
+class NewsArticleCard extends StatefulWidget {
   final NewsArticle article;
   final VoidCallback onTap;
 
@@ -45,19 +46,19 @@ class _NewsArticleCardState extends State<NewsArticleCard> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: widget.onTap,
       child: Card(
         margin: const EdgeInsets.only(bottom: 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (article.imageUrl != null)
+            if (widget.article.imageUrl != null)
               ClipRRect(
                 borderRadius: const BorderRadius.vertical(
                   top: Radius.circular(12),
                 ),
                 child: Image.network(
-                  article.imageUrl!,
+                  widget.article.imageUrl!,
                   height: 200,
                   width: double.infinity,
                   fit: BoxFit.cover,
@@ -81,7 +82,7 @@ class _NewsArticleCardState extends State<NewsArticleCard> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    article.title,
+                    widget.article.title,
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -89,12 +90,12 @@ class _NewsArticleCardState extends State<NewsArticleCard> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    '${article.source} • ${DateFormat.yMMMd().format(article.publishDate)}',
+                    '${widget.article.source} • ${DateFormat.yMMMd().format(widget.article.publishDate)}',
                     style: TextStyle(fontSize: 14, color: CustomColors.text),
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    article.description,
+                    widget.article.description,
                     style: TextStyle(color: CustomColors.text, height: 1.5),
                   ),
                   const SizedBox(height: 16),
