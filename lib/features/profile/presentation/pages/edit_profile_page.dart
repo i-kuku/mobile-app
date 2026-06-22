@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:ikuku/shared/widgets/loading_button.dart';
 import 'package:ikuku/theme/app_theme.dart';
@@ -75,7 +74,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       if (user == null) return;
 
       final fileExtension = pickedFile.path.split('.').last;
-      final filePath = '${user.id}/avatar_${DateTime.now().millisecondsSinceEpoch}.$fileExtension';
+      final filePath = '${user.id}/profile_avatar.$fileExtension';
 
       await Supabase.instance.client.storage.from('avatars').upload(
             filePath,

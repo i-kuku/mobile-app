@@ -22,6 +22,7 @@ class _ProfilePageState extends State<ProfilePage> {
   String? phone;
   String? farmName;
   String? farmLocation;
+  String? avatarUrl;
   bool loading = true;
 
   @override
@@ -58,6 +59,7 @@ class _ProfilePageState extends State<ProfilePage> {
         farmName = farmResponse?['farm_name'] ?? 'No Farm';
         farmLocation = farmResponse?['farm_location'] ?? 'No Location';
         location = farmLocation;
+        avatarUrl=userResponse?['avatar_url'];
         loading = false;
       });
     } catch (e) {
@@ -68,6 +70,7 @@ class _ProfilePageState extends State<ProfilePage> {
         farmLocation = 'No Location';
         location = farmLocation;
         loading = false;
+        avatarUrl =null;
       });
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -110,7 +113,12 @@ class _ProfilePageState extends State<ProfilePage> {
                       CircleAvatar(
                         radius: 44,
                         backgroundColor: Colors.grey[300],
-                        child: Text(
+                        backgroundImage: (avatarUrl !=null && avatarUrl!.isNotEmpty)?
+                        NetworkImage(avatarUrl!)
+                        :null,
+                        child: (avatarUrl==null 
+                         || avatarUrl!.isEmpty)?
+                        Text(
                           name != null && name!.isNotEmpty
                               ? name![0].toUpperCase()
                               : 'O',
@@ -118,7 +126,8 @@ class _ProfilePageState extends State<ProfilePage> {
                             fontSize: 40,
                             color: Colors.black54,
                           ),
-                        ),
+                        )
+                        :null,
                       ),
                       const SizedBox(width: 16),
                       Column(
@@ -185,6 +194,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             farmLocation = result['location'] as String?;
                             location = farmLocation;
                             phone = result['phone'] as String?;
+                            avatarUrl=result['avatar_url'] as String?;
                           });
                         }
                       },
