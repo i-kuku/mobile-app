@@ -140,7 +140,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         backgroundColor: Colors.grey[300],
                         backgroundImage:
                             (avatarUrl != null && avatarUrl!.isNotEmpty)
-                            ? NetworkImage(avatarUrl!)
+                            ? NetworkImage('$avatarUrl?v=${DateTime.now().millisecondsSinceEpoch}')
                             : null,
                         child: (avatarUrl == null || avatarUrl!.isEmpty)
                             ? Text(

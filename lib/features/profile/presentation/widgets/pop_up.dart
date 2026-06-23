@@ -61,9 +61,10 @@ class PopUp extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 OutlinedButton(
-                  onPressed: onMainAction ?? () => context.pop(),
+                  onPressed: onMainAction ?? () => context.pop(),        
                   style: OutlinedButton.styleFrom(
                     side: BorderSide(color: CustomColors.secondary),
+                    fixedSize: const Size(100, 50),
                     padding: EdgeInsets.all(12),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -80,6 +81,7 @@ class PopUp extends StatelessWidget {
                   onPressed: onsecondaryAction ?? () {},
                   style: ElevatedButton.styleFrom(
                     backgroundColor: CustomColors.primary,
+                    fixedSize: const Size(100, 50),
                     padding: EdgeInsets.all(12),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
@@ -90,7 +92,7 @@ class PopUp extends StatelessWidget {
                     secondaryButtonText,
                     style: Theme.of(
                       context,
-                    ).textTheme.bodyMedium!.copyWith(color:Colors.white),
+                    ).textTheme.bodyMedium!.copyWith(color:Colors.white,fontSize: 16),
                   ),
                 ),
               ],
