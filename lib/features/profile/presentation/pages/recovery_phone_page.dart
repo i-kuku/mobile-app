@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ikuku/theme/app_theme.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class RecoveryPhonePage extends StatefulWidget {
   const RecoveryPhonePage({super.key});
@@ -16,6 +17,13 @@ class _RecoveryPhonePageState extends State<RecoveryPhonePage> {
 
   String _recoveryNumber1 = '---';
   String? _recoveryNumber2;
+  bool isloading=false;
+
+  @override
+  void initState(){
+    super.initState();
+    _loadRecoveryNumbers();
+  }
 
   @override
   void dispose() {
@@ -23,22 +31,79 @@ class _RecoveryPhonePageState extends State<RecoveryPhonePage> {
     super.dispose();
   }
 
-  void _handleInstantSave() {
+ Future <void> _loadRecoveryNumbers() async{
+  setState(() =>isloading=false);
+
+  try{
+    final user = Supabase.instance.client.auth.currentUser;
+    if(user== null) return;
+
+    final data = await Supabase.instance.client
+    .from('users')
+    .select('recovery_phone_1, recovery_phone_2')
+    .eq('id','user.id')
+    .maybeSingle();
+
+    if (data!= null && mounted){
+      setState(() {
+        _recoveryNumber1 =data['recovery_number_1'] ??'___';
+        _recoveryNumber2 = data['recovery_number_2'];
+      });
+    }
+  }catch(e){
+    debugPrint('Error loading recovery numbers: $e');
+  }finally{
+    if(mounted) setState(() => isloading=false);
+  }
+ }
+ Future<void> _handleInstantSave() async{
     if (!_formKey.currentState!.validate()) return;
-    setState(() {
+    
       final newNumber = _phoneController.text.trim();
+      if(newNumber.isEmpty) return;
+       
+      //  setState(() => _isloading = true);
+
+      try{
+        final user=Supabase.instance.client.auth.currentUser;
+        if(user == null) throw Exception('User not authenticated');
+      
+       String targetNum1 = _recoveryNumber1;
+       String? targetNum2 = _recoveryNumber2;
 
       if (_recoveryNumber1 == '---' || _recoveryNumber1.isEmpty) {
-        _recoveryNumber1 = newNumber;
+        targetNum1 = newNumber;
       } else {
-        _recoveryNumber2 = newNumber;
+       targetNum2 = newNumber;
       }
-      _phoneController.clear();
-    });
+
+      await Supabase.instance.client.from('users').upsert({
+        'id':user.id,
+        'recovery_phone_1':targetNum1,
+        'recovery_phone_2':targetNum2,
+      });
+      if(mounted){
+        setState((){
+          _recoveryNumber1 = targetNum1;
+          _recoveryNumber2 = targetNum2;
+          _phoneController.clear();
+        });
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Recovery phone number added successfully')),
     );
   }
+}catch (e) {
+      debugPrint('Error saving recovery phone: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to save number: $e')),
+        );
+      }
+    } finally {
+      // if (mounted) setState(() => _isloading = false);
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {

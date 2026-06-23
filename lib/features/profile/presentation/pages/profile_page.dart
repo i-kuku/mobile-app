@@ -44,7 +44,7 @@ class _ProfilePageState extends State<ProfilePage> {
           .select()
           .eq('id', user.id)
           .maybeSingle();
-      
+
       final farmResponse = await Supabase.instance.client
           .from('farms')
           .select()
@@ -59,7 +59,7 @@ class _ProfilePageState extends State<ProfilePage> {
         farmName = farmResponse?['farm_name'] ?? 'No Farm';
         farmLocation = farmResponse?['farm_location'] ?? 'No Location';
         location = farmLocation;
-        avatarUrl=userResponse?['avatar_url'];
+        avatarUrl = userResponse?['avatar_url'];
         loading = false;
       });
     } catch (e) {
@@ -70,7 +70,7 @@ class _ProfilePageState extends State<ProfilePage> {
         farmLocation = 'No Location';
         location = farmLocation;
         loading = false;
-        avatarUrl =null;
+        avatarUrl = null;
       });
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -85,6 +85,32 @@ class _ProfilePageState extends State<ProfilePage> {
     if (mounted) context.go('/sign-in');
   }
 
+  Future<void> _deleteaccount() async {
+    final user = Supabase.instance.client.auth.currentUser;
+    if (user == null) return;
+
+    try {
+      await Supabase.instance.client.from('users').select().eq('id', user.id);
+
+      await Supabase.instance.client.auth.signOut();
+
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Account successfully deleted')));
+        context.go('/sign-in');
+      }
+    } catch (e) {
+      setState(() => loading = false);
+      debugPrint('Account deletion failed: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed to delete account: $e')));
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -95,7 +121,6 @@ class _ProfilePageState extends State<ProfilePage> {
             color: CustomColors.primary,
             fontWeight: FontWeight.bold,
             fontSize: 20,
-            
           ),
         ),
         centerTitle: true,
@@ -113,21 +138,21 @@ class _ProfilePageState extends State<ProfilePage> {
                       CircleAvatar(
                         radius: 44,
                         backgroundColor: Colors.grey[300],
-                        backgroundImage: (avatarUrl !=null && avatarUrl!.isNotEmpty)?
-                        NetworkImage(avatarUrl!)
-                        :null,
-                        child: (avatarUrl==null 
-                         || avatarUrl!.isEmpty)?
-                        Text(
-                          name != null && name!.isNotEmpty
-                              ? name![0].toUpperCase()
-                              : 'O',
-                          style: const TextStyle(
-                            fontSize: 40,
-                            color: Colors.black54,
-                          ),
-                        )
-                        :null,
+                        backgroundImage:
+                            (avatarUrl != null && avatarUrl!.isNotEmpty)
+                            ? NetworkImage(avatarUrl!)
+                            : null,
+                        child: (avatarUrl == null || avatarUrl!.isEmpty)
+                            ? Text(
+                                name != null && name!.isNotEmpty
+                                    ? name![0].toUpperCase()
+                                    : 'O',
+                                style: const TextStyle(
+                                  fontSize: 40,
+                                  color: Colors.black54,
+                                ),
+                              )
+                            : null,
                       ),
                       const SizedBox(width: 16),
                       Column(
@@ -194,12 +219,15 @@ class _ProfilePageState extends State<ProfilePage> {
                             farmLocation = result['location'] as String?;
                             location = farmLocation;
                             phone = result['phone'] as String?;
-                            avatarUrl=result['avatar_url'] as String?;
+                            avatarUrl = result['avatar_url'] as String?;
                           });
                         }
                       },
-                      child: Text('edit_profile'.tr(),
-                      style: Theme.of(context).textTheme.titleLarge!.copyWith(fontSize: 16),
+                      child: Text(
+                        'edit_profile'.tr(),
+                        style: Theme.of(
+                          context,
+                        ).textTheme.titleLarge!.copyWith(fontSize: 16),
                       ),
                     ),
                   ),
@@ -259,7 +287,10 @@ class _ProfilePageState extends State<ProfilePage> {
                           onMainAction: () {
                             context.pop(context);
                           },
-                          onsecondaryAction: () {},
+                          onsecondaryAction: () async {
+                            context.pop(context);
+                            await _deleteaccount();
+                          },
                           icon: SvgPicture.asset(
                             'assets/icons/remove-alert.svg',
                             height: 150,
