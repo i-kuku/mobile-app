@@ -7,7 +7,7 @@ class LocalAiService {
   LocalAiService._internal();
 
   bool _isModelReady = false;
-  dynamic _activeChat;
+  dynamic _modelInstance;
   bool get isModelReady => _isModelReady;
   Future<void> initLocalAi() async {
     if (_isModelReady) return;
@@ -22,7 +22,7 @@ class LocalAiService {
         maxTokens: 512,
         preferredBackend: PreferredBackend.gpu,
       );
-      _activeChat = await modelInstance.createChat();
+      _modelInstance = await modelInstance.createChat();
       _isModelReady = true;
       debugPrint("Local AI model and engine session successfully initialized.");
     } catch (e) {
@@ -30,19 +30,34 @@ class LocalAiService {
       _isModelReady = false;
     }
   }
-
-  Future<String> summarizeArticle(String title, String content) async {
-    if (!_isModelReady || _activeChat == null) {
-      return "AI  Model is loading offline data...";
+    Future<String> summarizeArticle(String title, String content) async {
+    if (!_isModelReady || _modelInstance == null) {
+      return "AI Model is loading offline data...";
     }
     try {
+      final chat = await _modelInstance.createChat();
       final prompt =
           "You are a poultry expert assistant. Summarize this African poultry news article in 2 bullet points.\nTitle: $title\nContent: $content";
-      await _activeChat.addQueryChunk(Message.text(text: prompt, isUser: true));
-      final response = await _activeChat.sendMessage();
+      await chat.addQueryChunk(Message.text(text: prompt, isUser: true));
+      final response = await chat.sendMessage();
       return response ?? "could not generate summary.";
     } catch (e) {
       return "Error processing summary:$e";
     }
   }
+
+  // Future<String> summarizeArticle(String title, String content) async {
+  //   if (!_isModelReady || _activeChat == null) {
+  //     return "AI  Model is loading offline data...";
+  //   }
+  //   try {
+  //     final prompt =
+  //         "You are a poultry expert assistant. Summarize this African poultry news article in 2 bullet points.\nTitle: $title\nContent: $content";
+  //     await _activeChat.addQueryChunk(Message.text(text: prompt, isUser: true));
+  //     final response = await _activeChat.sendMessage();
+  //     return response ?? "could not generate summary.";
+  //   } catch (e) {
+  //     return "Error processing summary:$e";
+  //   }
+  // }
 }

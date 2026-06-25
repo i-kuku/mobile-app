@@ -23,6 +23,12 @@ class _NewsArticleCardState extends State<NewsArticleCard> {
   String _summaryText = "";
   bool _isAiThinking = false;
 
+  @override
+  void initState() {
+    super.initState();
+    LocalAiService().initLocalAi();
+  }
+
   void _getOfflineSummary() async {
     setState(() {
       _isAiThinking = true;

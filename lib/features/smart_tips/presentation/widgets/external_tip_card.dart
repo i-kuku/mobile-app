@@ -61,7 +61,7 @@ class ExternalTipCard extends StatelessWidget {
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                        content: Text('No app found to open link'),
+                        content: Text('Successfullly opened link'),
                       ),
                     );
                   }
