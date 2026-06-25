@@ -1,7 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:ikuku/features/batches/presentation/widgets/pop_up.dart';
+import 'package:ikuku/features/batches/presentation/Widgets/pop_up.dart';
 import 'package:ikuku/features/batches/provider/batch_provider.dart';
 import 'package:ikuku/theme/app_theme.dart';
 import 'package:provider/provider.dart';
