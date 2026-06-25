@@ -456,5 +456,9 @@
   "deletion_message":"Je, una uhakika unataka kufuta akaunti yako?",
   "delete":"Futa",
   "add_recovery_number":"Ongeza nambari ya kurejeshea",
-  "recovery_phone_numbers":"Nambari za kurejeshea"
+  "recovery_phone_numbers":"Nambari za kurejeshea",
+  "account_deletion_title":"Weka kodi kudhibiti ufungaji wa akaunti",
+  "otp_message_text":"kodi yenye nambari sita imetumwa kwa",
+  "didn't_get_the_code":"hujapata kodi? ",
+  "delete account":"Futa akaunti"
 }

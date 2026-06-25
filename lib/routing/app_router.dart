@@ -15,6 +15,7 @@ import 'package:ikuku/features/onboarding/create_farm_page.dart';
 import 'package:ikuku/features/onboarding/onboarding_page.dart';
 import 'package:ikuku/features/onboarding/recovery_setup_page.dart';
 import 'package:ikuku/features/profile/presentation/pages/edit_profile_page.dart';
+import 'package:ikuku/features/profile/presentation/pages/otp_verification_page.dart';
 import 'package:ikuku/features/profile/presentation/pages/profile_page.dart';
 import 'package:ikuku/features/profile/presentation/pages/recovery_phone_page.dart';
 import 'package:ikuku/features/settings/languages/presentation/language_selection_page.dart';
@@ -22,6 +23,7 @@ import 'package:ikuku/features/smart_tips/presentation/screens/tip_detail_page.d
 // import 'package:ikuku/features/shop/presentation/pages/my_shop_page.dart';
 import 'package:ikuku/features/smart_tips/presentation/screens/tips_hub.dart';
 import 'package:ikuku/features/shop/presentation/pages/my_shop_page.dart';
+// import 'package:pdf/widgets.dart' hide Text, Center;
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../features/splash/splash_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -109,6 +111,10 @@ class AppRouter {
                     path: 'recovery_phone_page',
                     builder: (context, state) => const RecoveryPhonePage(),
                   ),
+                  GoRoute(
+                    path: 'otp_verification_page',
+                    builder: (context,state) => OtpVerificationPage(),
+                    ),
                 ],
               ),
             ],

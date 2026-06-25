@@ -454,5 +454,8 @@
   "deletion_message":"Are you sure you want to delete your account?",
   "delete":"Delete",
   "add_recovery_number":"Add recovery number",
-  "recovery_phone_numbers":"Recovery phone numbers"
+  "recovery_phone_numbers":"Recovery phone numbers",
+  "account_deletion_title":"Enter code to confirm account deletion",
+  "otp_message_text":"A 6-digit code has been sent to",
+  "didn't_get_the_code":"Didn't get the code? "
 }

@@ -85,29 +85,28 @@ class _ProfilePageState extends State<ProfilePage> {
     if (mounted) context.go('/sign-in');
   }
 
-  Future<void> _deleteaccount() async {
+  Future<void> _initiateAccountDeletion() async {
     final user = Supabase.instance.client.auth.currentUser;
-    if (user == null) return;
+    if (user == null || user.email == null) return;
 
     try {
-      await Supabase.instance.client.from('users').select().eq('id', user.id);
-
-      await Supabase.instance.client.auth.signOut();
+      await Supabase.instance.client.auth.signInWithOtp(
+        email: user.email!,
+        shouldCreateUser: false,
+      );
 
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Account successfully deleted')));
-        context.go('/sign-in');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Verification code sent to your email.')),
+        );
+
+        context.push('/profile/otp_verification_page');
       }
     } catch (e) {
-      setState(() => loading = false);
-      debugPrint('Account deletion failed: $e');
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Failed to delete account: $e')));
-      }
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to request verification code: $e')),
+      );
     }
   }
 
@@ -140,7 +139,9 @@ class _ProfilePageState extends State<ProfilePage> {
                         backgroundColor: Colors.grey[300],
                         backgroundImage:
                             (avatarUrl != null && avatarUrl!.isNotEmpty)
-                            ? NetworkImage('$avatarUrl?v=${DateTime.now().millisecondsSinceEpoch}')
+                            ? NetworkImage(
+                                '$avatarUrl?v=${DateTime.now().millisecondsSinceEpoch}',
+                              )
                             : null,
                         child: (avatarUrl == null || avatarUrl!.isEmpty)
                             ? Text(
@@ -288,8 +289,8 @@ class _ProfilePageState extends State<ProfilePage> {
                             context.pop(context);
                           },
                           onsecondaryAction: () async {
-                            context.pop(context);
-                            await _deleteaccount();
+                            context.pop();
+                            await _initiateAccountDeletion();
                           },
                           icon: SvgPicture.asset(
                             'assets/icons/remove-alert.svg',
