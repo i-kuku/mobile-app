@@ -26,12 +26,9 @@ void main() async {
   await Hive.openBox<String>('offline_reports');
   await Hive.openBox<String>('sync_status');
   await Supabase.initialize(
-    url: 'https://vrhujilkhtedvkhybtdx.supabase.co',
-    anonKey:
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZyaHVqaWxraHRlZHZraHlidGR4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE4MDY2ODEsImV4cCI6MjA2NzM4MjY4MX0.NLxRGmM4F6ckDcvbGW6SFvLKEd9Dn-8bieInZO6aPYs',
+  url:'https://ubzmplzgomzpczaspuyu.supabase.co' ,
+  anonKey:'sb_publishable_DuH_Ckn1wyGVRa9l-BN9gw_DCoSqQYC',
   );
-
-  // Fix database constraints on app startup
   try {
     await SupabaseService().fixDatabaseConstraints();
   } catch (e) {
@@ -55,7 +52,7 @@ void main() async {
         ChangeNotifierProvider(create: (context) => LanguageProvider()),
         ChangeNotifierProvider(create: (context) => BatchProvider()),
         ChangeNotifierProvider(create: (context) => AuthProvider()),
-        ChangeNotifierProvider(create: (context) =>InventoryProvider()),
+        ChangeNotifierProvider(create: (context) => InventoryProvider()),
         ChangeNotifierProvider(create: (context) => AnalyticsProvider()),
         ChangeNotifierProvider(create: (context) => TutorialProvider()),
       ],

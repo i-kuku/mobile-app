@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:icons_plus/icons_plus.dart';
 import 'package:ikuku/shared/utils/validators.dart';
 import 'package:ikuku/theme/app_theme.dart';
 
@@ -148,8 +147,8 @@ class TextFieldWidget extends StatelessWidget {
                     onTap: toggleVisibility,
                     child: Icon(
                       obscureText.value
-                          ? Iconsax.eye_outline
-                          : Iconsax.eye_slash_outline,
+                          ? Icons.visibility_outlined
+                          : Icons.visibility_off_outlined,
                       color: CustomColors.primary,
                     ),
                   )

@@ -179,7 +179,13 @@ class _CreateBatchPageState extends State<CreateBatchPage> {
                 ),
                 SizedBox(height: 48),
                 FeatureButton(label: "create_new_batch".tr(), 
-                onTap: _saveBatch
+                onTap: _saveBatch, style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                    color: CustomColors.primary,
+                    fontSize: 20,
+                    fontFamily: 'Roboto',
+                    fontWeight: FontWeight.bold,
+                    decoration: TextDecoration.underline,
+                  ),
                 ),
               ],
             ),

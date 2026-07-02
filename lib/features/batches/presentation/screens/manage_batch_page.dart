@@ -4,8 +4,9 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ikuku/features/batches/model/chicken_batch_model.dart';
 import 'package:ikuku/features/batches/presentation/Widgets/batch_card.dart';
-import 'package:ikuku/features/batches/presentation/widgets/pop_up.dart';
+import 'package:ikuku/features/batches/presentation/Widgets/pop_up.dart';
 import 'package:ikuku/features/batches/provider/batch_provider.dart';
+import 'package:ikuku/shared/widgets/feature_button.dart';
 import 'package:ikuku/theme/app_theme.dart';
 import 'package:provider/provider.dart';
 
@@ -163,12 +164,11 @@ class ManageBatchPage extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 16),
-              TextButton(
-                onPressed: () {
+              FeatureButton(
+                onTap: () {
                   context.push('/create_batch_page');
                 },
-                child: Text(
-                  "create_a_batch".tr(),
+                label:"create_a_batch".tr(),
                   style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                     color: CustomColors.primary,
                     fontSize: 20,
@@ -177,12 +177,12 @@ class ManageBatchPage extends StatelessWidget {
                     decoration: TextDecoration.underline,
                   ),
                 ),
-              ),
             ],
-          ),
+              ),
         ),
-      ],
-    );
+        
+      ]
+          );
   }
 
   Widget _buildActiveState(BuildContext context, BatchProvider provider) {
