@@ -50,7 +50,7 @@ class BatchCard extends StatelessWidget {
                   Row(
                     children: [
                       Text(
-                        "${batch.initialNumberOfBirds} ${batch.typeOfBird}",
+                        "${batch.initialCount} ${batch.typeOfBird}",
                         style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                           color: CustomColors.textDisabled,
                           fontSize: 20,

@@ -86,12 +86,13 @@ class ConfirmBatchPage extends StatelessWidget {
                   SizedBox(width: 58),
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: () {
-                        Provider.of<BatchProvider>(context, listen: false).addBatch(
+                      onPressed: () async{
+                        try{
+                        await Provider.of<BatchProvider>(context, listen: false).addBatch(
                           name: batchData['name'],
                           typeOfBird: batchData['typeOfBird'],
-                          initialCount: int.tryParse(batchData['initialCount']) ?? 0,
-                          age: int.tryParse(batchData['age']) ?? 0,
+                          initialCount: int.tryParse(batchData['initialCount'].toString()) ?? 0,
+                          age: int.tryParse(batchData['age'].toString())?? 0,
                           ageUnit: batchData['ageUnit'],
                         );
                         showDialog(
@@ -115,6 +116,13 @@ class ConfirmBatchPage extends StatelessWidget {
                             context.go('/batches');
                           }
                         });
+                      }catch(e){
+                        if(context.mounted){
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text("Failed to save batch to database: $e"))
+                          );
+                        }
+                      }
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: CustomColors.primary,

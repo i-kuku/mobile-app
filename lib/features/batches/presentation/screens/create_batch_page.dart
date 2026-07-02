@@ -30,7 +30,7 @@ class _CreateBatchPageState extends State<CreateBatchPage> {
   }
 
   void _saveBatch() {
-    if (_formKey.currentState!.validate()) {
+    if (_formKey.currentState!.validate()){
       final batchData = {
         'name': _nameController.text,
         'typeOfBird': _selectedType,
@@ -179,13 +179,7 @@ class _CreateBatchPageState extends State<CreateBatchPage> {
                 ),
                 SizedBox(height: 48),
                 FeatureButton(label: "create_new_batch".tr(), 
-                onTap: _saveBatch, style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                    color: CustomColors.primary,
-                    fontSize: 20,
-                    fontFamily: 'Roboto',
-                    fontWeight: FontWeight.bold,
-                    decoration: TextDecoration.underline,
-                  ),
+                onTap: _saveBatch, 
                 ),
               ],
             ),
