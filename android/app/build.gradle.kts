@@ -37,7 +37,8 @@ android {
 
    buildTypes {
     getByName("release") {
-        signingConfig = signingConfigs.getByName("release")
+       // Use the built-in debug key so the CI runner can sign it without a real keystore file
+        signingConfig = signingConfigs.getByName("debug")
         isMinifyEnabled = true
         isShrinkResources = true
         proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
