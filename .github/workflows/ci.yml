@@ -9,7 +9,7 @@ on:
 
 jobs:
   flutter_test:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     name: Run Flutter Tests and analyze
     steps:
       - uses: actions/checkout@v4
@@ -23,7 +23,7 @@ jobs:
   build_apk:
     name: Build Release APK
     needs: [ flutter_test ]
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v2
@@ -40,7 +40,7 @@ jobs:
   build_appbundle:
     name: Build Android App Bundle
     needs: [ flutter_test ]
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v2
