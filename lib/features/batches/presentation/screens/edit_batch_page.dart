@@ -51,7 +51,7 @@ class _EditBatchPageState extends State<EditBatchPage> {
   bool _isUpdating = false;
 
     Future <void> _handleUpdate()async{
-    if (_formKey.currentState!.validate()) return;
+    if (!_formKey.currentState!.validate()) return;
 
     final batchId = widget.batchData['id'];
     if(batchId == null){
@@ -80,6 +80,7 @@ class _EditBatchPageState extends State<EditBatchPage> {
     }
 
       }catch(e){
+         if(!context.mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content:Text('Failed to update batch: ${e.toString()}'))
         );

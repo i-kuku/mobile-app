@@ -95,6 +95,7 @@ class ConfirmBatchPage extends StatelessWidget {
                           age: int.tryParse(batchData['age'].toString())?? 0,
                           ageUnit: batchData['ageUnit'],
                         );
+                         if(!context.mounted)return;
                         showDialog(
                           context: context,
                           barrierDismissible: false,

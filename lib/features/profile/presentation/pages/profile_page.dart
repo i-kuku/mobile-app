@@ -140,7 +140,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         backgroundImage:
                             (avatarUrl != null && avatarUrl!.isNotEmpty)
                             ? NetworkImage(
-                                '$avatarUrl?v=${DateTime.now().millisecondsSinceEpoch}',
+                                '$avatarUrl',
                               )
                             : null,
                         child: (avatarUrl == null || avatarUrl!.isEmpty)
@@ -261,7 +261,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             context.pop();
                           },
                           onsecondaryAction: () async {
-                            context.pop(context);
+                            context.pop();
                             await _logout();
                           },
                           icon: SvgPicture.asset(
@@ -286,7 +286,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           mainButtonText: 'cancel'.tr(),
                           secondaryButtonText: 'delete'.tr(),
                           onMainAction: () {
-                            context.pop(context);
+                            context.pop();
                           },
                           onsecondaryAction: () async {
                             context.pop();

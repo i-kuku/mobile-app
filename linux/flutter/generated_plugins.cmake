@@ -3,11 +3,8 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
-<<<<<<< HEAD
-  flutter_gemma
-=======
   file_selector_linux
->>>>>>> 9bb0a0f (finished the recovery phone page and fixed the router)
+  flutter_gemma
   gtk
   printing
   url_launcher_linux

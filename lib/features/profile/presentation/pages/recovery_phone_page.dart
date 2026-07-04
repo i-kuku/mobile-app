@@ -41,13 +41,13 @@ class _RecoveryPhonePageState extends State<RecoveryPhonePage> {
     final data = await Supabase.instance.client
     .from('users')
     .select('recovery_phone_1, recovery_phone_2')
-    .eq('id','user.id')
+    .eq('id',user)
     .maybeSingle();
 
     if (data!= null && mounted){
       setState(() {
-        _recoveryNumber1 =data['recovery_number_1'] ??'___';
-        _recoveryNumber2 = data['recovery_number_2'];
+        _recoveryNumber1 =data['recovery_phone_1'] ??'___';
+        _recoveryNumber2 = data['recovery_phone_2'];
       });
     }
   }catch(e){
