@@ -51,11 +51,13 @@ class _EditBatchPageState extends State<EditBatchPage> {
   bool _isUpdating = false;
 
     Future <void> _handleUpdate()async{
+      final messenger = ScaffoldMessenger.of(context);
+
     if (!_formKey.currentState!.validate()) return;
 
     final batchId = widget.batchData['id'];
     if(batchId == null){
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Missing_batch_id".tr())));
+     messenger.showSnackBar(SnackBar(content: Text("Missing_batch_id".tr())));
       return;
     }
     setState(()=> _isUpdating = true);
@@ -72,7 +74,7 @@ class _EditBatchPageState extends State<EditBatchPage> {
     );
 
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      messenger.showSnackBar(
         SnackBar(content: Text('batch_updated_successfully'.tr())),
       );
 
@@ -81,7 +83,7 @@ class _EditBatchPageState extends State<EditBatchPage> {
 
       }catch(e){
          if(!context.mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
+        messenger.showSnackBar(
           SnackBar(content:Text('Failed to update batch: ${e.toString()}'))
         );
       }finally{
