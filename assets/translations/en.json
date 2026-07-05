@@ -449,5 +449,13 @@
   "latest_Poultry_news_summary": "Stay updated with the latest poultry farming news and insights",
   "more_tips_from_trusted_African_poultry_farmers": "More tips from trusted African poultry farmers",
   "no_news_articles_available": "No news articles available",
-  "close_article": "Close Article"
+  "close_article": "Close Article",
+  "confirm_deletion":"Going for good?",
+  "deletion_message":"Are you sure you want to delete your account?",
+  "delete":"Delete",
+  "add_recovery_number":"Add recovery number",
+  "recovery_phone_numbers":"Recovery phone numbers",
+  "account_deletion_title":"Enter code to confirm account deletion",
+  "otp_message_text":"A 6-digit code has been sent to",
+  "didn't_get_the_code":"Didn't get the code? "
 }

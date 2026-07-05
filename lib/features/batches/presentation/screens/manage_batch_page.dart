@@ -10,9 +10,24 @@ import 'package:ikuku/shared/widgets/feature_button.dart';
 import 'package:ikuku/theme/app_theme.dart';
 import 'package:provider/provider.dart';
 
-class ManageBatchPage extends StatelessWidget {
+class ManageBatchPage extends StatefulWidget {
   const ManageBatchPage({super.key});
 
+  @override
+  State<ManageBatchPage> createState() => _ManageBatchPageState();
+}
+
+class _ManageBatchPageState extends State<ManageBatchPage> {
+
+@override
+
+void initState() {
+    super.initState();
+    // Fetch live entries from Supabase as soon as the user logs in/views the page
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<BatchProvider>(context, listen: false).fetchBatches();
+    });
+  }
   void _handleremovebatchsequence(BuildContext context, ChickenBatch batch) {
     showDialog(
       context: context,
@@ -35,30 +50,41 @@ class ManageBatchPage extends StatelessWidget {
     );
   }
 
-  void _showsuccessRemoved(BuildContext context, ChickenBatch batch) {
-    Provider.of<BatchProvider>(context, listen: false).removeBatch(batch.id);
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (dialogContext) {
-        Future.delayed(const Duration(seconds: 1), () {
-          if (dialogContext.mounted) {
-            Navigator.pop(dialogContext);
-          }
-        });
+  void _showsuccessRemoved(BuildContext context, ChickenBatch batch) async{
+    try {
+    await Provider.of<BatchProvider>(context, listen: false).removeBatch(batch.id);
 
-        return PopUp(
-          icon: Image.asset(
-            'assets/icons/tip-chicken.png',
-            height: 154,
-            width: 151,
-            fit: BoxFit.contain,
-          ),
-          batchName: batch.name,
-          messageAfter: " has_been_removed".tr(),
-        );
-      },
-    );
+    if (context.mounted) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (dialogContext) {
+          Future.delayed(const Duration(seconds: 1), () {
+            if (dialogContext.mounted) {
+              Navigator.pop(dialogContext);
+            }
+          });
+
+          return PopUp(
+            icon: Image.asset(
+              'assets/icons/tip-chicken.png',
+              height: 154,
+              width: 151,
+              fit: BoxFit.contain,
+            ),
+            batchName: batch.name,
+            messageAfter: " has_been_removed".tr(),
+          );
+        },
+      );
+    }
+  } catch (e) {
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Could not complete deletion request: $e')),
+      );
+    }
+  }
   }
 
   @override
@@ -69,7 +95,7 @@ class ManageBatchPage extends StatelessWidget {
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.black),
           onPressed: (){
-            context.pop();
+            context.go('/');
           },
         ),
         title: Text(
@@ -93,6 +119,7 @@ class ManageBatchPage extends StatelessWidget {
           child: Consumer<BatchProvider>(
             builder: (context, provider, child) {
               if (provider.batches.isEmpty) {
+                
                 return _buildEmptyState(context);
               } else {
                 return _buildActiveState(context, provider);
@@ -126,7 +153,7 @@ class ManageBatchPage extends StatelessWidget {
                 height: 50,
                 width: 49.03,
               ),
-              SizedBox(width: 10),
+              SizedBox(width: 5),
               Text(
                 "tip_batch_definition".tr(),
                 style: Theme.of(context).textTheme.titleMedium!.copyWith(
@@ -169,13 +196,6 @@ class ManageBatchPage extends StatelessWidget {
                   context.push('/create_batch_page');
                 },
                 label:"create_a_batch".tr(),
-                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                    color: CustomColors.primary,
-                    fontSize: 20,
-                    fontFamily: 'Roboto',
-                    fontWeight: FontWeight.bold,
-                    decoration: TextDecoration.underline,
-                  ),
                 ),
             ],
               ),
@@ -227,7 +247,7 @@ class ManageBatchPage extends StatelessWidget {
                     extra: {
                       'name': batch.name,
                       'typeOfBird': batch.typeOfBird,
-                      'initialCount': batch.initialNumberOfBirds.toString(),
+                      'initialCount': batch.initialCount.toString(),
                       'age': batch.age.toString(),
                       'ageUnit': batch.ageUnit,
                     },

@@ -451,5 +451,14 @@
   "latest_Poultry_news_summary": "Pata habari mpya na miongozo ya hivi punde kuhusu ufugaji wa kuku",
   "more_tips_from_trusted_African_poultry_farmers": "Mbinu zaidi kutoka kwa wafugaji wa kuku Waafrika wanaoaminika",
   "no_news_articles_available": "Hakuna makala za habari zinazopatikana",
-  "close_news": "Funga Habari"
+  "close_news": "Funga Habari",
+  "confirm_deletion":"Thibitisha ufutaji wa account",
+  "deletion_message":"Je, una uhakika unataka kufuta akaunti yako?",
+  "delete":"Futa",
+  "add_recovery_number":"Ongeza nambari ya kurejeshea",
+  "recovery_phone_numbers":"Nambari za kurejeshea",
+  "account_deletion_title":"Weka kodi kudhibiti ufungaji wa akaunti",
+  "otp_message_text":"kodi yenye nambari sita imetumwa kwa",
+  "didn't_get_the_code":"hujapata kodi? ",
+  "delete account":"Futa akaunti"
 }

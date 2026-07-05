@@ -1,8 +1,10 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:ikuku/features/batches/provider/batch_provider.dart';
 import 'package:ikuku/shared/widgets/feature_button.dart';
 import 'package:ikuku/theme/app_theme.dart';
+import 'package:provider/provider.dart';
 // import 'package:provider/provider.dart';
 
 class EditBatchPage extends StatefulWidget {
@@ -46,20 +48,49 @@ class _EditBatchPageState extends State<EditBatchPage> {
     _ageController.dispose();
     super.dispose();
   }
+  bool _isUpdating = false;
 
-  void _handleUpdate() {
-    if (_formKey.currentState!.validate()) {
-      final updatedData = {
-        'name': _nameController.text,
-        'typeOfBird': _selectedType,
-        'initialCount': _countController.text,
-        'age': _ageController.text,
-        'ageUnit': _selectedUnit,
-      };
+    Future <void> _handleUpdate()async{
+      final messenger = ScaffoldMessenger.of(context);
 
-      context.push('/confirm_batch_page', extra: updatedData);
+    if (!_formKey.currentState!.validate()) return;
+
+    final batchId = widget.batchData['id'];
+    if(batchId == null){
+     messenger.showSnackBar(SnackBar(content: Text("Missing_batch_id".tr())));
+      return;
     }
+    setState(()=> _isUpdating = true);
+
+      try{
+
+       await Provider.of<BatchProvider>(context, listen: false).updateBatch(
+      id: batchId,
+      name: _nameController.text.trim(),
+      typeOfBird: _selectedType ?? 'layer',
+      initialCount: int.tryParse(_countController.text) ?? 0,
+      age: int.tryParse(_ageController.text) ?? 0,
+      ageUnit: _selectedUnit ?? 'Days',
+    );
+
+    if (mounted) {
+      messenger.showSnackBar(
+        SnackBar(content: Text('batch_updated_successfully'.tr())),
+      );
+
+      context.pop(); 
+    }
+
+      }catch(e){
+         if(!context.mounted) return;
+        messenger.showSnackBar(
+          SnackBar(content:Text('Failed to update batch: ${e.toString()}'))
+        );
+      }finally{
+        if(mounted) setState(() => _isUpdating = false);
+      }
   }
+  
 
   @override
   Widget build(BuildContext context) {
@@ -322,13 +353,9 @@ class _EditBatchPageState extends State<EditBatchPage> {
                   ],
                 ),
                 SizedBox(height: 48),
-                FeatureButton(label: 'update'.tr(), onTap: _handleUpdate, style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                    color: CustomColors.primary,
-                    fontSize: 20,
-                    fontFamily: 'Roboto',
-                    fontWeight: FontWeight.bold,
-                    decoration: TextDecoration.underline,
-                  ),),
+                FeatureButton(
+                  label:_isUpdating ? 'updating...'.tr() : 'update'.tr(), 
+                  onTap: _handleUpdate),
               ],
             ),
           ),
