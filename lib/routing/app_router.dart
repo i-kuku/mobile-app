@@ -10,6 +10,7 @@ import 'package:ikuku/features/batches/presentation/screens/edit_batch_page.dart
 import 'package:ikuku/features/batches/presentation/screens/manage_batch_page.dart';
 import 'package:ikuku/features/auth/presentation/screens/auth_page.dart';
 import 'package:ikuku/features/dashboard/presentation/pages/dashboard.dart';
+import 'package:ikuku/features/farms%20report/screens/add_report_page.dart';
 import 'package:ikuku/features/home/presentation/home_page.dart';
 import 'package:ikuku/features/onboarding/create_farm_page.dart';
 import 'package:ikuku/features/onboarding/onboarding_page.dart';
@@ -47,9 +48,8 @@ class AppRouter {
       ),
       GoRoute(
         path: '/onboarding',
-        builder: (context, state) => OnboardingPage(
-          onFinish: () => context.go('/auth'),
-        ),
+        builder: (context, state) =>
+            OnboardingPage(onFinish: () => context.go('/auth')),
       ),
       GoRoute(path: '/auth', builder: (context, state) => const AuthPage()),
       GoRoute(
@@ -61,7 +61,8 @@ class AppRouter {
               context.go('/profile');
             } else {
               final prefs = await SharedPreferences.getInstance();
-              final onboardingComplete = prefs.getBool('onboarding_complete') ?? false;
+              final onboardingComplete =
+                  prefs.getBool('onboarding_complete') ?? false;
               final user = Supabase.instance.client.auth.currentUser;
               if (onboardingComplete && context.mounted) {
                 context.go(user != null ? '/batches' : '/auth');
@@ -85,7 +86,8 @@ class AppRouter {
             routes: [
               GoRoute(
                 path: '/',
-                builder: (BuildContext context, GoRouterState state) => const HomePage(),
+                builder: (BuildContext context, GoRouterState state) =>
+                    const HomePage(),
               ),
             ],
           ),
@@ -93,7 +95,7 @@ class AppRouter {
             routes: [
               GoRoute(
                 path: '/my-shop',
-                builder: (context, state) => const MyShopPage(),
+                builder: (context, state) => const AddReportPage(),
               ),
             ],
           ),
@@ -102,7 +104,8 @@ class AppRouter {
               GoRoute(
                 path: '/profile',
                 builder: (context, state) => const ProfilePage(),
-                routes: [ // FIXED: Nested profile sub-routes correctly with closing parentheses
+                routes: [
+                  // FIXED: Nested profile sub-routes correctly with closing parentheses
                   GoRoute(
                     path: 'edit_profile_page',
                     builder: (context, state) => const EditProfilePage(),
@@ -113,14 +116,14 @@ class AppRouter {
                   ),
                   GoRoute(
                     path: 'otp_verification_page',
-                    builder: (context,state) => OtpVerificationPage(),
-                    ),
+                    builder: (context, state) => OtpVerificationPage(),
+                  ),
                 ],
               ),
             ],
-          ), 
-        ], 
-      ), 
+          ),
+        ],
+      ),
 
       GoRoute(
         path: '/batches',
@@ -163,19 +166,21 @@ class AppRouter {
         ],
       ),
       GoRoute(
-  path: '/smart-tips',
-  builder: (context, state) => const TipsHub(),
-  routes: [
-    GoRoute(
-      path: 'tip_detail', 
-      builder: (context, state) {
-        final rawData = state.extra;
-        final selectedBlogData = rawData is Map<String, String> ? rawData : <String, String>{};
-        return TipDetailPage(blogDataMap: selectedBlogData);
-      },
-    ),
-  ],
-),
+        path: '/smart-tips',
+        builder: (context, state) => const TipsHub(),
+        routes: [
+          GoRoute(
+            path: 'tip_detail',
+            builder: (context, state) {
+              final rawData = state.extra;
+              final selectedBlogData = rawData is Map<String, String>
+                  ? rawData
+                  : <String, String>{};
+              return TipDetailPage(blogDataMap: selectedBlogData);
+            },
+          ),
+        ],
+      ),
       // GoRoute(
       //   path: '/records',
       //   builder: (context, state) => const RecordsPage(),
