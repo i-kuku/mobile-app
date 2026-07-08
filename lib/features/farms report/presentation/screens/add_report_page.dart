@@ -39,7 +39,7 @@ class _AddReportPageState extends State<AddReportPage> {
             child: FeatureButton(
               label: 'add_farm_report'.tr(),
               onTap: () {
-                context.push('/add-report-form');
+                context.push('/report-entry');
               },
               icon: Icons.add,
             ),

@@ -5,14 +5,10 @@ import 'package:ikuku/theme/app_theme.dart';
 
 class BatchCard extends StatelessWidget {
   final ChickenBatch batch;
-  final VoidCallback onEdit;
-  final VoidCallback onDelete;
 
   const BatchCard({
     super.key,
     required this.batch,
-    required this.onEdit,
-    required this.onDelete,
   });
 
   @override
@@ -70,52 +66,8 @@ class BatchCard extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(width: 24),
-          Padding(
-            padding: EdgeInsets.fromLTRB(16, 8, 16, 8),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                _buildActionButton(
-                  icon: Icons.edit,
-                  label: "Edit".tr(),
-                  color: Colors.orange,
-                  onTap: onEdit,
-                ),
-                const SizedBox(height: 12),
-                _buildActionButton(
-                  icon: Icons.delete_outline,
-                  label: "Remove".tr(),
-                  color: Colors.red,
-                  onTap: onDelete,
-                ),
-              ],
-            ),
-          ),
         ],
-      ),
+      )
     );
   }
-}
-
-Widget _buildActionButton({
-  required IconData icon,
-  required String label,
-  required Color color,
-  required VoidCallback onTap,
-}) {
-  return InkWell(
-    onTap: onTap,
-    child: Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(icon, size: 16, color: color),
-        const SizedBox(width: 4),
-        Text(
-          label,
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
-        ),
-      ],
-    ),
-  );
 }

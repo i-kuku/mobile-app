@@ -10,7 +10,8 @@ import 'package:ikuku/features/batches/presentation/screens/edit_batch_page.dart
 import 'package:ikuku/features/batches/presentation/screens/manage_batch_page.dart';
 import 'package:ikuku/features/auth/presentation/screens/auth_page.dart';
 import 'package:ikuku/features/dashboard/presentation/pages/dashboard.dart';
-import 'package:ikuku/features/farms%20report/screens/add_report_page.dart';
+import 'package:ikuku/features/farms%20report/presentation/screens/add_report_page.dart';
+import 'package:ikuku/features/farms%20report/presentation/screens/batch_selection_page.dart';
 import 'package:ikuku/features/home/presentation/home_page.dart';
 import 'package:ikuku/features/onboarding/create_farm_page.dart';
 import 'package:ikuku/features/onboarding/onboarding_page.dart';
@@ -20,11 +21,9 @@ import 'package:ikuku/features/profile/presentation/pages/otp_verification_page.
 import 'package:ikuku/features/profile/presentation/pages/profile_page.dart';
 import 'package:ikuku/features/profile/presentation/pages/recovery_phone_page.dart';
 import 'package:ikuku/features/settings/languages/presentation/language_selection_page.dart';
-import 'package:ikuku/features/smart_tips/presentation/screens/tip_detail_page.dart';
-// import 'package:ikuku/features/shop/presentation/pages/my_shop_page.dart';
-import 'package:ikuku/features/smart_tips/presentation/screens/tips_hub.dart';
 import 'package:ikuku/features/shop/presentation/pages/my_shop_page.dart';
-// import 'package:pdf/widgets.dart' hide Text, Center;
+import 'package:ikuku/features/smart_tips/presentation/screens/tip_detail_page.dart';
+import 'package:ikuku/features/smart_tips/presentation/screens/tips_hub.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../features/splash/splash_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -95,7 +94,7 @@ class AppRouter {
             routes: [
               GoRoute(
                 path: '/my-shop',
-                builder: (context, state) => const AddReportPage(),
+                builder: (context, state) => const MyShopPage(),
               ),
             ],
           ),
@@ -185,18 +184,18 @@ class AppRouter {
       //   path: '/records',
       //   builder: (context, state) => const RecordsPage(),
       // ),
-      // GoRoute(
-      //   path: '/reports',
-      //   builder: (context, state) => const ReportsPage(),
-      // ),
+      GoRoute(
+        path: '/reports',
+        builder: (context, state) => const AddReportPage(),
+      ),
       // GoRoute(
       //   path: '/farm-summary',
       //   builder: (context, state) => const FarmSummaryPage(),
       // ),
-      // GoRoute(
-      //   path: '/report-entry',
-      //   builder: (context, state) => const FarmReportEntryPage(),
-      // ),
+      GoRoute(
+        path: '/report-entry',
+        builder: (context, state) => const BatchSelectionPage(),
+      ),
       // GoRoute(
       //   path: '/all-reports',
       //   builder: (context, state) => const AllReportsPage(),

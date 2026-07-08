@@ -23,7 +23,6 @@ class _ManageBatchPageState extends State<ManageBatchPage> {
 
 void initState() {
     super.initState();
-    // Fetch live entries from Supabase as soon as the user logs in/views the page
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<BatchProvider>(context, listen: false).fetchBatches();
     });
