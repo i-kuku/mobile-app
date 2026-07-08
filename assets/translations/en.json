@@ -450,5 +450,10 @@
     "didn't_get_the_code": "Didn't get the code? ",
     "my_farms_report": "My Farm Report",
     "select_batch_message":"Select the batch you are reporting for",
-    "farm_reports_entry":"Farm Reports Entry"
+    "farm_reports_entry":"Farm Reports Entry",
+    "age":"Age",
+    "batch_age":"Batch Age",
+    "choose_date":"Choose the date for your farm report",
+    "select_report_date":"Select Report Date",
+    "report_date":"Report Date"
   }

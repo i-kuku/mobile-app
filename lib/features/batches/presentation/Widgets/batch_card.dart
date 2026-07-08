@@ -18,8 +18,6 @@ class BatchCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      // height: 100,
-      width: 100,
       margin: EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -31,7 +29,7 @@ class BatchCard extends StatelessWidget {
         children: [
           Expanded(
             child: Container(
-              constraints: const BoxConstraints(minHeight: 90),
+              constraints: const BoxConstraints(minHeight: 80),
               padding: EdgeInsets.fromLTRB(16, 8, 16, 8),
               decoration: BoxDecoration(borderRadius: BorderRadius.circular(4)),
               child: Column(
@@ -46,21 +44,27 @@ class BatchCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 10),
+                  Text(
+                        "${"bird_type".tr()}: ${batch.typeOfBird}",
+                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                          color: Colors.grey,
+                          fontSize: 16,
+                        ),
+                      ),
                   Row(
                     children: [
                       Text(
-                        "${batch.initialCount} ${batch.typeOfBird}",
+                        "${"chicken".tr()}: ${batch.initialCount}",
                         style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                          color: CustomColors.textDisabled,
-                          fontSize: 20,
+                          color: Colors.grey,
+                          fontSize: 16,
                         ),
                       ),
-                      const SizedBox(width: 25),
                       Text(
-                        "${batch.age} ${batch.ageUnit} ${"old".tr()}",
+                        ", ${"age".tr()}: ${batch.age} ${batch.ageUnit} ",
                         style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                          color: CustomColors.textDisabled,
-                          fontSize: 20,
+                          color: Colors.grey,
+                          fontSize: 16,
                         ),
                       ),
                     ],

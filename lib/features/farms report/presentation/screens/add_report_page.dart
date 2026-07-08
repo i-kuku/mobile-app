@@ -45,30 +45,33 @@ class _AddReportPageState extends State<AddReportPage> {
             ),
           ),
           SizedBox(height: 2),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'previous_records'.tr(),
-                style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                  color: CustomColors.text,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              SizedBox(width: 8),
-              TextButton.icon(
-                onPressed: () {},
-                icon: Icon(Icons.list_alt),
-                label: Text(
-                  'see_all_reports'.tr(),
+          Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'previous_records'.tr(),
                   style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                    color: CustomColors.primary,
-                    fontSize: 14,
+                    color: CustomColors.text,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-              ),
-            ],
+                SizedBox(width: 16),
+                TextButton.icon(
+                  onPressed: () {},
+                  icon: Icon(Icons.list_alt),
+                  label: Text(
+                    'see_all_reports'.tr(),
+                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                      color: CustomColors.primary,
+                      fontSize: 20,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
