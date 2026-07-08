@@ -130,7 +130,7 @@ class _CreateBatchPageState extends State<CreateBatchPage> {
                       "type_of_bird".tr(),
                       DropdownButtonFormField<String>(
                         initialValue: _selectedType,
-                        items: ["layer", "broiler"].map((type) {
+                        items: ["layer", "broiler","kienyeji"].map((type) {
                           return DropdownMenuItem(
                             value: type,
                             child: Text(type.tr()),
