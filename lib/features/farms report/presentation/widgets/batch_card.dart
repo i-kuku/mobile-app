@@ -5,13 +5,13 @@ import 'package:ikuku/theme/app_theme.dart';
 class BatchCard extends StatelessWidget {
   final ChickenBatch batch;
   final bool isSelected;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
   final Color birdTypeColor;
 
   const BatchCard({
     super.key,
     required this.batch,
-    required this.onTap,
+    this.onTap,
     required this.birdTypeColor,
     required this.isSelected,
   });
