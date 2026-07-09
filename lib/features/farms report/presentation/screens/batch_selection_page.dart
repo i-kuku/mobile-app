@@ -2,7 +2,8 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ikuku/features/batches/model/chicken_batch_model.dart';
-import 'package:ikuku/features/farms%20report/widgets/batch_card.dart';
+import 'package:ikuku/features/farms%20report/presentation/widgets/app_state.dart';
+import 'package:ikuku/features/farms%20report/presentation/widgets/batch_card.dart';
 import 'package:ikuku/theme/app_theme.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -117,12 +118,16 @@ class _BatchSelectionPageState extends State<BatchSelectionPage> {
                             setState(() {
                               _selectedBatchId = batch.id;
                             });
+                            activeBatchNotifier.value = batch;
                             await Future.delayed(const Duration(milliseconds: 300));
                             
                             if(!context.mounted)return;
 
                             if (mounted){
-                              await context.push('/calendar_page',extra:batch.id);
+                              await context.push(
+                                '/calendar_page',
+                                extra:batch.id
+                                );
                             }
                           },
                           birdTypeColor: _getBirdTypeColor(batch.typeOfBird),

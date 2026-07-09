@@ -13,6 +13,8 @@ import 'package:ikuku/features/dashboard/presentation/pages/dashboard.dart';
 import 'package:ikuku/features/farms%20report/presentation/screens/add_report_page.dart';
 import 'package:ikuku/features/farms%20report/presentation/screens/batch_selection_page.dart';
 import 'package:ikuku/features/farms%20report/presentation/screens/calendar_picker_page.dart';
+import 'package:ikuku/features/farms%20report/presentation/screens/chicken_reduction_page.dart';
+import 'package:ikuku/features/farms%20report/presentation/widgets/app_state.dart';
 import 'package:ikuku/features/home/presentation/home_page.dart';
 import 'package:ikuku/features/onboarding/create_farm_page.dart';
 import 'package:ikuku/features/onboarding/onboarding_page.dart';
@@ -22,7 +24,7 @@ import 'package:ikuku/features/profile/presentation/pages/otp_verification_page.
 import 'package:ikuku/features/profile/presentation/pages/profile_page.dart';
 import 'package:ikuku/features/profile/presentation/pages/recovery_phone_page.dart';
 import 'package:ikuku/features/settings/languages/presentation/language_selection_page.dart';
-// import 'package:ikuku/features/shop/presentation/pages/my_shop_page.dart';
+import 'package:ikuku/features/shop/presentation/pages/my_shop_page.dart';
 import 'package:ikuku/features/smart_tips/presentation/screens/tip_detail_page.dart';
 import 'package:ikuku/features/smart_tips/presentation/screens/tips_hub.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -95,7 +97,7 @@ class AppRouter {
             routes: [
               GoRoute(
                 path: '/my-shop',
-                builder: (context, state) => const CalendarPickerPage(),
+                builder: (context, state) => const MyShopPage(),
               ),
             ],
           ),
@@ -197,21 +199,24 @@ class AppRouter {
         path: '/report-entry',
         builder: (context, state) => const BatchSelectionPage(),
       ),
-       GoRoute(
+      GoRoute(
         path: '/calendar_page',
-        builder: (context, state) => const CalendarPickerPage(),
+        builder: (context, state) => CalendarPickerPage(
+          batch:activeBatchNotifier.value,
+        ),
       ),
-      // GoRoute(
-      //   path: '/all-reports',
-      //   builder: (context, state) => const AllReportsPage(),
-      // ),
+      GoRoute(
+        path: '/chicken_reduction',
+        builder: (context, state) {
+          return ChickenReductionPage(
+            batch: activeBatchNotifier.value,
+          );
+        },
+      ),
+
       // GoRoute(
       //   path: '/offline-test',
       //   builder: (context, state) => const OfflineTestPage(),
-      // ),
-      // GoRoute(
-      //   path: '/profile',
-      //   builder: (context, state) => const ProfilePage(),
       // ),
       GoRoute(
         path: '/create-farm',
