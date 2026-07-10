@@ -461,5 +461,16 @@
   "otp_message_text":"kodi yenye nambari sita imetumwa kwa",
   "didn't_get_the_code":"hujapata kodi? ",
   "delete account":"Futa akaunti",
-  "age":"Umri"
+  "age":"Umri",
+  "my_farms_report": "Riporti zangu za shamba",
+
+  "select_batch_message":"Chagua kundi unayotaka kuripoti",
+  "farm_reports_entry":"Ingiza riporti za shamba",
+ 
+  "batch_age":"Umri ",
+  "choose_date":"Chagua tarehe ya riporti yako",
+  "select_report_date":"Chagua tarehe ya riporti",
+  "report_date":"Tarehe ya riporti",
+
+  
 }

@@ -14,6 +14,7 @@ import 'package:ikuku/features/farms%20report/presentation/screens/add_report_pa
 import 'package:ikuku/features/farms%20report/presentation/screens/batch_selection_page.dart';
 import 'package:ikuku/features/farms%20report/presentation/screens/calendar_picker_page.dart';
 import 'package:ikuku/features/farms%20report/presentation/screens/chicken_reduction_page.dart';
+import 'package:ikuku/features/farms%20report/presentation/screens/egg_production_page.dart';
 import 'package:ikuku/features/farms%20report/presentation/widgets/app_state.dart';
 import 'package:ikuku/features/home/presentation/home_page.dart';
 import 'package:ikuku/features/onboarding/create_farm_page.dart';
@@ -201,16 +202,19 @@ class AppRouter {
       ),
       GoRoute(
         path: '/calendar_page',
-        builder: (context, state) => CalendarPickerPage(
-          batch:activeBatchNotifier.value,
-        ),
+        builder: (context, state) =>
+            CalendarPickerPage(batch: activeBatchNotifier.value!),
       ),
       GoRoute(
         path: '/chicken_reduction',
         builder: (context, state) {
-          return ChickenReductionPage(
-            batch: activeBatchNotifier.value,
-          );
+          return ChickenReductionPage(batch: activeBatchNotifier.value!);
+        },
+      ),
+      GoRoute(
+        path: '/egg_production',
+        builder: (context, state) {
+          return EggProductionPage(batch: activeBatchNotifier.value!);
         },
       ),
 
