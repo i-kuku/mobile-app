@@ -46,12 +46,12 @@ class BatchCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 10),
                   Text(
-                        "${"bird_type".tr()}: ${batch.typeOfBird}",
-                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                          color: Colors.grey,
-                          fontSize: 16,
-                        ),
-                      ),
+                    "${"bird_type".tr()}: ${batch.typeOfBird}",
+                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                      color: Colors.grey,
+                      fontSize: 16,
+                    ),
+                  ),
                   Row(
                     children: [
                       Text(
