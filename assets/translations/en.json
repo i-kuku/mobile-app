@@ -455,6 +455,12 @@
     "batch_age":"Batch Age",
     "choose_date":"Choose the date for your farm report",
     "select_report_date":"Select Report Date",
-    "report_date":"Report Date"
-   
+    "report_date":"Report Date",
+    "have_you_collected_eggs_today":"Have you collected eggs today ?",
+    "select_vaccine_types_today":"Select the vaccine types you used today",
+    "cannot_see_any_item_in_the_list":"Cannot see any item in the list?",
+    "cannot_see_any_vaccine_in_the_list":"Cannot see any vaccine in the list?",
+    "cannot_see_any_feed_in_the_list":"Cannot see any feed in the list?",
+    "add_vaccine_to_store":"Add vaccine to store",
+    "add_feed_to_store":"Add feed to store"
   }
