@@ -5,6 +5,7 @@ import 'package:ikuku/features/Inventory/model/inventoryitem.dart';
 import 'package:ikuku/features/Inventory/provider/inventory_provider.dart';
 import 'package:ikuku/theme/app_theme.dart';
 import 'package:provider/provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
 
 void addItemDialog(BuildContext context, String category,{InventoryItem? itemToEdit}) {
@@ -133,13 +134,16 @@ class _AddItemFormState extends State<AddItemForm>{
                   ),
                   onPressed: () {
                     if(_formKey.currentState!.validate()){
+                      final currentUserId = Supabase.instance.client.auth.currentUser?.id ?? '';
                     final item=InventoryItem(
                       id: widget.itemToEdit?.id ?? const Uuid().v4(),
                       name: _nameController.text,
                       quantity: int.tryParse(_quantityController.text) ?? 0,
                       unit: _selectedUnit?? "kg",
                       price: double.tryParse(_priceController.text) ?? 0,
-                      category: widget.category,
+                      category: widget.category, 
+                      userId: currentUserId,
+                       addedOn: widget.itemToEdit?.addedOn ?? DateTime.now(),
                     );
                     final provider= context.read<InventoryProvider>();
                     if(widget.itemToEdit!=null){
@@ -148,7 +152,7 @@ class _AddItemFormState extends State<AddItemForm>{
                     else{
                       provider.addInventoryItem(item);
                     }
-                    context.pop(context);
+                    context.pop();
                   }
                   },
                   child: Text(

@@ -32,12 +32,12 @@ class _EggCollectionFormState extends State<EggCollectionForm> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          "have_you_collected_eggs_today?",
+        Text(
+          "have_you_collected_eggs_today".tr(),
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w500,
-            color: CustomColors.primary,
+            color: CustomColors.text,
           ),
         ),
         const SizedBox(height: 12),
@@ -134,7 +134,7 @@ class _EggCollectionFormState extends State<EggCollectionForm> {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: isSelected ?  CustomColors.primary : CustomColors.text,
+                  color: isSelected ? CustomColors.primary : CustomColors.text,
                   width: isSelected ? 6.5 : 2,
                 ),
               ),
@@ -145,7 +145,7 @@ class _EggCollectionFormState extends State<EggCollectionForm> {
               style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w400,
-                color:CustomColors.text,
+                color: CustomColors.text,
               ),
             ),
           ],
@@ -167,16 +167,22 @@ class _EggCollectionFormState extends State<EggCollectionForm> {
         decoration: InputDecoration(
           hintText: hintText,
           hintStyle: TextStyle(color: Colors.grey[500], fontSize: 16),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: 18,
+          ),
           filled: true,
           fillColor: Colors.white,
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
-            borderSide: const BorderSide( color: CustomColors.text, width: 1.5),
+            borderSide: const BorderSide(color: CustomColors.text, width: 1.5),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
-            borderSide: const BorderSide(color:CustomColors.primary, width: 2.0),
+            borderSide: const BorderSide(
+              color: CustomColors.primary,
+              width: 2.0,
+            ),
           ),
         ),
       ),

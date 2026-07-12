@@ -27,6 +27,16 @@ class InventoryListTemplate extends StatelessWidget{
   Widget build(BuildContext context) {
     final provider =context.watch<InventoryProvider>();
 
+   if (provider.isloading) {
+    return Scaffold(
+      appBar: AppBar(elevation: 0),
+      body: const Center(
+        child: CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(CustomColors.primary),
+        ),
+      ),
+    );
+  }
     final items= category =="feeds"?
      provider.feeds:category=="medicines"? 
      provider.medicines : provider.others;

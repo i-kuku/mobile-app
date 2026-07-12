@@ -1,30 +1,47 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:ikuku/features/Inventory/provider/inventory_provider.dart';
 import 'package:ikuku/features/batches/model/chicken_batch_model.dart';
 import 'package:ikuku/features/farms%20report/presentation/widgets/batch_detail_container.dart';
 import 'package:ikuku/features/farms%20report/presentation/widgets/egg_collection_form.dart';
 import 'package:ikuku/shared/widgets/feature_button.dart';
 import 'package:ikuku/theme/app_theme.dart';
+import 'package:provider/provider.dart';
 // Import your newly separated form here
 
-class EggProductionPage extends StatelessWidget {
+class EggProductionPage extends StatefulWidget {
   final ChickenBatch batch;
+
 
   const EggProductionPage({super.key, required this.batch});
 
+
+  @override
+  State<EggProductionPage> createState() => _EggProductionPageState();
+}
+
+
+class _EggProductionPageState extends State<EggProductionPage> {
+
+  @override
+void initState() {
+  super.initState();
+  // Fetch from Supabase right away when the app/section boots up
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    context.read<InventoryProvider>().fetchInventory();
+  });
+}
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xfff7f9fa),
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: CustomColors.primary),
-          onPressed: () => Navigator.pop(context),
+          icon: Icon(Icons.arrow_back, color: CustomColors.primary),
+          onPressed: () => context.pop(context),
         ),
         title:  Text(
-          "Farm_report_entry".tr(),
+          "farm_report_entry".tr(),
           style: TextStyle(
             color: CustomColors.primary,
             fontWeight: FontWeight.bold,
@@ -42,23 +59,17 @@ class EggProductionPage extends StatelessWidget {
                   children: [
                     Text(
                       "egg_production".tr(),
-                      style: TextStyle(
-                        fontSize: 26,
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: CustomColors.text,
                       ),
                     ),
                     const SizedBox(height: 20),
-
-                    // Calling Your Component Widgets Cleanly here
-                    BatchDetailContainer(batch: batch),
+                    BatchDetailContainer(batch: widget.batch),
                     const EggCollectionForm(),
                   ],
                 ),
               ),
             ),
-
-            // Bottom Continue Action Button Layout
             Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: 24.0,
@@ -67,7 +78,8 @@ class EggProductionPage extends StatelessWidget {
               child: FeatureButton(
                 label: "continue".tr(),
                 onTap: () {
-                  // Fixed the hyphen to an underscore here:
+                  context.push('/feeds_selection', 
+                  );
                 },
               ),
             ),
