@@ -4,6 +4,7 @@ import 'package:ikuku/features/Inventory/presentation/screens/feeds_page.dart';
 import 'package:ikuku/features/Inventory/presentation/screens/inventory_hub_page.dart';
 import 'package:ikuku/features/Inventory/presentation/screens/items_page.dart';
 import 'package:ikuku/features/Inventory/presentation/screens/medicines_page.dart';
+import 'package:ikuku/features/Inventory/provider/inventory_provider.dart';
 import 'package:ikuku/features/batches/presentation/screens/confirm_batch_page.dart';
 import 'package:ikuku/features/batches/presentation/screens/create_batch_page.dart';
 import 'package:ikuku/features/batches/presentation/screens/edit_batch_page.dart';
@@ -15,6 +16,9 @@ import 'package:ikuku/features/farms%20report/presentation/screens/batch_selecti
 import 'package:ikuku/features/farms%20report/presentation/screens/calendar_picker_page.dart';
 import 'package:ikuku/features/farms%20report/presentation/screens/chicken_reduction_page.dart';
 import 'package:ikuku/features/farms%20report/presentation/screens/egg_production_page.dart';
+import 'package:ikuku/features/farms%20report/presentation/screens/feeds_selection_page.dart';
+import 'package:ikuku/features/farms%20report/presentation/screens/other_items_page.dart';
+import 'package:ikuku/features/farms%20report/presentation/screens/vaccine_selection_page.dart';
 import 'package:ikuku/features/farms%20report/presentation/widgets/app_state.dart';
 import 'package:ikuku/features/home/presentation/home_page.dart';
 import 'package:ikuku/features/onboarding/create_farm_page.dart';
@@ -28,6 +32,7 @@ import 'package:ikuku/features/settings/languages/presentation/language_selectio
 import 'package:ikuku/features/shop/presentation/pages/my_shop_page.dart';
 import 'package:ikuku/features/smart_tips/presentation/screens/tip_detail_page.dart';
 import 'package:ikuku/features/smart_tips/presentation/screens/tips_hub.dart';
+import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../features/splash/splash_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -217,7 +222,45 @@ class AppRouter {
           return EggProductionPage(batch: activeBatchNotifier.value!);
         },
       ),
+    
+      GoRoute(
+        path: '/feeds_selection',
+        builder: (context, state) {
+          // 1. Read the active inventory data from your provider
+          final inventoryProvider = Provider.of<InventoryProvider>(
+            context,
+            listen: false,
+          );
 
+          return FeedsSelector(
+            feeds: inventoryProvider.feeds, // Pass the real feed items list fetched from Supabase
+            selectedFeeds: const [], // Start with an empty selection list map
+            onSelectedFeedsChanged: (updatedList) {
+              // Handle selection state saving globally if needed
+            },
+          );
+        },
+      ),
+      GoRoute(
+        path:'/vaccine_selection',
+        builder: ((context, state) {
+          return VaccineSelector(
+            selectedVaccines: [], 
+            onSelectedVaccinesChanged: (updatedList) {  },
+            
+          );
+        })
+         ),
+         GoRoute(
+          path:'/other_items_selection',
+          builder:((context, state) {
+            return OthersSelector(
+              selectedItem: [], 
+              onSelectedItemChanged: (updatedList) {  },
+              
+            );
+          })
+         ),
       // GoRoute(
       //   path: '/offline-test',
       //   builder: (context, state) => const OfflineTestPage(),
