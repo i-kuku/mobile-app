@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ikuku/features/Inventory/presentation/widgets/inventory_category_card.dart';
+import 'package:ikuku/features/Inventory/provider/inventory_provider.dart';
+import 'package:provider/provider.dart';
 
 class InventoryCategory{
   final String name;
@@ -18,8 +20,14 @@ class InventoryCategory{
   });
 }
 
-class InventoryHubPage extends StatelessWidget {
- InventoryHubPage({super.key});
+class InventoryHubPage extends StatefulWidget {
+ const InventoryHubPage({super.key});
+
+  @override
+  State<InventoryHubPage> createState() => _InventoryHubPageState();
+}
+
+class _InventoryHubPageState extends State<InventoryHubPage> {
   final List<InventoryCategory> categories = [
     InventoryCategory(
       name: 'feed'.tr(),
@@ -40,6 +48,13 @@ class InventoryHubPage extends StatelessWidget {
       route: '/inventory/others',
     ),
   ];
+  @override
+  void initState(){
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+    Provider.of<InventoryProvider>(context, listen: false).fetchInventory();
+  });
+  }
 
   @override
   Widget build(BuildContext context) {
