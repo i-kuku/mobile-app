@@ -64,7 +64,7 @@ class _EggCollectionFormState extends State<EggCollectionForm> {
         const SizedBox(height: 24),
         if (_collectedEggs == true) ...[
           _buildInputField(
-            hintText: "how_many_eggs_have_you_collected_today?".tr(),
+            hintText: "how_many_eggs_have_you_collected_today".tr(),
             controller: _totalEggsController,
           ),
           const SizedBox(height: 24),
@@ -101,7 +101,7 @@ class _EggCollectionFormState extends State<EggCollectionForm> {
               controller: _bigEggsController,
             ),
             _buildInputField(
-              hintText: "number_of_deformed_eggs",
+              hintText: "number_of_deformed_eggs".tr(),
               controller: _deformedEggsController,
             ),
             _buildInputField(
