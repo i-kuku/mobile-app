@@ -12,6 +12,7 @@ import 'package:ikuku/features/batches/presentation/screens/manage_batch_page.da
 import 'package:ikuku/features/auth/presentation/screens/auth_page.dart';
 import 'package:ikuku/features/dashboard/presentation/pages/dashboard.dart';
 import 'package:ikuku/features/farms%20report/presentation/screens/add_report_page.dart';
+import 'package:ikuku/features/farms%20report/presentation/screens/additional_notes_page.dart';
 import 'package:ikuku/features/farms%20report/presentation/screens/batch_selection_page.dart';
 import 'package:ikuku/features/farms%20report/presentation/screens/calendar_picker_page.dart';
 import 'package:ikuku/features/farms%20report/presentation/screens/chicken_reduction_page.dart';
@@ -222,7 +223,7 @@ class AppRouter {
           return EggProductionPage(batch: activeBatchNotifier.value!);
         },
       ),
-    
+
       GoRoute(
         path: '/feeds_selection',
         builder: (context, state) {
@@ -233,7 +234,8 @@ class AppRouter {
           );
 
           return FeedsSelector(
-            feeds: inventoryProvider.feeds, // Pass the real feed items list fetched from Supabase
+            feeds: inventoryProvider
+                .feeds, // Pass the real feed items list fetched from Supabase
             selectedFeeds: const [], // Start with an empty selection list map
             onSelectedFeedsChanged: (updatedList) {
               // Handle selection state saving globally if needed
@@ -242,25 +244,30 @@ class AppRouter {
         },
       ),
       GoRoute(
-        path:'/vaccine_selection',
+        path: '/vaccine_selection',
         builder: ((context, state) {
           return VaccineSelector(
-            selectedVaccines: [], 
-            onSelectedVaccinesChanged: (updatedList) {  },
-            
+            selectedVaccines: [],
+            onSelectedVaccinesChanged: (updatedList) {},
           );
-        })
-         ),
-         GoRoute(
-          path:'/other_items_selection',
-          builder:((context, state) {
-            return OthersSelector(
-              selectedItem: [], 
-              onSelectedItemChanged: (updatedList) {  },
-              
-            );
-          })
-         ),
+        }),
+      ),
+      GoRoute(
+        path: '/other_items_selection',
+        builder: ((context, state) {
+          return OthersSelector(
+            selectedItem: [],
+            onSelectedItemChanged: (updatedList) {},
+          );
+        }),
+      ),
+      GoRoute(
+        path: '/additional_notes',
+        builder: (context, state) {
+          return const AdditionalNotesPage();
+        },
+      ),
+
       // GoRoute(
       //   path: '/offline-test',
       //   builder: (context, state) => const OfflineTestPage(),

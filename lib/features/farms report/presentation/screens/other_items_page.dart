@@ -259,7 +259,10 @@ class _OtherItemsPage extends State<OtherItemsPage> {
               }),
             ],
             SizedBox(height: 20),
-            FeatureButton(label: "continue".tr(), onTap: () {}),
+            FeatureButton(label: "continue".tr(), onTap: () {
+              // move this page AdditionalNotesPage
+              context.push('/additional_notes');
+            }),
             const SizedBox(height: 16),
           ],
         ),
