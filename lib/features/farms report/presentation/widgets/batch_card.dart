@@ -21,12 +21,15 @@ class BatchCard extends StatelessWidget {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
       decoration: BoxDecoration(
-        color: isSelected ? Colors.yellow.shade100 : Colors.white,
+        color: isSelected ? Colors.yellow.shade50 : Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: isSelected ? Colors.amber : Colors.grey.shade500,
-          width: 1,
-        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 12,
+            offset: Offset(0, 8),
+          ),
+        ],
       ),
       child: InkWell(
         onTap: onTap,
@@ -36,7 +39,6 @@ class BatchCard extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -64,7 +66,7 @@ class BatchCard extends StatelessWidget {
                           child: Text(
                             " ${batch.typeOfBird}",
                             style: Theme.of(context).textTheme.bodyLarge!
-                                .copyWith(color: Colors.grey, fontSize: 16),
+                                .copyWith(color: Colors.grey, fontSize: 12),
                           ),
                         ),
                         SizedBox(width: 10),
@@ -80,7 +82,7 @@ class BatchCard extends StatelessWidget {
                           child: Text(
                             "${"Batch Age"}: ${batch.age} ${batch.ageUnit} ",
                             style: Theme.of(context).textTheme.bodyLarge!
-                                .copyWith(color: Colors.grey, fontSize: 16),
+                                .copyWith(color: Colors.grey, fontSize: 12),
                           ),
                         ),
                       ],
@@ -89,10 +91,9 @@ class BatchCard extends StatelessWidget {
                 ),
               ),
               if (isSelected) ...[
-                Icon(Icons.check_circle, color: Colors.black),
+                Icon(Icons.check_circle, color: Colors.orange, size: 20),
               ],
             ],
-            
           ),
         ),
       ),

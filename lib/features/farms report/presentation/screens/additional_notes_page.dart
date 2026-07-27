@@ -1,8 +1,11 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:ikuku/features/farms%20report/presentation/widgets/custom_notes_field.dart';
+import 'package:ikuku/features/farms%20report/provider/farm_report_provider.dart';
 import 'package:ikuku/shared/widgets/feature_button.dart';
 import 'package:ikuku/theme/app_theme.dart';
+import 'package:provider/provider.dart';
 
 class AdditionalNotesPage extends StatefulWidget {
   const AdditionalNotesPage({super.key});
@@ -13,6 +16,12 @@ class AdditionalNotesPage extends StatefulWidget {
 
 class _AdditionalNotesPageState extends State<AdditionalNotesPage> {
   final TextEditingController _notesController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _notesController.text = context.read<FarmReportProvider>().notes ?? '';
+  }
 
   @override
   void dispose() {
@@ -65,7 +74,16 @@ class _AdditionalNotesPageState extends State<AdditionalNotesPage> {
                 horizontal: 24.0,
                 vertical: 16.0,
               ),
-              child: FeatureButton(label: "continue".tr(), onTap: () {}),
+              child: FeatureButton(
+                label: "continue".tr(),
+                onTap: () {
+                  context.read<FarmReportProvider>().updateFinancialsAndNotes(
+                        notes: _notesController.text,
+                      );
+                  // go FarmReportEntryScreen
+                  context.push('/Farm_Report_Entry_Screen');
+                },
+              ),
             ),
           ],
         ),

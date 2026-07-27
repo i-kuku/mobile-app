@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ikuku/features/Inventory/model/inventoryitem.dart';
 import 'package:ikuku/features/Inventory/provider/inventory_provider.dart';
+import 'package:ikuku/features/farms%20report/provider/farm_report_provider.dart';
 import 'package:ikuku/shared/widgets/feature_button.dart';
 import 'package:ikuku/theme/app_theme.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -64,8 +65,9 @@ class _VaccineSelectionPage extends State<VaccineSelectionPage> {
   @override
   void initState() {
     super.initState();
+     final providerVaccines = context.read<FarmReportProvider>().vaccinesUsed;
     _selectedVaccines = List<Map<String, dynamic>>.from(
-      widget.selectedVaccines,
+      providerVaccines.isNotEmpty ? providerVaccines : widget.selectedVaccines,
     );
     _initializeControllers();
   }
@@ -102,6 +104,7 @@ class _VaccineSelectionPage extends State<VaccineSelectionPage> {
         _controllers.remove(vaccine.name);
       }
       widget.onSelectedVaccinesChanged(_selectedVaccines);
+            context.read<FarmReportProvider>().updateVaccines(_selectedVaccines);
     });
   }
 
@@ -140,6 +143,7 @@ class _VaccineSelectionPage extends State<VaccineSelectionPage> {
           _selectedVaccines[idx]['quantity'] = null;
         }
         widget.onSelectedVaccinesChanged(_selectedVaccines);
+        context.read<FarmReportProvider>().updateVaccines(_selectedVaccines);
       }
     });
   }

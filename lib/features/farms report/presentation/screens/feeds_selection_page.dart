@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ikuku/features/Inventory/model/inventoryitem.dart';
 import 'package:ikuku/features/Inventory/provider/inventory_provider.dart';
+import 'package:ikuku/features/farms%20report/provider/farm_report_provider.dart';
 import 'package:ikuku/shared/widgets/feature_button.dart';
 import 'package:ikuku/theme/app_theme.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -24,9 +25,16 @@ class FeedsSelector extends StatefulWidget {
 }
 
 class _FeedsSelectorState extends State<FeedsSelector> {
+  // A separate field on the STATE (not the widget), so it can be reassigned freely.
+  late List<Map<String, dynamic>> _mergedSelectedFeeds;
+
   @override
   void initState() {
     super.initState();
+    final providerFeeds = context.read<FarmReportProvider>().feedsUsed;
+    _mergedSelectedFeeds = List<Map<String, dynamic>>.from(
+      providerFeeds.isNotEmpty ? providerFeeds : widget.selectedFeeds,
+    );
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<InventoryProvider>().fetchInventory();
     });
@@ -48,7 +56,7 @@ class _FeedsSelectorState extends State<FeedsSelector> {
     }
     return FeedsSelectionPage(
       feeds: widget.feeds,
-      selectedFeeds: widget.selectedFeeds,
+      selectedFeeds: _mergedSelectedFeeds, // <-- merged value now actually used
       onSelectedFeedsChanged: widget.onSelectedFeedsChanged,
     );
   }
@@ -113,6 +121,9 @@ class _FeedsSelectionPage extends State<FeedsSelectionPage> {
         _controllers.remove(feed.name);
       }
       widget.onSelectedFeedsChanged(_selectedFeeds);
+      context.read<FarmReportProvider>().updateFeeds(
+        _selectedFeeds,
+      ); // <-- added (was missing)
     });
   }
 
@@ -122,7 +133,6 @@ class _FeedsSelectionPage extends State<FeedsSelectionPage> {
       if (idx != -1) {
         final quantity = double.tryParse(value);
         if (quantity != null && quantity >= 0) {
-          // Find the feed to check available stock
           final feed = widget.feeds.firstWhere((f) => f.name == feedName);
           if (quantity <= feed.quantity) {
             _selectedFeeds[idx]['quantity'] = quantity;
@@ -130,18 +140,10 @@ class _FeedsSelectionPage extends State<FeedsSelectionPage> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(
-                  'cannot_use_more_than'.tr(
-                    namedArgs: {
-                      'quantity': feed.quantity.toString(),
-                      'unit': 'kg'.tr(),
-                      'item': feed.name,
-                    },
-                  ),
+                  'quantity_exceeds_stock'.tr(args: [feedName.tr()]),
                 ),
-                backgroundColor: Colors.red,
               ),
             );
-            // Reset the controller to the previous valid value
             _controllers[feedName]?.text =
                 _selectedFeeds[idx]['quantity']?.toString() ?? '';
             return;
@@ -150,6 +152,7 @@ class _FeedsSelectionPage extends State<FeedsSelectionPage> {
           _selectedFeeds[idx]['quantity'] = null;
         }
         widget.onSelectedFeedsChanged(_selectedFeeds);
+        context.read<FarmReportProvider>().updateFeeds(_selectedFeeds);
       }
     });
   }
@@ -190,7 +193,7 @@ class _FeedsSelectionPage extends State<FeedsSelectionPage> {
                   const SizedBox(height: 16),
                   TextButton.icon(
                     onPressed: () {
-                      context.push('/inventory/feeds');
+                      context.push('/inventory/feedspage');
                     },
                     label: Text("add_feed_to_store".tr()),
                     icon: Icon(Icons.add),

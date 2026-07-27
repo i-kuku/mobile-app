@@ -9,7 +9,7 @@ class Report {
   final int? chickensSold;
   final int? chickensDied;
   final int? chickensStolen;
-  final bool eggsCollection;
+  final bool eggCollection;
   final int? eggsCollected;
   final bool gradeEggs;
   final int? eggsSmall;
@@ -33,7 +33,7 @@ class Report {
     this.chickensSold,
     this.chickensDied,
     this.chickensStolen,
-    required this.eggsCollection,
+    required this.eggCollection,
     this.eggsCollected,
     required this.gradeEggs,
     this.eggsSmall,
@@ -58,7 +58,7 @@ class Report {
     chickensCurled: json['chickens_curled'] as int? ?? 0,
     chickensDied: json['chickens_died'] as int? ?? 0,
     chickensStolen: json['chickens_stolen'] as int? ?? 0,
-    eggsCollection: json['eggs_collection'] as bool? ?? false,
+    eggCollection: json['egg_collection'] as bool? ?? false,
     eggsCollected: json['eggs_collected'] as int? ?? 0,
     gradeEggs: json['grade_eggs'] as bool? ?? false,
     eggsSmall: json['eggs_small'] as int? ?? 0,
@@ -83,7 +83,7 @@ class Report {
     'chickens_sold': chickensSold,
     'chickens_died': chickensDied,
     'chickens_stolen': chickensStolen,
-    'eggs_collection': eggsCollection,
+    'egg_collection': eggCollection,
     'eggs_collected': eggsCollected,
     'grade_eggs': gradeEggs,
     'eggs_small': eggsSmall,
@@ -105,7 +105,7 @@ class Report {
       dailyRecordId: dailyRecordId,
       batchId: batchId,
       chickenReduction: false,
-      eggsCollection: false,
+      eggCollection: false,
       gradeEggs: false,
     );
   }
