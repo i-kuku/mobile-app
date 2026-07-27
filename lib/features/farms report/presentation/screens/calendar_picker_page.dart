@@ -2,8 +2,10 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ikuku/features/batches/model/chicken_batch_model.dart';
+import 'package:ikuku/features/farms%20report/provider/farm_report_provider.dart';
 import 'package:ikuku/shared/widgets/feature_button.dart';
 import 'package:ikuku/theme/app_theme.dart';
+import 'package:provider/provider.dart';
 
 
 class CalendarPickerPage extends StatefulWidget {
@@ -162,13 +164,12 @@ class _CalendarPickerPage extends State<CalendarPickerPage> {
 
             const Spacer(),
             FeatureButton(
-              label: "continue".tr(),
-              onTap: () {
-                context.push(
-                  '/chicken_reduction',
-                );
-              },
-            ),
+  label: "continue".tr(),
+  onTap: () {
+    context.read<FarmReportProvider>().setReportDate(_selectedDate);
+    context.push('/chicken_reduction');
+  },
+),
             const SizedBox(height: 16),
           ],
         ),

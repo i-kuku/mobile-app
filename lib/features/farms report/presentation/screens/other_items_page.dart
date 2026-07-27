@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ikuku/features/Inventory/model/inventoryitem.dart';
 import 'package:ikuku/features/Inventory/provider/inventory_provider.dart';
+import 'package:ikuku/features/farms%20report/provider/farm_report_provider.dart';
 import 'package:ikuku/shared/widgets/feature_button.dart';
 import 'package:ikuku/theme/app_theme.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -78,7 +79,10 @@ class _OtherItemsPage extends State<OtherItemsPage> {
   @override
   void initState() {
     super.initState();
-    _selectedItem = List<Map<String, dynamic>>.from(widget.selectedItem);
+   final providerItems = context.read<FarmReportProvider>().otherMaterialsUsed;
+    _selectedItem = List<Map<String, dynamic>>.from(
+      providerItems.isNotEmpty ? providerItems : widget.selectedItem,
+    );
     _initializeControllers();
   }
 
@@ -114,6 +118,7 @@ class _OtherItemsPage extends State<OtherItemsPage> {
         _controllers.remove(item.name);
       }
       widget.onSelectedItemChanged(_selectedItem);
+      context.read<FarmReportProvider>().updateOtherMaterials(_selectedItem);
     });
   }
 
@@ -151,6 +156,7 @@ class _OtherItemsPage extends State<OtherItemsPage> {
           _selectedItem[idx]['quantity'] = null;
         }
         widget.onSelectedItemChanged(_selectedItem);
+        context.read<FarmReportProvider>().updateOtherMaterials(_selectedItem);
       }
     });
   }

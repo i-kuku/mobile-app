@@ -16,12 +16,22 @@ class QuickAction extends StatelessWidget {
       child: InkWell(
         borderRadius: BorderRadius.circular(14),
         onTap: () async {
-          if (action.route == null) {
+          if (action.onTap != null) {
+            // <-- ADD this check first
+            await action.onTap!(context);
+          } else if (action.route == null) {
             showToast("Coming soon!");
           } else {
             context.push(action.route!);
           }
         },
+        // onTap: () async {
+        //   if (action.route == null) {
+        //     showToast("Coming soon!");
+        //   } else {
+        //     context.push(action.route!);
+        //   }
+        // },
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
           child: Column(

@@ -1,11 +1,14 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+
 import 'package:ikuku/features/batches/model/chicken_batch_model.dart';
 import 'package:ikuku/features/farms%20report/presentation/widgets/batch_detail_container.dart';
 import 'package:ikuku/features/farms%20report/presentation/widgets/reduction_reasons_checkboxes.dart';
+import 'package:ikuku/features/farms%20report/provider/farm_report_provider.dart';
 import 'package:ikuku/shared/widgets/feature_button.dart';
 import 'package:ikuku/theme/app_theme.dart';
+import 'package:provider/provider.dart';
 
 class ChickenReductionPage extends StatefulWidget {
   final ChickenBatch? batch;
@@ -26,6 +29,25 @@ class _ChickenReductionPageState extends State<ChickenReductionPage> {
     'death': 0,
     'sold': 0,
   };
+  @override
+  void initState() {
+    super.initState();
+    final report = context.read<FarmReportProvider>();
+
+    _reductionCounts = {
+      'curled': report.chickensCurled,
+      'stolen': report.chickensStolen,
+      'death': report.chickensDied,
+      'sold': report.chickensSold,
+    };
+
+    final hasReduction = _reductionCounts.values.any((v) => v > 0);
+    _chickenReduction = hasReduction ? 'yes' : null;
+
+    _salesAmount = report.salesAmount > 0
+        ? report.salesAmount.toDouble()
+        : null;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -110,10 +132,32 @@ class _ChickenReductionPageState extends State<ChickenReductionPage> {
                     ),
                   ],
                   const SizedBox(height: 24),
+
+                  // ...inside build(), replace the FeatureButton's onTap:
                   FeatureButton(
                     label: "continue".tr(),
                     onTap: () {
-                      // Fixed the hyphen to an underscore here:
+                      final provider = context.read<FarmReportProvider>();
+                      if (_chickenReduction == 'yes') {
+                        provider.updateChicken(
+                          curled: _reductionCounts['curled'],
+                          sold: _reductionCounts['sold'],
+                          died: _reductionCounts['death'],
+                          stolen: _reductionCounts['stolen'],
+                        );
+                        if (_salesAmount != null) {
+                          provider.updateFinancialsAndNotes(
+                            sales: _salesAmount!.toInt(),
+                          );
+                        }
+                      } else {
+                        provider.updateChicken(
+                          curled: 0,
+                          sold: 0,
+                          died: 0,
+                          stolen: 0,
+                        );
+                      }
                       context.push('/egg_production');
                     },
                   ),
