@@ -5,6 +5,7 @@ import 'package:ikuku/features/Inventory/provider/inventory_provider.dart';
 import 'package:ikuku/features/batches/model/chicken_batch_model.dart';
 import 'package:ikuku/features/farms%20report/presentation/widgets/batch_detail_container.dart';
 import 'package:ikuku/features/farms%20report/presentation/widgets/egg_collection_form.dart';
+import 'package:ikuku/features/farms%20report/provider/farm_report_provider.dart';
 import 'package:ikuku/shared/widgets/feature_button.dart';
 import 'package:ikuku/theme/app_theme.dart';
 import 'package:provider/provider.dart';
@@ -78,6 +79,7 @@ void initState() {
               child: FeatureButton(
                 label: "continue".tr(),
                 onTap: () {
+                   
                   context.push('/feeds_selection', 
                   );
                 },

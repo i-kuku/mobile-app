@@ -19,8 +19,11 @@ import 'package:ikuku/features/farms%20report/presentation/screens/chicken_reduc
 import 'package:ikuku/features/farms%20report/presentation/screens/egg_production_page.dart';
 import 'package:ikuku/features/farms%20report/presentation/screens/feeds_selection_page.dart';
 import 'package:ikuku/features/farms%20report/presentation/screens/other_items_page.dart';
+import 'package:ikuku/features/farms%20report/presentation/screens/report_summary_page.dart';
+import 'package:ikuku/features/farms%20report/presentation/screens/see_all_report_page.dart';
 import 'package:ikuku/features/farms%20report/presentation/screens/vaccine_selection_page.dart';
-import 'package:ikuku/features/farms%20report/presentation/widgets/app_state.dart';
+
+import 'package:ikuku/features/farms%20report/provider/farm_report_provider.dart';
 import 'package:ikuku/features/home/presentation/home_page.dart';
 import 'package:ikuku/features/onboarding/create_farm_page.dart';
 import 'package:ikuku/features/onboarding/onboarding_page.dart';
@@ -207,22 +210,35 @@ class AppRouter {
         builder: (context, state) => const BatchSelectionPage(),
       ),
       GoRoute(
-        path: '/calendar_page',
-        builder: (context, state) =>
-            CalendarPickerPage(batch: activeBatchNotifier.value!),
-      ),
-      GoRoute(
-        path: '/chicken_reduction',
-        builder: (context, state) {
-          return ChickenReductionPage(batch: activeBatchNotifier.value!);
-        },
-      ),
-      GoRoute(
-        path: '/egg_production',
-        builder: (context, state) {
-          return EggProductionPage(batch: activeBatchNotifier.value!);
-        },
-      ),
+  path: '/calendar_page',
+  builder: (context, state) {
+    final batch = context.read<FarmReportProvider>().batch;
+    if (batch == null) {
+      return const Scaffold(body: Center(child: Text('No batch selected')));
+    }
+    return CalendarPickerPage(batch: batch);
+  },
+),
+GoRoute(
+  path: '/chicken_reduction',
+  builder: (context, state) {
+    final batch = context.read<FarmReportProvider>().batch;
+    if (batch == null) {
+      return const Scaffold(body: Center(child: Text('No batch selected')));
+    }
+    return ChickenReductionPage(batch: batch);
+  },
+),
+GoRoute(
+  path: '/egg_production',
+  builder: (context, state) {
+    final batch = context.read<FarmReportProvider>().batch;
+    if (batch == null) {
+      return const Scaffold(body: Center(child: Text('No batch selected')));
+    }
+    return EggProductionPage(batch: batch);
+  },
+),
 
       GoRoute(
         path: '/feeds_selection',
@@ -266,6 +282,23 @@ class AppRouter {
         builder: (context, state) {
           return const AdditionalNotesPage();
         },
+      ),
+     GoRoute(
+  path: '/Farm_Report_Entry_Screen',
+  builder: (context, state) {
+    final passedBatchId = state.extra as String?;
+    final providerBatch = context.read<FarmReportProvider>().batch;
+    final batchId = passedBatchId ?? providerBatch?.id;
+
+    if (batchId == null) {
+      return const Scaffold(body: Center(child: Text('No batch selected')));
+    }
+    return FarmReportEntryScreen(batchId: batchId);
+  },
+),
+      GoRoute(
+        path: '/all_reports',
+        builder: (context, state) => const AllReportsPage(),
       ),
 
       // GoRoute(
