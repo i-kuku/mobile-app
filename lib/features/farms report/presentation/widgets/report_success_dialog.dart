@@ -1,5 +1,7 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:ikuku/theme/app_theme.dart';
 
 class ReportSuccessDialog extends StatelessWidget {
   final VoidCallback onBackToDashboard;
@@ -23,20 +25,18 @@ class ReportSuccessDialog extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // "Daily Report Saved!" Title
-            const Text(
-              'Daily Report\nSaved!',
+             Text(
+              'daily_report_saved'.tr(),
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 32,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF1E331A),
+                color: CustomColors.primary,
                 height: 1.2,
               ),
             ),
             const SizedBox(height: 32),
 
-            // Green Checkmark Icon in Circle
             Container(
               width: 140,
               height: 140,
@@ -47,18 +47,16 @@ class ReportSuccessDialog extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.all(
                   30,
-                ), // Adjust padding to scale your image inside the circle
+                ), 
                 child: SvgPicture.asset(
                   'assets/icons/success_checkmark.svg',
                   height: 100,
                 ),
               ),
             ),
-            const SizedBox(height: 32),
-
-            // Subtitle Description text
-            const Text(
-              'Great job keeping your\nrecords up to date.',
+             SizedBox(height: 32),
+            Text(
+              'great_job_keeping_your_records_up_to_date'.tr(),
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 18,
@@ -83,8 +81,8 @@ class ReportSuccessDialog extends StatelessWidget {
                   ),
                   elevation: 2,
                 ),
-                child: const Text(
-                  'Back to Dashboard',
+                child:Text(
+                  'back_to_dashboard'.tr(),
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,

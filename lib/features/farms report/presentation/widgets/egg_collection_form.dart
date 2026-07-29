@@ -23,7 +23,6 @@ class _EggCollectionFormState extends State<EggCollectionForm> {
   @override
   void initState() {
     super.initState();
-    // Prefill from provider in case the user is coming back to this screen
     final report = context.read<FarmReportProvider>();
     _collectedEggs = report.eggsCollected > 0 ? true : null;
     _gradeEggs = report.gradeEggs ? true : (report.eggsCollected > 0 ? false : null);
