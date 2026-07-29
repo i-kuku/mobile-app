@@ -5,34 +5,28 @@ import 'package:ikuku/features/Inventory/provider/inventory_provider.dart';
 import 'package:ikuku/features/batches/model/chicken_batch_model.dart';
 import 'package:ikuku/features/farms%20report/presentation/widgets/batch_detail_container.dart';
 import 'package:ikuku/features/farms%20report/presentation/widgets/egg_collection_form.dart';
-import 'package:ikuku/features/farms%20report/provider/farm_report_provider.dart';
 import 'package:ikuku/shared/widgets/feature_button.dart';
 import 'package:ikuku/theme/app_theme.dart';
 import 'package:provider/provider.dart';
-// Import your newly separated form here
 
 class EggProductionPage extends StatefulWidget {
   final ChickenBatch batch;
 
-
   const EggProductionPage({super.key, required this.batch});
-
 
   @override
   State<EggProductionPage> createState() => _EggProductionPageState();
 }
 
-
 class _EggProductionPageState extends State<EggProductionPage> {
-
   @override
-void initState() {
-  super.initState();
-  // Fetch from Supabase right away when the app/section boots up
-  WidgetsBinding.instance.addPostFrameCallback((_) {
-    context.read<InventoryProvider>().fetchInventory();
-  });
-}
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<InventoryProvider>().fetchInventory();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,7 +35,7 @@ void initState() {
           icon: Icon(Icons.arrow_back, color: CustomColors.primary),
           onPressed: () => context.pop(context),
         ),
-        title:  Text(
+        title: Text(
           "farm_report_entry".tr(),
           style: TextStyle(
             color: CustomColors.primary,
@@ -79,9 +73,7 @@ void initState() {
               child: FeatureButton(
                 label: "continue".tr(),
                 onTap: () {
-                   
-                  context.push('/feeds_selection', 
-                  );
+                  context.push('/feeds_selection');
                 },
               ),
             ),

@@ -67,8 +67,6 @@ class _ChickenReductionPageState extends State<ChickenReductionPage> {
                 ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 24),
-
-              // Batch Detail Container Card
               if (widget.batch != null)
                 BatchDetailContainer(batch: widget.batch!),
 
@@ -80,8 +78,6 @@ class _ChickenReductionPageState extends State<ChickenReductionPage> {
                     'have_chickens_reduced_today'.tr(),
                     style: TextStyle(color: CustomColors.text, fontSize: 16),
                   ),
-
-                  // Radio buttons hook directly into local state variables
                   Row(
                     children: [
                       RadioMenuButton<String>(
@@ -95,7 +91,7 @@ class _ChickenReductionPageState extends State<ChickenReductionPage> {
                             CustomColors.primary,
                           ),
                         ),
-                        child: Text('yes'.tr()),
+                        child: Text('yes'.tr(),style: TextStyle(color: CustomColors.text),),
                       ),
                       RadioMenuButton<String>(
                         value: 'no',
@@ -108,7 +104,7 @@ class _ChickenReductionPageState extends State<ChickenReductionPage> {
                             CustomColors.primary,
                           ),
                         ),
-                        child: Text('no'.tr()),
+                        child: Text('no'.tr(),style: TextStyle(color: CustomColors.text),),
                       ),
                     ],
                   ),
@@ -132,8 +128,6 @@ class _ChickenReductionPageState extends State<ChickenReductionPage> {
                     ),
                   ],
                   const SizedBox(height: 24),
-
-                  // ...inside build(), replace the FeatureButton's onTap:
                   FeatureButton(
                     label: "continue".tr(),
                     onTap: () {

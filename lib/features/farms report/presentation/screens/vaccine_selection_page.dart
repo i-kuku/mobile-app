@@ -126,7 +126,7 @@ class _VaccineSelectionPage extends State<VaccineSelectionPage> {
                   'cannot_use_more_than'.tr(
                     namedArgs: {
                       'quantity': vaccine.quantity.toString(),
-                      'unit': 'kg'.tr(),
+                      'unit': vaccine.unit.tr(),
                       'item': vaccine.name,
                     },
                   ),

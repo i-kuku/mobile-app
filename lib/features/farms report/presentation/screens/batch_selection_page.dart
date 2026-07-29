@@ -2,7 +2,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ikuku/features/batches/model/chicken_batch_model.dart';
-
 import 'package:ikuku/features/farms%20report/presentation/widgets/batch_card.dart';
 import 'package:ikuku/features/farms%20report/provider/farm_report_provider.dart';
 import 'package:ikuku/theme/app_theme.dart';
@@ -51,11 +50,62 @@ class _BatchSelectionPageState extends State<BatchSelectionPage> {
       case 'broiler':
         return Colors.green.shade100;
       case 'layer':
-        return Colors.grey.shade100; // Visible dark yellow
+        return Colors.grey.shade100;
       case 'kienyeji':
         return Colors.orange.shade100;
       default:
         return Colors.grey.shade200;
+    }
+  }
+
+  void _alreadyReportedDialog(BuildContext context, String batchName) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadiusGeometry.circular(10),
+        ),
+        title: Text('Report Already Submitted'),
+        content: Text(
+          "A daily report for this batch has already been submitted today",
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text("Ok"),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<bool> _hasReportForToday(String batchId) async {
+    try {
+      final userId = Supabase.instance.client.auth.currentUser?.id;
+      if (userId == null) return false;
+
+      final todayStr = DateTime.now().toIso8601String().split('T')[0];
+
+      final dailyRecord = await Supabase.instance.client
+      .from("daily_records")
+      .select('id')
+      .eq('user_id', userId)
+      .eq('report_date', todayStr)
+      .maybeSingle();
+
+      if(dailyRecord == null) return false;
+
+      final batchRecord = await Supabase.instance.client
+      .from('batch_records')
+      .select('id')
+      .eq('daily_record_id', dailyRecord['id'])
+      .eq('batch_id', batchId)
+      .maybeSingle();
+      
+      return batchRecord != null;
+    } catch (e) {
+      debugPrint("Error checking todays's report status: $e");
+      return false;
     }
   }
 
@@ -119,12 +169,19 @@ class _BatchSelectionPageState extends State<BatchSelectionPage> {
                         return BatchCard(
                           batch: batch,
                           onTap: () async {
+                            final exists = await _hasReportForToday(batch.id);
+                            if (!context.mounted) return;
+
+                            if (exists) {
+                              _alreadyReportedDialog(context, batch.name);
+                              return;
+                            }
                             setState(() {
                               _selectedBatchId = batch.id;
                             });
                             context.read<FarmReportProvider>().setBatch(batch);
                             await Future.delayed(
-                              const Duration(milliseconds: 300),
+                              const Duration(milliseconds: 100),
                             );
 
                             if (!context.mounted) return;

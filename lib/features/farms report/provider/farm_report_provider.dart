@@ -111,8 +111,6 @@ class FarmReportProvider extends ChangeNotifier {
   DateTime _reportDate = DateTime.now();
   DateTime get reportDate => _reportDate;
 
-  // FIXED: this was hardcoded to always return false, ignoring the real field.
-  // Was: bool get gradeEggs => false;
   bool get gradeEggs => _gradeEggs;
 
   void setReportDate(DateTime date) {
@@ -174,9 +172,7 @@ class FarmReportProvider extends ChangeNotifier {
     if (value is String) return int.tryParse(value) ?? 0;
     return 0;
   }
-  // ==========================================================================================
-
-  // 3. Database Action: Handles Parent and Child Insert Transactions Sequential logic
+  
   Future<bool> submitDailyReport({required String batchId}) async {
     final userId = Supabase.instance.client.auth.currentUser?.id;
     if (userId == null) return false;
@@ -272,7 +268,6 @@ class FarmReportProvider extends ChangeNotifier {
             .from('batch_records')
             .insert(finalReport.toJson());
       }
-      // ==========================================================================================
 
       resetForm();
       return true;
