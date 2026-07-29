@@ -25,7 +25,6 @@ class FeedsSelector extends StatefulWidget {
 }
 
 class _FeedsSelectorState extends State<FeedsSelector> {
-  // A separate field on the STATE (not the widget), so it can be reassigned freely.
   late List<Map<String, dynamic>> _mergedSelectedFeeds;
 
   @override
@@ -123,7 +122,7 @@ class _FeedsSelectionPage extends State<FeedsSelectionPage> {
       widget.onSelectedFeedsChanged(_selectedFeeds);
       context.read<FarmReportProvider>().updateFeeds(
         _selectedFeeds,
-      ); // <-- added (was missing)
+      );
     });
   }
 
@@ -139,8 +138,14 @@ class _FeedsSelectionPage extends State<FeedsSelectionPage> {
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(
-                  'quantity_exceeds_stock'.tr(args: [feedName.tr()]),
+               content: Text(
+                  'cannot_use_more_than'.tr(
+                    namedArgs: {
+                      'quantity': feed.quantity.toString(),
+                      'unit': feed.unit.tr(),
+                      'item': feed.name,
+                    },
+                  ),
                 ),
               ),
             );

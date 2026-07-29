@@ -6,6 +6,7 @@ import 'package:ikuku/features/batches/model/chicken_batch_model.dart';
 import 'package:ikuku/features/batches/presentation/Widgets/batch_card.dart';
 import 'package:ikuku/features/batches/presentation/Widgets/pop_up.dart';
 import 'package:ikuku/features/batches/provider/batch_provider.dart';
+import 'package:ikuku/features/dashboard/presentation/components/app_bottom_nav_bar.dart';
 import 'package:ikuku/shared/widgets/feature_button.dart';
 import 'package:ikuku/theme/app_theme.dart';
 import 'package:provider/provider.dart';
@@ -126,6 +127,18 @@ void initState() {
             },
           ),
         
+      ),
+      bottomNavigationBar: AppBottomNavbar(
+        currentIndex: 0,
+        onTap: (index) {
+          if (index == 0) {
+            context.go('/');
+          } else if (index == 1) {
+            context.go('/shop');
+          } else if (index == 2) {
+            context.go('/profile');
+          }
+        },
       ),
     );
   }

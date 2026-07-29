@@ -1,12 +1,10 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-
 import 'package:ikuku/features/batches/model/chicken_batch_model.dart';
 import 'package:ikuku/features/farms%20report/%20model/report_list_item.dart';
 import 'package:ikuku/features/farms%20report/provider/farm_report_provider.dart';
-import 'package:intl/intl.dart';
 import 'package:ikuku/features/farms%20report/repository/reports_repository.dart';
-
 import 'package:ikuku/theme/app_theme.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -54,7 +52,7 @@ class _AllReportsPageState extends State<AllReportsPage> {
           onPressed: () => context.pop(),
         ),
         title: Text(
-          'All Reports',
+          'all_reports'.tr(),
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
             color: CustomColors.primary,
             fontWeight: FontWeight.bold,
@@ -63,9 +61,7 @@ class _AllReportsPageState extends State<AllReportsPage> {
         actions: [
           IconButton(
             icon: const Icon(Icons.filter_list, color: CustomColors.primary),
-            onPressed: () {
-              // TODO: hook up filter options later
-            },
+            onPressed: () {},
           ),
         ],
       ),
@@ -78,7 +74,7 @@ class _AllReportsPageState extends State<AllReportsPage> {
               onChanged: (value) =>
                   setState(() => _searchQuery = value.toLowerCase()),
               decoration: InputDecoration(
-                hintText: 'Search reports...',
+                hintText: 'search_reports'.tr(),
                 prefixIcon: const Icon(Icons.search),
                 filled: true,
                 fillColor: Colors.grey.shade100,
@@ -112,7 +108,7 @@ class _AllReportsPageState extends State<AllReportsPage> {
                 if (reports.isEmpty) {
                   return Center(
                     child: Text(
-                      'No reports found',
+                      'no_reports_found'.tr(),
                       style: TextStyle(color: Colors.grey.shade600),
                     ),
                   );
@@ -199,7 +195,7 @@ class _ReportCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.grey,
             blurRadius: 6,
             offset: const Offset(0, 2),
           ),

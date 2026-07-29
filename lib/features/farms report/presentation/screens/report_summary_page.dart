@@ -1,10 +1,9 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:ikuku/features/farms%20report/presentation/widgets/app_state.dart';
-import 'package:ikuku/features/farms%20report/presentation/widgets/report_dialog_success.dart';
+import 'package:ikuku/features/farms%20report/presentation/widgets/report_success_dialog.dart';
 import 'package:ikuku/shared/widgets/loading_button.dart';
-import 'package:intl/intl.dart';
-import 'package:ikuku/features/farms%20report/presentation/widgets/report%20card%20header.dart';
+import 'package:ikuku/features/farms%20report/presentation/widgets/report_card_header.dart';
 import 'package:ikuku/features/farms%20report/provider/farm_report_provider.dart';
 import 'package:ikuku/theme/app_theme.dart';
 import 'package:provider/provider.dart';
@@ -29,63 +28,69 @@ class FarmReportEntryScreen extends StatelessWidget {
           const SizedBox(height: 16),
           _sectionCard(
             context,
-            title: 'Birds - $birdType',
+            title: 'Birds- $birdType',
             rows: {
-              'Sold': report.chickensSold,
-              'Died': report.chickensDied,
-              'Curled': report.chickensCurled,
-              'Stolen': report.chickensStolen,
+              'sold'.tr(): report.chickensSold,
+              'died'.tr(): report.chickensDied,
+              'curled'.tr(): report.chickensCurled,
+              'stolen'.tr(): report.chickensStolen,
             },
             onEdit: () => context.push('/chicken_reduction'),
           ),
           const SizedBox(height: 16),
           _sectionCard(
             context,
-            title: 'Eggs',
+            title: 'eggs'.tr(),
             rows: {
-              'Collected': report.eggsCollected,
-              'Broken': report.eggsBroken,
-              'Big': report.eggsStandard, // fixed: was eggsSmall
-              'Deformed': report.eggsDeformed,
+              'collected'.tr(): report.eggsCollected,
+              'broken'.tr(): report.eggsBroken,
+              'big'.tr(): report.eggsStandard,
+              'deformed'.tr(): report.eggsDeformed,
             },
             onEdit: () => context.push('/egg_production'),
           ),
           const SizedBox(height: 16),
           _listCard(
             context,
-            title: 'Feeds Used',
+            title: 'feeds_used'.tr(),
             items: report.feedsUsed,
             onEdit: () => context.push('/feeds_selection'),
           ),
           const SizedBox(height: 16),
           _listCard(
             context,
-            title: 'Vaccines',
+            title: 'vaccines'.tr(),
             items: report.vaccinesUsed,
             onEdit: () => context.push('/vaccine_selection'),
           ),
           const SizedBox(height: 16),
           _listCard(
             context,
-            title: 'Other Materials',
+            title: 'other_materials'.tr(),
             items: report.otherMaterialsUsed,
             onEdit: () => context.push('/other_items_selection'),
           ),
           const SizedBox(height: 16),
           _notesCard(
             context,
-            title: 'Additional Notes',
+            title: 'additional_notes'.tr(),
             notes: report.notes,
             onEdit: () => context.push('/additional_notes'),
           ),
           const SizedBox(height: 16),
-          Center(
-            child: Text(
-              'This report was prepared on '
-              '$formattedDate'
-              'at ${DateFormat('HH:mm').format(DateTime.now())}',
-              style: const TextStyle(color: Colors.grey, fontSize: 13),
-            ),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'this_report_was_prepared_on'.tr(),
+                style: const TextStyle(color: Colors.grey, fontSize: 14),
+              ),
+              Text(
+                '$formattedDate'
+                ' at ${DateFormat('HH:mm').format(DateTime.now())}',
+                style: const TextStyle(color: Colors.grey, fontSize: 14),
+              ),
+            ],
           ),
           const SizedBox(height: 24),
           _finishButton(context, report),
@@ -95,7 +100,6 @@ class FarmReportEntryScreen extends StatelessWidget {
     );
   }
 
-  // Shared card shell: white background, rounded corners, soft elevation shadow
   Widget _cardShell({required Widget child}) {
     return Container(
       width: double.infinity,
@@ -105,7 +109,7 @@ class FarmReportEntryScreen extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.grey,
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -130,7 +134,7 @@ class FarmReportEntryScreen extends StatelessWidget {
         InkWell(
           onTap: onEdit,
           child: Text(
-            'EDIT ITEMS',
+            'edit_items'.tr(),
             style: TextStyle(
               color: CustomColors.primary,
               fontWeight: FontWeight.bold,
@@ -192,13 +196,18 @@ class FarmReportEntryScreen extends StatelessWidget {
           if (items.isNotEmpty) ...[
             const SizedBox(height: 12),
             for (final item in items)
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4),
-                child: Text(
-                  '${item['name']}'
-                  '${item['quantity'] != null ? ' - ${item['quantity']}' : ''}',
-                  style: TextStyle(fontSize: 15, color: textColor),
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    '${item['name']}',
+                    style: TextStyle(fontSize: 15, color: textColor),
+                  ),
+                  Text(
+                    item['quantity'] != null ? '${item['quantity']}' : '',
+                    style: TextStyle(fontSize: 15, color: textColor),
+                  ),
+                ],
               ),
           ],
         ],
@@ -220,11 +229,11 @@ class FarmReportEntryScreen extends StatelessWidget {
           if (notes != null && notes.isNotEmpty) ...[
             const SizedBox(height: 12),
             Align(
-              alignment: Alignment.centerRight,
+              alignment: Alignment.centerLeft,
               child: Text(
                 notes,
                 style: TextStyle(
-                  color: CustomColors.primary,
+                  color: CustomColors.text,
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
                 ),
@@ -247,24 +256,20 @@ class FarmReportEntryScreen extends StatelessWidget {
         if (!context.mounted) return;
 
         if (success) {
-          // Show your custom success dialog
           showDialog(
             context: context,
-            barrierDismissible: false, // User must click the button to exit
+            barrierDismissible: false,
             builder: (dialogContext) {
               return ReportSuccessDialog(
                 onBackToDashboard: () {
-                  // 1. Dismiss the success dialog
+                  
                   Navigator.pop(dialogContext);
-
-                  // 2. Go all the way back to your main dashboard screen
-                  Navigator.of(context).popUntil((route) => route.isFirst);
+                  context.go('/');
                 },
               );
             },
           );
         } else {
-          // Only show a SnackBar if the submission fails
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Failed to submit report'),

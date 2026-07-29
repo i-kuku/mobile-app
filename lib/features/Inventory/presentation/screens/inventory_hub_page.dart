@@ -4,6 +4,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ikuku/features/Inventory/presentation/widgets/inventory_category_card.dart';
 import 'package:ikuku/features/Inventory/provider/inventory_provider.dart';
+import 'package:ikuku/features/dashboard/presentation/components/app_bottom_nav_bar.dart';
 import 'package:provider/provider.dart';
 
 class InventoryCategory{
@@ -67,7 +68,7 @@ class _InventoryHubPageState extends State<InventoryHubPage> {
           }
         ),
         title: Text('my_inventory'.tr(),
-        style: Theme.of(context).textTheme.headlineMedium,
+        style: Theme.of(context).textTheme.headlineMedium!.copyWith(fontWeight: FontWeight.bold)
         ),
         centerTitle: true,
         actions: [
@@ -88,6 +89,18 @@ class _InventoryHubPageState extends State<InventoryHubPage> {
             category:item,
             onTap: ()=>context.push(item.route),
           );
+        },
+      ),
+      bottomNavigationBar: AppBottomNavbar(
+        currentIndex: 0,
+        onTap: (index) {
+          if (index == 0) {
+            context.go('/');
+          } else if (index == 1) {
+            context.go('/shop');
+          } else if (index == 2) {
+            context.go('/profile');
+          }
         },
       ),
     );
