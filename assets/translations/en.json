@@ -465,5 +465,8 @@
     "add_feed_to_store": "Add feed to store",
     "Notes": "Notes",
     "would_you_like_to_grade_your_eggs": "Would you like to grade your eggs?",
-    "how_many_eggs_have_you_collected_today": "How many eggs have you collected today?"
+    "how_many_eggs_have_you_collected_today": "How many eggs have you collected today?",
+    "would_you_like_to_grade_your_eggs?": "Would you like to grade your eggs?",
+    "this_report_was_prepared_on": "This report was prepared on",
+    "great_job_keeping_your_records_up_to_date": "Great job keeping your records up to date."
   }

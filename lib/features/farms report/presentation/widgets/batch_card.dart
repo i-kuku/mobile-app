@@ -25,7 +25,7 @@ class BatchCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.grey,
             blurRadius: 12,
             offset: Offset(0, 8),
           ),

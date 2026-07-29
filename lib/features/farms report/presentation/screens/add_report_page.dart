@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:ikuku/features/batches/model/chicken_batch_model.dart';
+import 'package:ikuku/features/dashboard/presentation/components/app_bottom_nav_bar.dart';
 
 import 'package:provider/provider.dart';
 
@@ -41,7 +42,7 @@ class _AddReportPageState extends State<AddReportPage> {
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.pop(context),
+          onPressed: () => context.pop(),
         ),
         title: Text(
           'my_farms_report'.tr(),
@@ -112,7 +113,7 @@ class _AddReportPageState extends State<AddReportPage> {
                 if (reports.isEmpty) {
                   return Center(
                     child: Text(
-                      'No reports yet',
+                      'no_reports_yet'.tr(),
                       style: TextStyle(color: Colors.grey.shade600),
                     ),
                   );
@@ -136,7 +137,7 @@ class _AddReportPageState extends State<AddReportPage> {
 
                         final batchId = detail['batch_id'] as String;
 
-                        // NEW: fetch the full batch and set the notifier, same as BatchSelectionPage does
+                        // fetch the full batch and set the notifier, same as BatchSelectionPage does
                         final batchRow = await Supabase.instance.client
                             .from('batches')
                             .select()
@@ -165,6 +166,18 @@ class _AddReportPageState extends State<AddReportPage> {
             ),
           ),
         ],
+      ),
+      bottomNavigationBar: AppBottomNavbar(
+        currentIndex: 0,
+        onTap: (index) {
+          if (index == 0) {
+            context.go('/');
+          } else if (index == 1) {
+            context.go('/shop');
+          } else if (index == 2) {
+            context.go('/profile');
+          }
+        },
       ),
     );
   }

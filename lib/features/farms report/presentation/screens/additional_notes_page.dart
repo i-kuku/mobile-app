@@ -62,8 +62,6 @@ class _AdditionalNotesPageState extends State<AdditionalNotesPage> {
                       style: TextStyle(color: CustomColors.text, fontSize: 18),
                     ),
                     const SizedBox(height: 24),
-
-                    // Super clean call!
                     CustomNotesField(controller: _notesController),
                   ],
                 ),
@@ -80,7 +78,6 @@ class _AdditionalNotesPageState extends State<AdditionalNotesPage> {
                   context.read<FarmReportProvider>().updateFinancialsAndNotes(
                         notes: _notesController.text,
                       );
-                  // go FarmReportEntryScreen
                   context.push('/Farm_Report_Entry_Screen');
                 },
               ),
