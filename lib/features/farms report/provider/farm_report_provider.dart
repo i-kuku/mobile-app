@@ -8,13 +8,9 @@ class FarmReportProvider extends ChangeNotifier {
   bool _isloading = false;
   bool get isloading => _isloading;
 
-  // ============ NEW: tracks whether we're editing an existing report ============
   String? _editingReportId;
   String? _editingDailyRecordId;
   bool get isEditing => _editingReportId != null;
-  // ================================================================================
-
-  //temporary state holders
   int _chickensCurled = 0;
   int _chickensSold = 0;
   int _chickensDied = 0;
@@ -123,7 +119,7 @@ class FarmReportProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ============ NEW: load a previously-saved report into the form for editing ============
+  //load a previously-saved report into the form for editing
   void loadReportForEditing(Map<String, dynamic> data) {
     _editingReportId = data['id'] as String?;
     _editingDailyRecordId = data['daily_record_id'] as String?;
@@ -183,9 +179,7 @@ class FarmReportProvider extends ChangeNotifier {
     try {
       final todayStr = _reportDate.toIso8601String().split('T')[0];
 
-      // ============ NEW: branch between UPDATE (editing) and INSERT (new report) ============
       if (_editingReportId != null) {
-        // --- UPDATE PATH ---
         await Supabase.instance.client
             .from('daily_records')
             .update({'record_date': todayStr, 'report_date': todayStr})
@@ -221,7 +215,6 @@ class FarmReportProvider extends ChangeNotifier {
             .update(updatedReport.toJson())
             .eq('id', _editingReportId!);
       } else {
-        // --- INSERT PATH (your original logic, unchanged) ---
         final parentResponse = await Supabase.instance.client
             .from('daily_records')
             .insert({
@@ -300,11 +293,9 @@ class FarmReportProvider extends ChangeNotifier {
     _lossesBreakdown = [];
     _salesAmount = 0;
     _gainsAmount = 0;
-    // NEW: clear editing state so the next report starts fresh (INSERT, not UPDATE)
-    _editingReportId = null;
-    _editingDailyRecordId = null;
     _editingReportId = null;
     _editingDailyRecordId = null;
     _batch = null;
+    notifyListeners();
   }
 }
