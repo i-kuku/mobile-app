@@ -19,13 +19,19 @@ class ConfirmBatchPage extends StatelessWidget {
         leadingWidth: 100,
         leading: InkWell(
           onTap: () => context.pop(),
-
           child: Row(
             children: [
               SizedBox(width: 8),
               Icon(Icons.arrow_back, size: 18, color: Colors.black),
               SizedBox(width: 4),
-              Text("Back".tr(), style: TextStyle(color: CustomColors.text, fontSize: 16,fontWeight: FontWeight.w500)),
+              Text(
+                "Back".tr(),
+                style: TextStyle(
+                  color: CustomColors.text,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
             ],
           ),
         ),
@@ -42,9 +48,11 @@ class ConfirmBatchPage extends StatelessWidget {
                 alignment: Alignment.centerLeft,
                 padding: EdgeInsets.only(left: 8),
                 decoration: BoxDecoration(color: CustomColors.secondary),
-                child: Text("Confirm_your_batch".tr(),
-                style: Theme.of(context).textTheme.titleLarge!.copyWith(color: CustomColors.text
-                ),
+                child: Text(
+                  "Confirm_your_batch".tr(),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge!.copyWith(color: CustomColors.text),
                 ),
               ),
               SizedBox(height: 10),
@@ -56,10 +64,17 @@ class ConfirmBatchPage extends StatelessWidget {
                   children: [
                     _listItem("Batch_Name".tr(), batchData['name']),
                     _listItem("type_of_bird".tr(), batchData['typeOfBird']),
-                    _listItem("number_of_birds".tr(), batchData['initialCount']),
+                    _listItem(
+                      "number_of_birds".tr(),
+                      batchData['initialCount'],
+                    ),
                     _listItem(
                       "Age".tr(),
                       "${batchData['age']} ${batchData['ageUnit'].toString().tr()}",
+                    ),
+                    _listItem(
+                      "cost_of_chicks".tr(),
+                      batchData['purchaseCost'],
                     ),
                   ],
                 ),
@@ -75,55 +90,73 @@ class ConfirmBatchPage extends StatelessWidget {
                       style: ElevatedButton.styleFrom(
                         side: BorderSide(color: CustomColors.secondary),
                         padding: EdgeInsets.symmetric(vertical: 16),
-                        
                       ),
                       child: Text(
                         "edit".tr(),
-                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: CustomColors.primary,),
+                        style: Theme.of(context).textTheme.bodyLarge!
+                            .copyWith(color: CustomColors.primary),
                       ),
                     ),
                   ),
                   SizedBox(width: 58),
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: () async{
-                        try{
-                        await Provider.of<BatchProvider>(context, listen: false).addBatch(
-                          name: batchData['name'],
-                          typeOfBird: batchData['typeOfBird'],
-                          initialCount: int.tryParse(batchData['initialCount'].toString()) ?? 0,
-                          age: int.tryParse(batchData['age'].toString())?? 0,
-                          ageUnit: batchData['ageUnit'],
-                        );
-                         if(!context.mounted)return;
-                        showDialog(
-                          context: context,
-                          barrierDismissible: false,
-                          builder: (context) => PopUp(
-                            icon: Image.asset(
-                              "assets/icons/tip-chicken.png",
-                              height: 154,
-                              width: 151,
-                              fit: BoxFit.contain,
-                            ),
-                            messagebefore: "you_have_created ".tr(),
-                             batchName: batchData['name'],
-                            mainButtonText: null,
-                          ),
-                        );
-                        Future.delayed(Duration(seconds: 1), () {
-                          if (context.mounted) {
-                            Navigator.of(context).pop();
-                            context.go('/batches');
-                          }
-                        });
-                      }catch(e){
-                        if(context.mounted){
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text("Failed to save batch to database: $e"))
+                      onPressed: () async {
+                        try {
+                          await Provider.of<BatchProvider>(
+                            context,
+                            listen: false,
+                          ).addBatch(
+                            name: batchData['name'],
+                            typeOfBird: batchData['typeOfBird'],
+                            initialCount:
+                                int.tryParse(
+                                  batchData['initialCount'].toString(),
+                                ) ??
+                                0,
+                            age:
+                                int.tryParse(batchData['age'].toString()) ??
+                                0,
+                            ageUnit: batchData['ageUnit'],
+                            purchaseCost:
+                                num.tryParse(
+                                  batchData['purchaseCost'].toString(),
+                                ) ??
+                                0,
                           );
+                          if (!context.mounted) return;
+                          showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (context) => PopUp(
+                              icon: Image.asset(
+                                "assets/icons/tip-chicken.png",
+                                height: 154,
+                                width: 151,
+                                fit: BoxFit.contain,
+                              ),
+                              messagebefore: "you_have_created ".tr(),
+                              batchName: batchData['name'],
+                              mainButtonText: null,
+                            ),
+                          );
+                          Future.delayed(Duration(seconds: 1), () {
+                            if (context.mounted) {
+                              Navigator.of(context).pop();
+                              context.go('/batches');
+                            }
+                          });
+                        } catch (e) {
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  "Failed to save batch to database: $e",
+                                ),
+                              ),
+                            );
+                          }
                         }
-                      }
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: CustomColors.primary,
@@ -131,7 +164,9 @@ class ConfirmBatchPage extends StatelessWidget {
                       ),
                       child: Text(
                         "confirm".tr(),
-                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Colors.white),
+                        style: Theme.of(
+                          context,
+                        ).textTheme.bodyLarge!.copyWith(color: Colors.white),
                       ),
                     ),
                   ),
@@ -153,7 +188,10 @@ Widget _listItem(String label, String value) {
       children: [
         Text(
           label,
-          style: TextStyle(color: CustomColors.textColorSecondary, fontSize: 20),
+          style: TextStyle(
+            color: CustomColors.textColorSecondary,
+            fontSize: 20,
+          ),
         ),
         Text(
           value,
