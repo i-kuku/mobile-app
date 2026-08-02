@@ -17,6 +17,7 @@ class _CreateBatchPageState extends State<CreateBatchPage> {
   final _nameController = TextEditingController();
   final _countController = TextEditingController();
   final _ageController = TextEditingController();
+  final _costController = TextEditingController();
 
   String _selectedType = "layer";
   String _selectedUnit = "Days";
@@ -26,17 +27,19 @@ class _CreateBatchPageState extends State<CreateBatchPage> {
     _nameController.dispose();
     _countController.dispose();
     _ageController.dispose();
+    _costController.dispose();
     super.dispose();
   }
 
   void _saveBatch() {
-    if (_formKey.currentState!.validate()){
+    if (_formKey.currentState!.validate()) {
       final batchData = {
         'name': _nameController.text,
         'typeOfBird': _selectedType,
         'initialCount': _countController.text,
         'age': _ageController.text,
         'ageUnit': _selectedUnit,
+        'purchaseCost': _costController.text,
       };
       context.push('/confirm_batch_page', extra: batchData);
     }
@@ -73,7 +76,7 @@ class _CreateBatchPageState extends State<CreateBatchPage> {
               const SizedBox(width: 8),
               const Icon(Icons.arrow_back, color: Colors.black, size: 18),
               const SizedBox(width: 4),
-               Text(
+              Text(
                 'Back'.tr(),
                 style: TextStyle(
                   color: Colors.black,
@@ -114,7 +117,8 @@ class _CreateBatchPageState extends State<CreateBatchPage> {
                 TextFormField(
                   controller: _nameController,
                   decoration: InputDecoration(hintText: "batch_1".tr()),
-                  validator: (value) => value!.isEmpty ? "enter_a_name".tr() : null,
+                  validator: (value) =>
+                      value!.isEmpty ? "enter_a_name".tr() : null,
                 ),
                 SizedBox(height: 48),
 
@@ -130,7 +134,7 @@ class _CreateBatchPageState extends State<CreateBatchPage> {
                       "type_of_bird".tr(),
                       DropdownButtonFormField<String>(
                         initialValue: _selectedType,
-                        items: ["layer", "broiler","kienyeji"].map((type) {
+                        items: ["layer", "broiler", "kienyeji"].map((type) {
                           return DropdownMenuItem(
                             value: type,
                             child: Text(type.tr()),
@@ -160,7 +164,6 @@ class _CreateBatchPageState extends State<CreateBatchPage> {
                             value!.isEmpty ? "enter_the_age".tr() : null,
                       ),
                     ),
-
                     _buildLabelField(
                       "age_unit".tr(),
                       DropdownButtonFormField<String>(
@@ -175,11 +178,22 @@ class _CreateBatchPageState extends State<CreateBatchPage> {
                             setState(() => _selectedUnit = val!),
                       ),
                     ),
+                    _buildLabelField(
+                      "cost_of_chicks".tr(),
+                      TextFormField(
+                        controller: _costController,
+                        keyboardType: TextInputType.number,
+                        decoration: const InputDecoration(hintText: "0"),
+                        validator: (value) =>
+                            value!.isEmpty ? "enter_the_cost".tr() : null,
+                      ),
+                    ),
                   ],
                 ),
                 SizedBox(height: 48),
-                FeatureButton(label: "create_new_batch".tr(), 
-                onTap: _saveBatch, 
+                FeatureButton(
+                  label: "create_new_batch".tr(),
+                  onTap: _saveBatch,
                 ),
               ],
             ),
