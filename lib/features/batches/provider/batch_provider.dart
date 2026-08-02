@@ -1,50 +1,43 @@
 import 'package:flutter/material.dart';
 import 'package:ikuku/features/batches/model/chicken_batch_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-// import 'package:uuid/uuid.dart';
 
-class BatchProvider extends ChangeNotifier{
-  // final SupabaseClient _supabase = Supabase.instance.client;
-  final List<ChickenBatch> _batches=[];
-  // bool _isLoading = false;
+class BatchProvider extends ChangeNotifier {
+  final List<ChickenBatch> _batches = [];
 
-  List <ChickenBatch> get batches => _batches;
-  // bool get _isLoading => _isLoading;
+  List<ChickenBatch> get batches => _batches;
 
- Future<void> fetchBatches() async {
-  // _isLoading = true;
-  notifyListeners();
-
-  try{
-    final userId = Supabase.instance.client.auth.currentUser?.id;
-    if(userId == null) return;
-
-    final response = await Supabase.instance.client
-    .from('batches')
-    .select()
-    .eq('user_id',userId)
-    .order('created_at',ascending: false);
-
-  _batches.clear();
-  for(var item in response){
-    _batches.add(ChickenBatch.fromJson(item));
-  }
-  }catch(e){
-    debugPrint('Error fetching batches: $e');
-  }finally{
-    // _isLoading = false;
+  Future<void> fetchBatches() async {
     notifyListeners();
+
+    try {
+      final userId = Supabase.instance.client.auth.currentUser?.id;
+      if (userId == null) return;
+
+      final response = await Supabase.instance.client
+          .from('batches')
+          .select()
+          .eq('user_id', userId)
+          .order('created_at', ascending: false);
+
+      _batches.clear();
+      for (var item in response) {
+        _batches.add(ChickenBatch.fromJson(item));
+      }
+    } catch (e) {
+      debugPrint('Error fetching batches: $e');
+    } finally {
+      notifyListeners();
+    }
   }
- }
 
-
-
- Future<void> addBatch({
+  Future<void> addBatch({
     required String name,
     required String typeOfBird,
     required int initialCount,
     required int age,
     required String ageUnit,
+    required num purchaseCost,
   }) async {
     try {
       final userId = Supabase.instance.client.auth.currentUser?.id;
@@ -57,16 +50,15 @@ class BatchProvider extends ChangeNotifier{
         'initial_count': initialCount,
         'age': age,
         'age_unit': ageUnit,
+        'purchase_cost': purchaseCost,
       };
 
-      await Supabase.instance.client
-          .from('batches')
-          .insert(newBatchData);
-          
-          await fetchBatches();
+      await Supabase.instance.client.from('batches').insert(newBatchData);
+
+      await fetchBatches();
     } catch (e) {
       debugPrint('Error inserting batch: $e');
-      rethrow; 
+      rethrow;
     }
   }
 
@@ -77,6 +69,7 @@ class BatchProvider extends ChangeNotifier{
     required int initialCount,
     required int age,
     required String ageUnit,
+    required num purchaseCost,
   }) async {
     try {
       final updatedData = {
@@ -85,12 +78,13 @@ class BatchProvider extends ChangeNotifier{
         'initial_count': initialCount,
         'age': age,
         'age_unit': ageUnit,
+        'purchase_cost': purchaseCost,
       };
 
       await Supabase.instance.client
-      .from('batches')
-      .update(updatedData)
-      .eq('id', id);
+          .from('batches')
+          .update(updatedData)
+          .eq('id', id);
 
       final index = _batches.indexWhere((element) => element.id == id);
       if (index != -1) {
@@ -102,6 +96,7 @@ class BatchProvider extends ChangeNotifier{
           age: age,
           ageUnit: ageUnit,
           createdAt: _batches[index].createdAt,
+          purchaseCost: purchaseCost,
         );
         notifyListeners();
       }
@@ -111,15 +106,12 @@ class BatchProvider extends ChangeNotifier{
     }
   }
 
-  Future<void> removeBatch(String id) async{
-    try{
-      await Supabase.instance.client
-      .from('batches')
-      .delete()
-      .eq('id',id);
+  Future<void> removeBatch(String id) async {
+    try {
+      await Supabase.instance.client.from('batches').delete().eq('id', id);
       _batches.removeWhere((batch) => batch.id == id);
       notifyListeners();
-    }catch(e){
+    } catch (e) {
       debugPrint('Error deleting batch $e');
     }
   }
