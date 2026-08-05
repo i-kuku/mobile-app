@@ -144,7 +144,6 @@ class _AddItemFormState extends State<AddItemForm>{
                       category: widget.category, 
                       userId: currentUserId,
                       addedOn: widget.itemToEdit?.addedOn ?? DateTime.now(),
-                      daily_records_id: widget.itemToEdit?.daily_records_id ?? const Uuid().v4(),
                     );
                     final provider= context.read<InventoryProvider>();
                     if(widget.itemToEdit!=null){

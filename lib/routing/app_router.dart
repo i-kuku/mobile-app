@@ -24,7 +24,7 @@ import 'package:ikuku/features/farms%20report/presentation/screens/see_all_repor
 import 'package:ikuku/features/farms%20report/presentation/screens/vaccine_selection_page.dart';
 
 import 'package:ikuku/features/farms%20report/provider/farm_report_provider.dart';
-import 'package:ikuku/features/financial%20summary/presentation/screens/financial_summary_page.dart';
+import 'package:ikuku/features/financial%20summaries/presentation/screens/financial_summary_page.dart';
 import 'package:ikuku/features/home/presentation/home_page.dart';
 import 'package:ikuku/features/onboarding/create_farm_page.dart';
 import 'package:ikuku/features/onboarding/onboarding_page.dart';
