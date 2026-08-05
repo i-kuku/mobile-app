@@ -12,10 +12,7 @@ class RevenueCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Calculate net revenue (Total Income - Total Expenses)
     final double netRevenue = summary.totalSales - summary.totalExpenses;
-
-    // Show predicted mode only if there are no sales recorded yet
     final bool showPredicted = summary.totalSales <= 0;
 
     final double displayValue = showPredicted
@@ -61,7 +58,7 @@ class RevenueCard extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             showPredicted
-                ? 'If you sell all remaining chicken at Ksh 500 you are predicted to earn this money at the end of your cycle'
+                ? 'If you sell all remaining chicken at Ksh 600 you are predicted to earn this money at the end of your cycle'
                 : '',
             style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                   color: Colors.grey.shade600,
