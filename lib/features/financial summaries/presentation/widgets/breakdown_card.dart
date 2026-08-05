@@ -73,8 +73,7 @@ class _BreakdownCardState extends State<BreakdownCard> {
                 if ((rawPercent == 0 || rawPercent.isNaN) && totalBase > 0) {
                   rawPercent = (amount / totalBase) * 100;
                 }
-
-                // Progress bar value must stay strictly between 0.0 and 1.0
+                
                 final double progressValue = totalBase > 0 
                     ? (amount / totalBase).clamp(0.0, 1.0) 
                     : 0.0;

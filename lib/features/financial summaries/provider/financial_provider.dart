@@ -10,13 +10,11 @@ class FinancialSummaryProvider extends ChangeNotifier {
   String? _selectedBatchId;
   String _selectedTimeframe = '3 months';
 
-  // Getters
   FinancialSummaryModel? get summary => _summary;
   bool get isLoading => _isLoading;
   String? get selectedBatchId => _selectedBatchId;
   String get selectedTimeframe => _selectedTimeframe;
 
-  // Fetch financial summary from Supabase RPC function
   Future<void> load() async {
     _isLoading = true;
     notifyListeners();
@@ -45,7 +43,7 @@ class FinancialSummaryProvider extends ChangeNotifier {
     }
   }
 
-  // Refreshes data dynamically (call this after adding a sale or expense)
+  // Refreshes data
   Future<void> refresh() async {
     await load();
   }
