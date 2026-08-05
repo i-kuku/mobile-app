@@ -3,7 +3,6 @@ import 'package:ikuku/features/Inventory/provider/inventory_provider.dart';
 import 'package:ikuku/features/batches/provider/batch_provider.dart';
 import 'package:ikuku/features/auth/provider/auth_provider.dart';
 import 'package:ikuku/features/farms%20report/provider/farm_report_provider.dart';
-import 'package:ikuku/features/financial%20summary/provider/financial_provider.dart';
 import 'package:ikuku/features/home/provider/analytics_provider.dart';
 import 'package:ikuku/features/home/provider/tutorial_provider.dart';
 import 'package:ikuku/features/settings/languages/provider/language_provider.dart';
@@ -58,7 +57,6 @@ void main() async {
         ChangeNotifierProvider(create: (context) => AnalyticsProvider()),
         ChangeNotifierProvider(create: (context) => TutorialProvider()),
         ChangeNotifierProvider(create: (context) => FarmReportProvider()),
-        ChangeNotifierProvider(create: (_) => FinancialSummaryProvider()),
 
       ],
       child: EasyLocalization(
