@@ -1,0 +1,53 @@
+name: RaptorReview AI 
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: dev-k99/raptorreview-ai@v1
+        with:
+          groq_api_key: ${{ secrets.GROQKEY }}
+          model: llama-3.3-70b-versatile
+          temperature: 0.1
+          max_tokens: 2048
+          custom_prompt: |
+            You are reviewing Flutter/Dart code. Focus on:
+            - BuildContext used across async gaps (after await, mounted check missing)
+            - Memory leaks (StreamControllers, AnimationControllers, listeners not disposed)
+            - setState called after dispose or during build
+            - Widget keys misused or missing in lists
+            - const constructors missed (performance)
+            - Unnecessary widget rebuilds (ValueListenableBuilder vs setState, etc.)
+            - Incorrect use of StatelessWidget vs StatefulWidget
+            - Async operations inside build methods
+            - Null safety violations or unsafe casts
+            - Platform channel or plugin usage errors
+            Be concise. Only comment on actual bugs or performance issues, not style nits or formatting.
+
+            Respond with ONLY a valid JSON object, no markdown, no freeform text, in this exact shape:
+            {
+              "summary": "one or two sentence overall assessment",
+              "issues": [
+                {
+                  "file": "path/to/file.dart",
+                  "line": 123,
+                  "severity": "CRITICAL",
+                  "title": "short issue title",
+                  "suggestion": "concrete fix",
+                  "why": "impact explanation"
+                }
+              ]
+            }
+            If there are no issues, return "issues": [].
