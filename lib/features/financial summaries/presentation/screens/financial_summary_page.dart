@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ikuku/features/batches/provider/batch_provider.dart';
@@ -43,7 +44,7 @@ class _FinancialSummaryPageState extends State<FinancialSummaryPage> {
           onPressed: () => context.pop(),
         ),
         title: Text(
-          'Financial Summary',
+          'financial_summary'.tr(),
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
             color: CustomColors.primary,
             fontWeight: FontWeight.bold,
@@ -61,9 +62,9 @@ class _FinancialSummaryPageState extends State<FinancialSummaryPage> {
       body: financialProvider.isLoading
           ? const Center(child: CircularProgressIndicator())
           : summary == null
-          ? const Center(
+          ?  Center(
               child: Text(
-                'No financial summary records found.',
+                "no_financial_summary_records_found".tr(),
                 style: TextStyle(color: Colors.grey),
               ),
             )
