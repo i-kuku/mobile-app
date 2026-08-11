@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:ikuku/features/financial%20summaries/model/financial_summary_model.dart';
 import 'package:ikuku/theme/app_theme.dart';
@@ -24,8 +25,8 @@ class _BreakdownCardState extends State<BreakdownCard> {
         ? widget.summary.incomeBreakdownAmounts
         : widget.summary.expenseBreakdownAmounts;
 
-    final double totalBase = _showIncome 
-        ? widget.summary.totalSales 
+    final double totalBase = _showIncome
+        ? widget.summary.totalSales
         : widget.summary.totalExpenses;
 
     final Map<String, Color> colors = {
@@ -52,10 +53,18 @@ class _BreakdownCardState extends State<BreakdownCard> {
           Row(
             children: [
               Expanded(
-                child: _toggleTab('Income', _showIncome, () => setState(() => _showIncome = true)),
+                child: _toggleTab(
+                  'income'.tr(),
+                  _showIncome,
+                  () => setState(() => _showIncome = true),
+                ),
               ),
               Expanded(
-                child: _toggleTab('Expenses', !_showIncome, () => setState(() => _showIncome = false)),
+                child: _toggleTab(
+                  'expenses'.tr(),
+                  !_showIncome,
+                  () => setState(() => _showIncome = false),
+                ),
               ),
             ],
           ),
@@ -66,16 +75,17 @@ class _BreakdownCardState extends State<BreakdownCard> {
             Builder(
               builder: (context) {
                 final String categoryKey = entry.key.toLowerCase();
-                final double amount = amounts[entry.key] ?? amounts[categoryKey] ?? 0.0;
-                
+                final double amount =
+                    amounts[entry.key] ?? amounts[categoryKey] ?? 0.0;
+
                 // Dynamic fallback percentage calculation if backend return is 0
                 double rawPercent = entry.value;
                 if ((rawPercent == 0 || rawPercent.isNaN) && totalBase > 0) {
                   rawPercent = (amount / totalBase) * 100;
                 }
-                
-                final double progressValue = totalBase > 0 
-                    ? (amount / totalBase).clamp(0.0, 1.0) 
+
+                final double progressValue = totalBase > 0
+                    ? (amount / totalBase).clamp(0.0, 1.0)
                     : 0.0;
 
                 return Padding(
