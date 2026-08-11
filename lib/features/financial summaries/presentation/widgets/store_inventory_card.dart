@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:ikuku/features/financial%20summaries/model/financial_summary_model.dart';
 import 'package:ikuku/theme/app_theme.dart';
@@ -25,7 +26,7 @@ class StoreInventoryCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Total Cost Of Items In Store',
+                  'total_cost_of_items_in_store'.tr(),
                   style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
                 ),
                 const SizedBox(height: 4),

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:ikuku/features/financial%20summaries/model/financial_summary_model.dart';
 
@@ -24,7 +25,7 @@ class IncomeExpenseCards extends StatelessWidget {
                   children: [
                     const Icon(Icons.arrow_upward, color: Colors.green, size: 16),
                     const SizedBox(width: 4),
-                    Text('Total Income', style: TextStyle(color: Colors.grey.shade600, fontSize: 12)),
+                    Text('total_income'.tr(), style: TextStyle(color: Colors.grey.shade600, fontSize: 12)),
                   ],
                 ),
                 const SizedBox(height: 4),
@@ -51,7 +52,7 @@ class IncomeExpenseCards extends StatelessWidget {
                   children: [
                     const Icon(Icons.arrow_downward, color: Colors.orange, size: 16),
                     const SizedBox(width: 4),
-                    Text('Total Expenses', style: TextStyle(color: Colors.grey.shade600, fontSize: 12)),
+                    Text('total_expenses'.tr(), style: TextStyle(color: Colors.grey.shade600, fontSize: 12)),
                   ],
                 ),
                 const SizedBox(height: 4),

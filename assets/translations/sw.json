@@ -469,11 +469,15 @@
   "Notes":"Maelezo",
   "would_you_like_to_grade_your_eggs?":"Ungependa kuyaweka gredi mayai yako?",
   "how_many_eggs_have_you_collected_today":"Je, unakusanya mayai ngapi leo?",
-  "this_report_was_prepared_on":"Ripoti hii iliundwa tarehe"
- ,"great_job_keeping_your_records_up_to_date":"Kazi nzuri ya kuweka rekodi zako hadi sasa."
-  
-  
-  
-  
-  
+  "this_report_was_prepared_on":"Ripoti hii iliundwa tarehe",
+  "great_job_keeping_your_records_up_to_date":"Kazi nzuri ya kuweka rekodi zako hadi sasa.",
+  "no_financial_summary_records_found":"Hakuna rekodi za muhtasari wa kifedha zilizopatikana",
+  "income": "Mapato",
+  "total_revenue": "Jumla ya mapato",
+  "manure": "Mbolea",
+  "predicted_text":"Ukiwauza kuku wote waliobaki kwa ksh 600,unatabiriwa kupata pesa hizi mwishoni mwa mzunguko wako ",
+  "total_predicted_revenue": "Jumla ya mapato yanayotarajiwa",
+  "total_cost_of_items_in_store":"Jumla ya vitu vilivyopo kwenye stoo",
+  "3_months": "Miezi tatu",
+  "lifecycle": "Mzunguko wa uzalio"
 }

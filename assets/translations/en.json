@@ -468,5 +468,16 @@
     "how_many_eggs_have_you_collected_today": "How many eggs have you collected today?",
     "would_you_like_to_grade_your_eggs?": "Would you like to grade your eggs?",
     "this_report_was_prepared_on": "This report was prepared on",
-    "great_job_keeping_your_records_up_to_date": "Great job keeping your records up to date."
+    "great_job_keeping_your_records_up_to_date": "Great job keeping your records up to date.",
+    "no_financial_summary_records_found.": "No financial summary records found.",
+    "income": "Income",
+    "expenses": "Expenses",
+    "total_revenue": "Total Revenue",
+    "total_expenses":"Total Expenses",
+    "manure": "Manure",
+    "predicted_text":"If you sell all remaining chicken at Ksh 600 you are predicted to earn this money at the end of your cycle",
+    "total_predicted_revenue":"Total predicted revenue",
+    "total_cost_of_items_in_store": "Total cost of items in store",
+    "3_months": "3 Months",
+    "lifecycle": "Lifecycle"
   }

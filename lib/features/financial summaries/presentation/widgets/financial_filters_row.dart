@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:ikuku/features/batches/provider/batch_provider.dart';
 import 'package:ikuku/features/financial%20summaries/presentation/widgets/drop_down.dart';
@@ -23,11 +24,11 @@ class FinancialFiltersRow extends StatelessWidget {
               value: provider.selectedBatchId,
               isExpanded: true,
               underline: SizedBox.shrink(),
-              hint: Text("All batches"),
+              hint: Text("all_batches".tr()),
               items: [
                 DropdownMenuItem<String>(
                   value: null,
-                  child: Text("All batches"),
+                  child: Text("all_batches".tr()),
                 ),
                 ...batchProvider.batches.map(
                   (batch) => DropdownMenuItem<String>(
@@ -48,8 +49,8 @@ class FinancialFiltersRow extends StatelessWidget {
               isExpanded: true,
               underline: SizedBox.shrink(),
               items: [
-                DropdownMenuItem(value: '3 months', child: Text('3 months')),
-                DropdownMenuItem(value: 'LifeCycle', child: Text('LifeCycle')),
+                DropdownMenuItem(value: '3 months', child: Text('3 months'.tr())),
+                DropdownMenuItem(value: 'LifeCycle', child: Text('LifeCycle'.tr())),
               ],
               onChanged: (value) {
                 if (value != null) provider.setTimeframe(value);
