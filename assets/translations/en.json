@@ -479,5 +479,7 @@
     "total_predicted_revenue":"Total predicted revenue",
     "total_cost_of_items_in_store": "Total cost of items in store",
     "3_months": "3 Months",
-    "lifecycle": "Lifecycle"
+    "lifecycle": "Lifecycle",
+    "record_sales": "Record Sales",
+    "total_sales": "Total Sales"
   }
