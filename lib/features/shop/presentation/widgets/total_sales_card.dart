@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:ikuku/theme/app_theme.dart';
 
 class TotalSalesCard extends StatelessWidget {
@@ -16,32 +17,24 @@ class TotalSalesCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: CustomColors.primary.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(16),
+        color: Colors.green.shade50,
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              const Icon(
-                Icons.savings_outlined,
-                color: CustomColors.primary,
-                size: 18,
-              ),
-              const SizedBox(width: 6),
-              Text(
-                "today_total_sales".tr(),
-                style: TextStyle(color: Colors.grey.shade600),
-              ),
-            ],
+          SvgPicture.asset('assets/icons/icons-money.svg', height: 18),
+          SizedBox(height: 10),
+          Text(
+            "today_total_sales".tr(),
+            style: TextStyle(color: Colors.grey.shade600),
           ),
-          const SizedBox(height: 6),
+          SizedBox(height: 6),
           Text(
             amount,
-            style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+            style:TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 16),
           SizedBox(
@@ -53,21 +46,20 @@ class TotalSalesCard extends StatelessWidget {
               ),
               child: ElevatedButton.icon(
                 onPressed: onRecordSale,
-                icon: const Icon(Icons.add, color: Colors.black),
-                label: const Text(
-                  'Record Sale',
+                icon: Icon(Icons.add, color: Colors.black),
+                label:Text(
+                  'record_sale'.tr(),
                   style: TextStyle(
                     color: Colors.black,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.transparent,
-                  shadowColor: Colors.transparent,
+                  backgroundColor: Colors.lightGreen,
                   elevation: 0,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  padding: EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(10),
                   ),
                 ),
               ),

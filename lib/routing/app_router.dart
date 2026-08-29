@@ -34,7 +34,7 @@ import 'package:ikuku/features/profile/presentation/pages/otp_verification_page.
 import 'package:ikuku/features/profile/presentation/pages/profile_page.dart';
 import 'package:ikuku/features/profile/presentation/pages/recovery_phone_page.dart';
 import 'package:ikuku/features/settings/languages/presentation/language_selection_page.dart';
-import 'package:ikuku/features/shop/presentation/pages/Record_sales_page.dart';
+import 'package:ikuku/features/shop/presentation/pages/record_sale_page.dart';
 import 'package:ikuku/features/shop/presentation/pages/manure_sales_page.dart';
 import 'package:ikuku/features/shop/presentation/pages/my_shop_page.dart';
 import 'package:ikuku/features/shop/presentation/pages/record_chicken_sales.dart';
@@ -124,13 +124,13 @@ class AppRouter {
                 builder: (context, state) => const RecordChickenSalePage(),
               ),
               GoRoute(
-  path: '/record_eggs_sale',
-  builder: (context, state) => const RecordEggsSalePage(),
-),
-GoRoute(
-  path: '/record_manure_sale',
-  builder: (context, state) => const RecordManureSalePage(),
-),
+                path: '/record_eggs_sale',
+                builder: (context, state) => const RecordEggsSalePage(),
+              ),
+              GoRoute(
+                path: '/record_manure_sale',
+                builder: (context, state) => const RecordManureSalePage(),
+              ),
             ],
           ),
           StatefulShellBranch(

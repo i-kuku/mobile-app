@@ -1,6 +1,14 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:ikuku/theme/app_theme.dart';
+import 'package:ikuku/features/shop/model/sale_model.dart';
+import 'package:ikuku/features/shop/presentation/widgets/input_fields.dart';
+import 'package:ikuku/features/shop/presentation/widgets/record_sale_button.dart';
+import 'package:ikuku/features/shop/presentation/widgets/select_card.dart';
+import 'package:ikuku/features/shop/presentation/widgets/confirmation_dialog.dart';
+import 'package:ikuku/features/shop/provider/sales_provider.dart';
+import 'package:provider/provider.dart';
 
 class RecordManureSalePage extends StatefulWidget {
   const RecordManureSalePage({super.key});
@@ -20,6 +28,31 @@ class _RecordManureSalePageState extends State<RecordManureSalePage> {
     super.dispose();
   }
 
+  Future<void> _handleManureSave() async {
+    final bags = int.tryParse(_bagsController.text) ?? 0;
+    final price = double.tryParse(_priceController.text) ?? 0.0;
+
+    try {
+      final salesProvider = Provider.of<SalesProvider>(context, listen: false);
+
+      await salesProvider.addSale(
+        SaleModel(
+          saleType: 'manure',
+          subType: null,
+          quantity: bags,
+          amount: price,
+        ),
+      );
+      if (mounted) context.pop();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed to save sale: $e')));
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,8 +64,8 @@ class _RecordManureSalePageState extends State<RecordManureSalePage> {
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => context.pop(),
         ),
-        title: const Text(
-          'My Shop',
+        title: Text(
+          'my_shop'.tr(),
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.w600),
         ),
         centerTitle: true,
@@ -49,7 +82,7 @@ class _RecordManureSalePageState extends State<RecordManureSalePage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'RECORD SALE',
+              'record_sales'.tr(),
               style: TextStyle(
                 color: Colors.grey.shade600,
                 fontWeight: FontWeight.bold,
@@ -57,157 +90,90 @@ class _RecordManureSalePageState extends State<RecordManureSalePage> {
               ),
             ),
             const SizedBox(height: 16),
-            const Text(
-              'What have You Sold?',
+            Text(
+              'what_have_you_sold'.tr(),
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
             Row(
               children: [
                 Expanded(
-                  child: _pillChip(
+                  child: SelectCard(
                     label: 'Chicken',
-                    icon: Icons.pets,
-                    selected: false,
-                    onTap: () =>
-                        context.pushReplacement('/record_chicken_sale'),
+                    onTap: () {
+                      context.push('/record_chicken_sale');
+                    },
+                    isSelected: false,
+                    icon: SvgPicture.asset('assets/icons/animal-chicken.svg'),
                   ),
                 ),
-                const SizedBox(width: 8),
+                SizedBox(width: 8),
                 Expanded(
-                  child: _pillChip(
+                  child: SelectCard(
                     label: 'Eggs',
-                    icon: Icons.egg,
-                    selected: false,
-                    onTap: () => context.pushReplacement('/record_eggs_sale'),
+                    onTap: () {
+                      context.push('/record_eggs_sale');
+                    },
+                    isSelected: false,
+                    icon: SvgPicture.asset('assets/icons/eggs-f.svg'),
                   ),
                 ),
-                const SizedBox(width: 8),
+                SizedBox(width: 8),
                 Expanded(
-                  child: _pillChip(
+                  child: SelectCard(
                     label: 'Manure',
-                    icon: Icons.shopping_bag_outlined,
-                    selected: true,
-                    onTap: () {},
+                    onTap: () {
+                      context.push('/record_manure_sale');
+                    },
+                    isSelected: true,
+                    icon: SvgPicture.asset('assets/icons/feeds.svg'),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 28),
-            const Text(
-              'How bags of manure?',
+            SizedBox(height: 28),
+            Text(
+              'how_many_bags_of_manure'.tr(),
               style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 8),
-            _inputField(controller: _bagsController, hint: '0'),
+            InputFields(controller: _bagsController, hint: '0'),
             const SizedBox(height: 20),
-            const Text(
-              'Price of manure bags',
+            Text(
+              'price_of_manure_bags'.tr(),
               style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 8),
-            _inputField(controller: _priceController, hint: '0'),
+            InputFields(controller: _priceController, hint: '0'),
             const SizedBox(height: 28),
-            _recordSaleButton(
-              onTap: () {
-                // No functionality yet — UI only
-              },
+            RecordSaleButton(
+              onTap: _showConfirmDialog,
             ),
+            
           ],
         ),
       ),
     );
   }
+  void _showConfirmDialog() {
+  final bags = int.tryParse(_bagsController.text) ?? 0;
+  final price = double.tryParse(_priceController.text) ?? 0.0;
 
-  Widget _pillChip({
-    required String label,
-    required IconData icon,
-    required bool selected,
-    required VoidCallback onTap,
-  }) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(24),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
-        decoration: BoxDecoration(
-          color: selected ? const Color(0xFFEAF7EC) : Colors.white,
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(
-            color: selected ? CustomColors.primary : Colors.grey.shade300,
-          ),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              icon,
-              size: 16,
-              color: selected ? CustomColors.primary : Colors.grey,
-            ),
-            const SizedBox(width: 4),
-            Flexible(
-              child: Text(
-                label,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontSize: 13,
-                  color: selected ? CustomColors.primary : Colors.grey.shade700,
-                  fontWeight: selected ? FontWeight.bold : FontWeight.normal,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
+  if (bags <= 0 || price <= 0) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Please enter valid quantities and price')),
     );
+    return;
   }
 
-  Widget _inputField({
-    required TextEditingController controller,
-    required String hint,
-  }) {
-    return TextField(
-      controller: controller,
-      keyboardType: TextInputType.number,
-      decoration: InputDecoration(
-        hintText: hint,
-        filled: true,
-        fillColor: Colors.white,
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 14,
-        ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(color: Colors.grey.shade300),
-        ),
-      ),
-    );
-  }
-
-  Widget _recordSaleButton({required VoidCallback onTap}) {
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton(
-        onPressed: onTap,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: CustomColors.primary,
-          padding: const EdgeInsets.symmetric(vertical: 14),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-        ),
-        child: const Text(
-          'RECORD SALE',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-            letterSpacing: 0.5,
-          ),
-        ),
-      ),
-    );
-  }
+  showDialog(
+    context: context,
+    builder: (dialogContext) => ConfirmationDialog(
+      onTap: () {
+        Navigator.of(dialogContext).pop(); 
+        _handleManureSave(); 
+      },
+    ),
+  );
+}
 }
