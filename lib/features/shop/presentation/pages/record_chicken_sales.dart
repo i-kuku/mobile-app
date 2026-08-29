@@ -1,7 +1,16 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:ikuku/features/shop/model/sale_model.dart';
+import 'package:ikuku/features/shop/presentation/widgets/chicken_type_card.dart';
+import 'package:ikuku/features/shop/presentation/widgets/input_fields.dart';
+import 'package:ikuku/features/shop/presentation/widgets/record_sale_button.dart';
+import 'package:ikuku/features/shop/presentation/widgets/select_card.dart';
+import 'package:ikuku/features/shop/presentation/widgets/confirmation_dialog.dart';
+import 'package:ikuku/features/shop/provider/sales_provider.dart';
 import 'package:ikuku/theme/app_theme.dart';
+import 'package:provider/provider.dart';
 
 class RecordChickenSalePage extends StatefulWidget {
   const RecordChickenSalePage({super.key});
@@ -28,6 +37,57 @@ class _RecordChickenSalePageState extends State<RecordChickenSalePage> {
     super.dispose();
   }
 
+  Future<void> _handleSale() async {
+    final salesProvider = Provider.of<SalesProvider>(context, listen: false);
+
+    try {
+      if (_selectedTypes.contains('chicken')) {
+        if (_selectedBirdType == null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Please select a chicken type')),
+          );
+          return;
+        }
+        final count = int.tryParse(_countController.text) ?? 0;
+        final price = double.tryParse(_priceController.text) ?? 0.0;
+
+        if (count > 0 && price > 0) {
+          await salesProvider.addSale(
+            SaleModel(
+              saleType: 'chicken',
+              subType: _selectedBirdType,
+              quantity: count,
+              amount: price,
+            ),
+          );
+        }
+      }
+
+      if (_selectedTypes.contains('eggs')) {
+        final eggsCount = int.tryParse(_eggsCountController.text) ?? 0;
+        final eggsPrice = double.tryParse(_eggsPriceController.text) ?? 0.0;
+
+        if (eggsCount > 0 && eggsPrice > 0) {
+          await salesProvider.addSale(
+            SaleModel(
+              saleType: 'eggs',
+              subType: null,
+              quantity: eggsCount,
+              amount: eggsPrice,
+            ),
+          );
+        }
+      }
+      if (mounted) context.pop();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed to save sale: $e')));
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,8 +99,8 @@ class _RecordChickenSalePageState extends State<RecordChickenSalePage> {
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => context.pop(),
         ),
-        title: const Text(
-          'My Shop',
+        title: Text(
+          'my_shop'.tr(),
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.w600),
         ),
         centerTitle: true,
@@ -57,123 +117,104 @@ class _RecordChickenSalePageState extends State<RecordChickenSalePage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'RECORD SALE',
+              'record_sale'.tr(),
               style: TextStyle(
                 color: Colors.grey.shade600,
                 fontWeight: FontWeight.bold,
                 letterSpacing: 0.5,
+                fontSize: 20,
               ),
             ),
             const SizedBox(height: 16),
-            const Text(
-              'What have You Sold?',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            Text(
+              'what_have_you_sold'.tr(),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
             Row(
               children: [
                 Expanded(
-                  child: _pillChip(
+                  child: SelectCard(
                     label: 'Chicken',
-                    icon: SvgPicture.asset(
-                      'assets/icons/animal-chicken.svg',
-                      width: 16,
-                      height: 16,
-                      colorFilter: ColorFilter.mode(
-                        _selectedTypes.contains('chicken')
-                            ? Colors.white
-                            : Colors.grey,
-                        BlendMode.srcIn,
-                      ),
-                    ),
-                    selected: _selectedTypes.contains('chicken'),
-                    color: CustomColors.primary,
-                    onTap: () => _toggleType('chicken'),
+                    onTap: () {
+                      _toggleType('chicken');
+                    },
+                    isSelected: false,
+                    icon: SvgPicture.asset('assets/icons/animal-chicken.svg'),
                   ),
                 ),
-                const SizedBox(width: 8),
+                SizedBox(width: 8),
                 Expanded(
-                  child: _pillChip(
+                  child: SelectCard(
                     label: 'Eggs',
-                    icon: Icon(
-                      Icons.egg,
-                      size: 16,
-                      color: _selectedTypes.contains('eggs')
-                          ? Colors.white
-                          : Colors.grey,
-                    ),
-                    selected: _selectedTypes.contains('eggs'),
-                    color: Colors.orange,
                     onTap: () => _toggleType('eggs'),
+
+                    isSelected: false,
+                    icon: SvgPicture.asset('assets/icons/eggs-f.svg'),
                   ),
                 ),
-                const SizedBox(width: 8),
+                SizedBox(width: 8),
                 Expanded(
-                  child: _pillChip(
+                  child: SelectCard(
                     label: 'Manure',
-                    icon: const Icon(
-                      Icons.shopping_bag_outlined,
-                      size: 16,
-                      color: Colors.grey,
-                    ),
-                    selected: false,
-                    color: Colors.grey,
                     onTap: () => context.pushReplacement('/record_manure_sale'),
+                    isSelected: false,
+                    icon: SvgPicture.asset('assets/icons/feeds.svg'),
                   ),
                 ),
               ],
             ),
             if (_selectedTypes.contains('chicken')) ...[
               const SizedBox(height: 28),
-              const Text(
-                'Chicken type',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              Text(
+                'chicken_type'.tr(),
+                style: TextStyle(fontSize: 18, color: CustomColors.text),
               ),
               const SizedBox(height: 12),
               Row(
                 children: [
                   Expanded(
-                    child: _outlineChip(
+                    child: ChickenTypeCard(
                       label: 'Kienyeji',
-                      selected: _selectedBirdType == 'kienyeji',
                       onTap: () =>
                           setState(() => _selectedBirdType = 'kienyeji'),
+                      isSelected: _selectedBirdType == 'kienyeji',
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  SizedBox(width: 8),
                   Expanded(
-                    child: _outlineChip(
-                      label: 'Broiler',
-                      selected: _selectedBirdType == 'broiler',
+                    child: ChickenTypeCard(
+                      label: 'broiler'.tr(),
                       onTap: () =>
                           setState(() => _selectedBirdType = 'broiler'),
+                      isSelected: _selectedBirdType == 'broiler',
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  SizedBox(width: 8),
                   Expanded(
-                    child: _outlineChip(
-                      label: 'Layer',
-                      selected: _selectedBirdType == 'layer',
+                    child: ChickenTypeCard(
+                      label: 'layer'.tr(),
                       onTap: () => setState(() => _selectedBirdType = 'layer'),
+                      isSelected: _selectedBirdType == 'layer',
                     ),
                   ),
                 ],
               ),
               if (_selectedBirdType != null) ...[
                 const SizedBox(height: 28),
-                const Text(
-                  'How many chicken ?',
+                Text(
+                  'how_many_chicken'.tr(),
                   style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(height: 8),
-                _inputField(controller: _countController, hint: '0'),
+               InputFields(controller: _countController, hint: '0'),
                 const SizedBox(height: 20),
-                const Text(
-                  'Price of Chicken',
+                Text(
+                  'price_of_chicken'.tr(),
                   style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(height: 8),
-                _inputField(controller: _priceController, hint: '0'),
+               InputFields(controller: _priceController, hint: '0'),
               ],
             ],
             if (_selectedTypes.contains('eggs')) ...[
@@ -183,20 +224,18 @@ class _RecordChickenSalePageState extends State<RecordChickenSalePage> {
                 style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 8),
-              _inputField(controller: _eggsCountController, hint: '0'),
+             InputFields(controller: _eggsCountController, hint: '0'),
               const SizedBox(height: 20),
               const Text(
                 'Price of eggs',
                 style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 8),
-              _inputField(controller: _eggsPriceController, hint: '0'),
+             InputFields(controller: _eggsPriceController, hint: '0'),
             ],
             const SizedBox(height: 28),
-            _recordSaleButton(
-              onTap: () {
-                // No functionality yet — UI only
-              },
+            RecordSaleButton(
+              onTap: _showConfirmDialog
             ),
           ],
         ),
@@ -214,122 +253,40 @@ class _RecordChickenSalePageState extends State<RecordChickenSalePage> {
       }
     });
   }
-
-  Widget _pillChip({
-    required String label,
-    required Widget icon,
-    required bool selected,
-    required Color color,
-    required VoidCallback onTap,
-  }) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(24),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
-        decoration: BoxDecoration(
-          color: selected ? color : Colors.white,
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: selected ? color : Colors.grey.shade300),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            icon,
-            const SizedBox(width: 4),
-            Flexible(
-              child: Text(
-                label,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontSize: 13,
-                  color: selected ? Colors.white : Colors.grey.shade700,
-                  fontWeight: selected ? FontWeight.bold : FontWeight.normal,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _outlineChip({
-    required String label,
-    required bool selected,
-    required VoidCallback onTap,
-  }) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(10),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(
-            color: selected ? CustomColors.primary : Colors.grey.shade300,
-            width: selected ? 2 : 1,
-          ),
-        ),
-        child: Text(
-          label,
-          textAlign: TextAlign.center,
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(
-            fontSize: 13,
-            color: selected ? CustomColors.primary : Colors.grey.shade700,
-            fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _inputField({
-    required TextEditingController controller,
-    required String hint,
-  }) {
-    return TextField(
-      controller: controller,
-      keyboardType: TextInputType.number,
-      decoration: InputDecoration(
-        hintText: hint,
-        filled: true,
-        fillColor: Colors.white,
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 14,
-        ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(color: Colors.grey.shade300),
-        ),
-      ),
-    );
-  }
-
-  Widget _recordSaleButton({required VoidCallback onTap}) {
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton(
-        onPressed: onTap,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: CustomColors.primary,
-          padding: const EdgeInsets.symmetric(vertical: 14),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-        ),
-        child: const Text(
-          'RECORD SALE',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-            letterSpacing: 0.5,
-          ),
-        ),
+  void _showConfirmDialog() {
+    if (_selectedTypes.contains('chicken')) {
+      if (_selectedBirdType == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please select a chicken type')),
+        );
+        return;
+      }
+      final count = int.tryParse(_countController.text) ?? 0;
+      final price = double.tryParse(_priceController.text) ?? 0.0;
+      if (count <= 0 || price <= 0) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please enter a valid chicken count and price')),
+        );
+        return;
+      }
+    }
+    if (_selectedTypes.contains('eggs')) {
+      final eggsCount = int.tryParse(_eggsCountController.text) ?? 0;
+      final eggsPrice = double.tryParse(_eggsPriceController.text) ?? 0.0;
+      if (eggsCount <= 0 || eggsPrice <= 0) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please enter a valid egg count and price')),
+        );
+        return;
+      }
+    }
+    showDialog(
+      context: context,
+      builder: (dialogContext) => ConfirmationDialog(
+        onTap: () {
+          Navigator.of(dialogContext).pop();
+          _handleSale();
+        },
       ),
     );
   }

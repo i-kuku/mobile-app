@@ -7,6 +7,7 @@ import 'package:ikuku/features/financial%20summaries/provider/financial_provider
 import 'package:ikuku/features/home/provider/analytics_provider.dart';
 import 'package:ikuku/features/home/provider/tutorial_provider.dart';
 import 'package:ikuku/features/settings/languages/provider/language_provider.dart';
+import 'package:ikuku/features/shop/provider/sales_provider.dart';
 import 'package:ikuku/theme/app_theme.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -59,7 +60,7 @@ void main() async {
         ChangeNotifierProvider(create: (context) => TutorialProvider()),
         ChangeNotifierProvider(create: (context) => FarmReportProvider()),
         ChangeNotifierProvider(create: (context) => FinancialSummaryProvider()),
-
+        ChangeNotifierProvider(create: (context) => SalesProvider()),
       ],
       child: EasyLocalization(
         supportedLocales: const [Locale('en'), Locale('sw')],

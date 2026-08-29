@@ -481,5 +481,15 @@
     "3_months": "3 Months",
     "lifecycle": "Lifecycle",
     "record_sales": "Record Sales",
-    "total_sales": "Total Sales"
+    "total_sales": "Total Sales",
+    "today_total_sales":"Today's total sales",
+    "record_sale":"Record Sale",
+    "all_sales": "All sales",
+    "latest_sales":"LATEST SALES",
+    "what_have_you_sold":"What have you sold ?",
+    "chicken_type": "Chicken type",
+    "how_many_chicken": "How many chicken",
+    "price_of_chicken": "Price of chicken",
+    "how_many_bags_of_manure":"How many bags of manure",
+    "price_of_manure_bags":"Price of manure bags"
   }
