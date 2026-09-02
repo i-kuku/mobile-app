@@ -44,7 +44,7 @@ class _RecordChickenSalePageState extends State<RecordChickenSalePage> {
       if (_selectedTypes.contains('chicken')) {
         if (_selectedBirdType == null) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Please select a chicken type')),
+            SnackBar(content: Text('please_select_chicken_type'.tr())),
           );
           return;
         }
@@ -135,31 +135,49 @@ class _RecordChickenSalePageState extends State<RecordChickenSalePage> {
               children: [
                 Expanded(
                   child: SelectCard(
-                    label: 'Chicken',
+                    label: 'chicken',
                     onTap: () {
                       _toggleType('chicken');
                     },
-                    isSelected: false,
-                    icon: SvgPicture.asset('assets/icons/animal-chicken.svg'),
+                    isSelected: true,
+                    icon: SvgPicture.asset(
+                      'assets/icons/animal-chicken.svg',
+                      colorFilter: const ColorFilter.mode(
+                        Colors.grey,
+                        BlendMode.srcIn,
+                      ),
+                    ),
                   ),
                 ),
                 SizedBox(width: 8),
                 Expanded(
                   child: SelectCard(
-                    label: 'Eggs',
+                    label: 'eggs'.tr(),
                     onTap: () => _toggleType('eggs'),
 
                     isSelected: false,
-                    icon: SvgPicture.asset('assets/icons/eggs-f.svg'),
+                    icon: SvgPicture.asset(
+                      'assets/icons/eggs-f.svg',
+                      colorFilter: const ColorFilter.mode(
+                        Colors.grey,
+                        BlendMode.srcIn,
+                      ),
+                    ),
                   ),
                 ),
                 SizedBox(width: 8),
                 Expanded(
                   child: SelectCard(
-                    label: 'Manure',
+                    label: 'manure'.tr(),
                     onTap: () => context.pushReplacement('/record_manure_sale'),
                     isSelected: false,
-                    icon: SvgPicture.asset('assets/icons/feeds.svg'),
+                    icon: SvgPicture.asset(
+                      'assets/icons/feeds.svg',
+                      colorFilter: const ColorFilter.mode(
+                        Colors.grey,
+                        BlendMode.srcIn,
+                      ),
+                    ),
                   ),
                 ),
               ],
@@ -207,36 +225,34 @@ class _RecordChickenSalePageState extends State<RecordChickenSalePage> {
                   style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(height: 8),
-               InputFields(controller: _countController, hint: '0'),
+                InputFields(controller: _countController, hint: '0'),
                 const SizedBox(height: 20),
                 Text(
                   'price_of_chicken'.tr(),
                   style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(height: 8),
-               InputFields(controller: _priceController, hint: '0'),
+                InputFields(controller: _priceController, hint: '0'),
               ],
             ],
             if (_selectedTypes.contains('eggs')) ...[
               const SizedBox(height: 28),
-              const Text(
-                'How many eggs ?',
+              Text(
+                'how_many_eggs'.tr(),
                 style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 8),
-             InputFields(controller: _eggsCountController, hint: '0'),
+              InputFields(controller: _eggsCountController, hint: '0'),
               const SizedBox(height: 20),
-              const Text(
-                'Price of eggs',
+              Text(
+                'price_of_eggs'.tr(),
                 style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 8),
-             InputFields(controller: _eggsPriceController, hint: '0'),
+              InputFields(controller: _eggsPriceController, hint: '0'),
             ],
             const SizedBox(height: 28),
-            RecordSaleButton(
-              onTap: _showConfirmDialog
-            ),
+            RecordSaleButton(onTap: _showConfirmDialog),
           ],
         ),
       ),
@@ -253,6 +269,7 @@ class _RecordChickenSalePageState extends State<RecordChickenSalePage> {
       }
     });
   }
+
   void _showConfirmDialog() {
     if (_selectedTypes.contains('chicken')) {
       if (_selectedBirdType == null) {
@@ -265,7 +282,9 @@ class _RecordChickenSalePageState extends State<RecordChickenSalePage> {
       final price = double.tryParse(_priceController.text) ?? 0.0;
       if (count <= 0 || price <= 0) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please enter a valid chicken count and price')),
+          const SnackBar(
+            content: Text('Please enter a valid chicken count and price'),
+          ),
         );
         return;
       }
@@ -275,7 +294,9 @@ class _RecordChickenSalePageState extends State<RecordChickenSalePage> {
       final eggsPrice = double.tryParse(_eggsPriceController.text) ?? 0.0;
       if (eggsCount <= 0 || eggsPrice <= 0) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please enter a valid egg count and price')),
+          const SnackBar(
+            content: Text('Please enter a valid egg count and price'),
+          ),
         );
         return;
       }

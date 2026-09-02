@@ -29,7 +29,7 @@ class TotalSalesCard extends StatelessWidget {
           SizedBox(height: 10),
           Text(
             "today_total_sales".tr(),
-            style: TextStyle(color: Colors.grey.shade600),
+            style: TextStyle(color: Colors.grey.shade600,fontSize: 16),
           ),
           SizedBox(height: 6),
           Text(

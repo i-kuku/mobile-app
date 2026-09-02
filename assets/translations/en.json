@@ -491,5 +491,11 @@
     "how_many_chicken": "How many chicken",
     "price_of_chicken": "Price of chicken",
     "how_many_bags_of_manure":"How many bags of manure",
-    "price_of_manure_bags":"Price of manure bags"
+    "price_of_manure_bags":"Price of manure bags",
+    "your_sale_has_been_recorded":"Your sale has been recorded",
+    "all": "ALL SALES",
+    "no_sales_found": "No sales found",
+    "select_date":"Select Date",
+    "how_many_eggs": "How many eggs",
+    "price_of_eggs": "Price of eggs"
   }

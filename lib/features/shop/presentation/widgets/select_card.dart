@@ -15,17 +15,49 @@ class SelectCard extends StatelessWidget {
     required this.isSelected,
   });
 
+  Color _getPrimaryColor() {
+    switch (label.toLowerCase().trim()) {
+      case 'chicken':
+        return CustomColors.primary;
+      case 'eggs':
+        return Colors.orange;
+      case 'manure':
+        return Colors.lightGreen.shade700;
+      default:
+        return CustomColors.primary;
+    }
+  }
+
+  Color _getBackgroundColor() {
+    switch (label.toLowerCase().trim()) {
+      case 'chicken':
+        return Colors.lightGreen.shade50;
+      case 'eggs':
+        return Colors.yellow.shade100;
+      case 'manure':
+        return Colors.greenAccent.shade100;
+      default:
+        return Colors.grey.shade100;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final activeColor = _getPrimaryColor();
+    final activeBgColor = _getBackgroundColor();
+
     return InkWell(
       onTap: onTap,
+      borderRadius: BorderRadius.circular(10),
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFFEAF7EC) : Colors.white,
+          // Uses the light background color when selected, white when unselected
+          color: isSelected ? activeBgColor : Colors.white,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
-            color: isSelected ? CustomColors.primary : Colors.grey.shade600,
+            color: isSelected ? activeColor : Colors.grey.shade600,
+            width: isSelected ? 1.0 : 0.5,
           ),
         ),
         child: Row(
@@ -33,25 +65,21 @@ class SelectCard extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             CircleAvatar(
-              backgroundColor: Colors.grey,
-              foregroundColor: Colors.grey,
+              backgroundColor: isSelected
+                  ? activeColor
+                  : Colors.grey.shade300,
               radius: 15,
               child: icon,
             ),
-    
-            SizedBox(width: 4),
+            const SizedBox(width: 4),
             Flexible(
               child: Text(
                 label,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   fontSize: 13,
-                  color: isSelected
-                      ? CustomColors.primary
-                      : Colors.grey.shade700,
-                  fontWeight: isSelected
-                      ? FontWeight.bold
-                      : FontWeight.normal,
+                  color: isSelected ? activeColor : Colors.grey.shade700,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                 ),
               ),
             ),

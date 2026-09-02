@@ -34,6 +34,7 @@ import 'package:ikuku/features/profile/presentation/pages/otp_verification_page.
 import 'package:ikuku/features/profile/presentation/pages/profile_page.dart';
 import 'package:ikuku/features/profile/presentation/pages/recovery_phone_page.dart';
 import 'package:ikuku/features/settings/languages/presentation/language_selection_page.dart';
+import 'package:ikuku/features/shop/presentation/pages/all_sales_page.dart';
 import 'package:ikuku/features/shop/presentation/pages/record_sale_page.dart';
 import 'package:ikuku/features/shop/presentation/pages/manure_sales_page.dart';
 import 'package:ikuku/features/shop/presentation/pages/my_shop_page.dart';
@@ -130,6 +131,10 @@ class AppRouter {
               GoRoute(
                 path: '/record_manure_sale',
                 builder: (context, state) => const RecordManureSalePage(),
+              ),
+              GoRoute(
+                path: '/all_sales',
+                builder: (context, state) => const AllSalesPage(),
               ),
             ],
           ),

@@ -490,5 +490,9 @@
   "how_many_chicken": "Kuku wangapi ?",
   "price_of_chicken": "Bei ya kuku",
   "how_many_bags_of_manure":"Mifuko ngapi ya mbolea",
-  "price_of_manure_bags":"Bei ya mifuko ya mbolea"
+  "price_of_manure_bags":"Bei ya mifuko ya mbolea",
+  "your_sale_has_been_recorded": "Mauzo yako yamehifadhiwa",
+  "all":"ALL SALES",
+  "no_sales_found" : "Hakuna mauzo yaliyopatikana",
+  "select_date" : "Chagua Tarehe"
 }
