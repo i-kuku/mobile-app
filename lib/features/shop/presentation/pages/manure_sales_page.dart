@@ -104,7 +104,12 @@ class _RecordManureSalePageState extends State<RecordManureSalePage> {
                       context.push('/record_chicken_sale');
                     },
                     isSelected: false,
-                    icon: SvgPicture.asset('assets/icons/animal-chicken.svg'),
+                    icon: SvgPicture.asset('assets/icons/animal-chicken.svg',
+                    colorFilter: const ColorFilter.mode(
+                        Colors.grey,
+                        BlendMode.srcIn,
+                      ),
+                    ),
                   ),
                 ),
                 SizedBox(width: 8),
@@ -115,7 +120,12 @@ class _RecordManureSalePageState extends State<RecordManureSalePage> {
                       context.push('/record_eggs_sale');
                     },
                     isSelected: false,
-                    icon: SvgPicture.asset('assets/icons/eggs-f.svg'),
+                    icon: SvgPicture.asset('assets/icons/eggs-f.svg',
+                    colorFilter: const ColorFilter.mode(
+                        Colors.grey,
+                        BlendMode.srcIn,
+                      ),
+                    ),
                   ),
                 ),
                 SizedBox(width: 8),
@@ -126,7 +136,12 @@ class _RecordManureSalePageState extends State<RecordManureSalePage> {
                       context.push('/record_manure_sale');
                     },
                     isSelected: true,
-                    icon: SvgPicture.asset('assets/icons/feeds.svg'),
+                    icon: SvgPicture.asset('assets/icons/feeds.svg',
+                    colorFilter: const ColorFilter.mode(
+                        Colors.grey,
+                        BlendMode.srcIn,
+                      ),
+                    ),
                   ),
                 ),
               ],

@@ -30,6 +30,6 @@ class RecordSaleButton extends StatelessWidget {
           ),
         ),
       ),
-    );;
+    );
   }
 }

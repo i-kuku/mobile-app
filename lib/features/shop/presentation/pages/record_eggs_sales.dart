@@ -60,7 +60,9 @@ class _RecordEggsSalePageState extends State<RecordEggsSalePage> {
 
       if (chickenCount <= 0 || chickenPrice <= 0) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please enter valid chicken quantity and price')),
+          const SnackBar(
+            content: Text('Please enter valid chicken quantity and price'),
+          ),
         );
         return;
       }
@@ -73,7 +75,9 @@ class _RecordEggsSalePageState extends State<RecordEggsSalePage> {
 
       if (eggsCount <= 0 || eggsPrice <= 0) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please enter valid egg quantity and price')),
+          const SnackBar(
+            content: Text('Please enter valid egg quantity and price'),
+          ),
         );
         return;
       }
@@ -96,7 +100,8 @@ class _RecordEggsSalePageState extends State<RecordEggsSalePage> {
     try {
       if (_selectedTypes.contains('chicken')) {
         final chickenCount = int.tryParse(_chickenCountController.text) ?? 0;
-        final chickenPrice = double.tryParse(_chickenPriceController.text) ?? 0.0;
+        final chickenPrice =
+            double.tryParse(_chickenPriceController.text) ?? 0.0;
 
         if (chickenCount > 0 && chickenPrice > 0) {
           await salesProvider.addSale(
@@ -129,9 +134,9 @@ class _RecordEggsSalePageState extends State<RecordEggsSalePage> {
       if (mounted) context.pop();
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to save sale: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed to save sale: $e')));
       }
     }
   }
@@ -149,7 +154,10 @@ class _RecordEggsSalePageState extends State<RecordEggsSalePage> {
         ),
         title: Text(
           'my_shop'.tr(),
-          style: const TextStyle(color: Colors.black, fontWeight: FontWeight.w600),
+          style: const TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.w600,
+          ),
         ),
         centerTitle: true,
         actions: [
@@ -183,7 +191,13 @@ class _RecordEggsSalePageState extends State<RecordEggsSalePage> {
                 Expanded(
                   child: SelectCard(
                     label: 'chicken'.tr(),
-                    icon: SvgPicture.asset('assets/icons/animal-chicken.svg'),
+                    icon: SvgPicture.asset(
+                      'assets/icons/animal-chicken.svg',
+                      colorFilter: const ColorFilter.mode(
+                        Colors.grey,
+                        BlendMode.srcIn,
+                      ),
+                    ),
                     onTap: () => _toggleType('chicken'),
                     isSelected: _selectedTypes.contains('chicken'),
                   ),
@@ -192,7 +206,13 @@ class _RecordEggsSalePageState extends State<RecordEggsSalePage> {
                 Expanded(
                   child: SelectCard(
                     label: 'eggs'.tr(),
-                    icon: SvgPicture.asset('assets/icons/eggs-f.svg'),
+                    icon: SvgPicture.asset(
+                      'assets/icons/eggs-f.svg',
+                      colorFilter: const ColorFilter.mode(
+                        Colors.grey,
+                        BlendMode.srcIn,
+                      ),
+                    ),
                     onTap: () => _toggleType('eggs'),
                     isSelected: _selectedTypes.contains('eggs'),
                   ),
@@ -201,7 +221,13 @@ class _RecordEggsSalePageState extends State<RecordEggsSalePage> {
                 Expanded(
                   child: SelectCard(
                     label: 'manure'.tr(),
-                    icon: SvgPicture.asset('assets/icons/feeds.svg'),
+                    icon: SvgPicture.asset(
+                      'assets/icons/feeds.svg',
+                      colorFilter: const ColorFilter.mode(
+                        Colors.grey,
+                        BlendMode.srcIn,
+                      ),
+                    ),
                     onTap: () => context.pushReplacement('/record_manure_sale'),
                     isSelected: _selectedTypes.contains('manure'),
                   ),
@@ -212,7 +238,10 @@ class _RecordEggsSalePageState extends State<RecordEggsSalePage> {
               const SizedBox(height: 28),
               Text(
                 'chicken_type'.tr(),
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 12),
               Row(
@@ -220,7 +249,8 @@ class _RecordEggsSalePageState extends State<RecordEggsSalePage> {
                   Expanded(
                     child: ChickenTypeCard(
                       label: 'Kienyeji',
-                      onTap: () => setState(() => _selectedBirdType = 'kienyeji'),
+                      onTap: () =>
+                          setState(() => _selectedBirdType = 'kienyeji'),
                       isSelected: _selectedBirdType == 'kienyeji',
                     ),
                   ),
@@ -228,7 +258,8 @@ class _RecordEggsSalePageState extends State<RecordEggsSalePage> {
                   Expanded(
                     child: ChickenTypeCard(
                       label: 'Broiler',
-                      onTap: () => setState(() => _selectedBirdType = 'broiler'),
+                      onTap: () =>
+                          setState(() => _selectedBirdType = 'broiler'),
                       isSelected: _selectedBirdType == 'broiler',
                     ),
                   ),
@@ -246,14 +277,20 @@ class _RecordEggsSalePageState extends State<RecordEggsSalePage> {
                 const SizedBox(height: 28),
                 Text(
                   'how_many_chicken'.tr(),
-                  style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 InputFields(controller: _chickenCountController, hint: '0'),
                 const SizedBox(height: 20),
                 Text(
                   'price_of_chicken'.tr(),
-                  style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 InputFields(controller: _chickenPriceController, hint: '0'),
@@ -263,14 +300,20 @@ class _RecordEggsSalePageState extends State<RecordEggsSalePage> {
               const SizedBox(height: 28),
               Text(
                 'how_many_eggs'.tr(),
-                style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               const SizedBox(height: 8),
               InputFields(controller: _countController, hint: '0'),
               const SizedBox(height: 20),
               Text(
                 'price_of_eggs'.tr(),
-                style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               const SizedBox(height: 8),
               InputFields(controller: _priceController, hint: '0'),

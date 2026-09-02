@@ -27,6 +27,6 @@ class InputFields extends StatelessWidget {
           borderSide: BorderSide(color: Colors.grey.shade300),
         ),
       ),
-    );;
+    );
   }
 }

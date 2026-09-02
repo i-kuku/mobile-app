@@ -33,30 +33,34 @@ class ConfirmationDialog extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    OutlinedButton(
-                      
-                      style: OutlinedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        side: BorderSide(
-                           color: Colors.lightGreen,
-                           width: 2.0,
+                    Expanded(
+                      child: OutlinedButton(
+                        
+                        style: OutlinedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          side: BorderSide(
+                             color: Colors.lightGreen,
+                             width: 2.0,
+                          ),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))
                         ),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))
+                        onPressed: () {
+                          context.pop();
+                        },
+                        child: Text('back'.tr()),
                       ),
-                      onPressed: () {
-                        context.pop();
-                      },
-                      child: Text('back'.tr()),
                     ),
-                    SizedBox(width: 10),
-                    ElevatedButton(
-                      onPressed: onTap,
-                      
-        
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: CustomColors.lightGreen,
+                    SizedBox(width: 12),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: onTap,
+                        
+                              
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: CustomColors.lightGreen,
+                        ),
+                        child: Text('save'.tr()),
                       ),
-                      child: Text('save'.tr()),
                     ),
                   ],
                 ),

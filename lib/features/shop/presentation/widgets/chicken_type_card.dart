@@ -17,15 +17,17 @@ class ChickenTypeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return InkWell(
       onTap: onTap,
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 8, vertical: 10),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: isSelected ? Colors.lightGreen.shade50 : Colors.white,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
             color: isSelected ? CustomColors.primary : Colors.grey.shade600,
+            width: isSelected ? 1.0 : 0.5,
           ),
         ),
         child: Row(
@@ -38,9 +40,7 @@ class ChickenTypeCard extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   fontSize: 13,
-                  color: isSelected
-                      ? CustomColors.primary
-                      : Colors.grey.shade700,
+                  color:Colors.grey.shade700,
                   fontWeight: isSelected
                       ? FontWeight.bold
                       : FontWeight.normal,
