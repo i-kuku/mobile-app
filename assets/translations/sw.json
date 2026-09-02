@@ -494,5 +494,8 @@
   "your_sale_has_been_recorded": "Mauzo yako yamehifadhiwa",
   "all":"ALL SALES",
   "no_sales_found" : "Hakuna mauzo yaliyopatikana",
-  "select_date" : "Chagua Tarehe"
+  "select_date" : "Chagua Tarehe",
+  "how_many_chickens_curled" : "Kuku wangapi wamekunjamana?",
+  "how_many_chickens_stolen" : "Kuku wangapi wameibiwa?",
+  "how_many_chickens_died" : "Kuku wangapi waliokufa?"
 }

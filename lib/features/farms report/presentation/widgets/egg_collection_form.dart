@@ -115,7 +115,7 @@ class _EggCollectionFormState extends State<EggCollectionForm> {
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w500,
-              color: CustomColors.primary,
+              color: CustomColors.text,
             ),
           ),
           const SizedBox(height: 12),

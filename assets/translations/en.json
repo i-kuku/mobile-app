@@ -497,5 +497,8 @@
     "no_sales_found": "No sales found",
     "select_date":"Select Date",
     "how_many_eggs": "How many eggs",
-    "price_of_eggs": "Price of eggs"
+    "price_of_eggs": "Price of eggs",
+    "how_many_chickens_curled?": "How many chickens curled?",
+    "how_many_chickens_stolen?": "How many chickens were stolen?",
+    "how_many_chickens_died?": "How many chickens died?"
   }
