@@ -1,13 +1,11 @@
-import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/material.dart';
 
 class ReductionReasonCheckboxesMulti extends StatefulWidget {
   final List<String>? selectedReasons;
   final ValueChanged<List<String>>? onReasonsChanged;
   final Map<String, int> counts;
   final ValueChanged<Map<String, int>>? onCountsChanged;
-  final double? salesAmount;
-  final ValueChanged<double>? onSalesAmountChanged;
   final bool showCountsBelow;
 
   const ReductionReasonCheckboxesMulti({
@@ -16,8 +14,6 @@ class ReductionReasonCheckboxesMulti extends StatefulWidget {
     this.onReasonsChanged,
     required this.counts,
     this.onCountsChanged,
-    this.salesAmount,
-    this.onSalesAmountChanged,
     this.showCountsBelow = false,
   });
 
@@ -32,10 +28,8 @@ class _ReductionReasonCheckboxesMultiState
     'curled': false,
     'stolen': false,
     'death': false,
-    'sold': false,
   };
   final Map<String, TextEditingController> _controllers = {};
-  final TextEditingController _salesAmountController = TextEditingController();
   final Map<String, int> _counts = {};
 
   @override
@@ -52,31 +46,19 @@ class _ReductionReasonCheckboxesMultiState
 
     if (widget.selectedReasons != null) {
       for (final reason in widget.selectedReasons!) {
-        _checked[reason] = true;
+        if (_checked.containsKey(reason)) {
+          _checked[reason] = true;
+        }
       }
     }
 
-    if (widget.salesAmount != null) {
-      _salesAmountController.text = widget.salesAmount!.toString();
-    }
-    _salesAmountController.addListener(_onSalesAmountChanged);
     for (final entry in _controllers.entries) {
       entry.value.addListener(() => _onCountChanged(entry.key));
     }
   }
 
-  void _onSalesAmountChanged() {
-    if (_checked['sold'] == true && widget.onSalesAmountChanged != null) {
-      final amount = double.tryParse(_salesAmountController.text);
-      if (amount != null) {
-        widget.onSalesAmountChanged!(amount);
-      }
-    }
-  }
-
   @override
   void dispose() {
-    _salesAmountController.dispose();
     for (final controller in _controllers.values) {
       controller.dispose();
     }
@@ -95,15 +77,13 @@ class _ReductionReasonCheckboxesMultiState
     String getQuantityLabel(String reason) {
       switch (reason) {
         case 'curled':
-          return 'How many chickens curled?';
+          return 'how_many_chickens_curled?'.tr();
         case 'stolen':
-          return 'How many chickens stolen?';
+          return 'how_many_chickens_stolen?'.tr();
         case 'death':
-          return 'How many chickens died?';
-        case 'sold':
-          return 'How many chickens sold?';
+          return 'how_many_chickens_died?'.tr();
         default:
-          return 'How many chickens $reason?';
+          return 'how_many_chickens_$reason?'.tr();
       }
     }
 
@@ -151,7 +131,6 @@ class _ReductionReasonCheckboxesMultiState
                     }
                   });
 
-                  // Clear count when unchecked
                   if (val == false) {
                     _controllers[reason]?.clear();
                     _onCountChanged(reason);
@@ -162,17 +141,6 @@ class _ReductionReasonCheckboxesMultiState
             ],
           ),
         ),
-        if (_checked['sold'] == true) ...[
-          const SizedBox(height: 16),
-          TextFormField(
-            controller: _salesAmountController,
-            keyboardType: TextInputType.number,
-            decoration: InputDecoration(
-              labelText: 'How much did you sell the chickens? (total)',
-              border: const OutlineInputBorder(),
-            ),
-          ),
-        ],
       ],
     );
   }

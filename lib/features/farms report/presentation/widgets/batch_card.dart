@@ -22,14 +22,8 @@ class BatchCard extends StatelessWidget {
       margin: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
       decoration: BoxDecoration(
         color: isSelected ? Colors.yellow.shade50 : Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey,
-            blurRadius: 12,
-            offset: Offset(0, 8),
-          ),
-        ],
+        borderRadius: BorderRadius.circular(10),
+        
       ),
       child: InkWell(
         onTap: onTap,

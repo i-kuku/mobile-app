@@ -112,6 +112,7 @@ class _BatchSelectionPageState extends State<BatchSelectionPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xfff7f9fa),
       appBar: AppBar(
         leading: IconButton(
           color: CustomColors.primary,

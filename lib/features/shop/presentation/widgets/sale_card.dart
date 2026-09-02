@@ -59,7 +59,10 @@ class _SaleCardState extends State<SaleCard> {
                     _getIconPath(widget.sale.saleType),
                     width:  20,
                     height: 20,
-                    color: Colors.grey,
+                    colorFilter: const ColorFilter.mode(
+                        Colors.grey,
+                        BlendMode.srcIn,
+                      ),
                   ),
                 ),
                 SizedBox(width: 10,),
