@@ -201,7 +201,7 @@ class _AllSalesPageState extends State<AllSalesPage> {
                             vertical: 12,
                           ),
                           decoration: BoxDecoration(
-                            color: Colors.lightGreen.shade50,
+                            color: Color(0xFFEFFFF4),
                             borderRadius: BorderRadius.only(
                               bottomLeft: Radius.circular(12),
                               bottomRight: Radius.circular(12),

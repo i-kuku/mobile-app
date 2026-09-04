@@ -16,7 +16,7 @@ class ChickenBatch {
     required this.age,
     required this.ageUnit,
     required this.createdAt,
-    this.purchaseCost = 0,
+    required this.purchaseCost,
   });
 
   factory ChickenBatch.fromJson(Map<String, dynamic> json) {

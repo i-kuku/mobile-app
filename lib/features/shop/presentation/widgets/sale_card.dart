@@ -30,15 +30,29 @@ class _SaleCardState extends State<SaleCard> {
   Color _getAvatarColor(String saleType) {
   switch (saleType.toLowerCase()) {
     case 'chicken':
-      return Colors.lightGreen.shade100; 
+      return Color(0xFFEFFFF4); 
     case 'eggs':
       return const Color(0xFFFFF3E0); 
     case 'manure':
-      return Colors.lightGreen.shade100; 
+      return Color(0xFFEFFFF4); 
     default:
       return const Color(0xFFF5F5F5); 
   }
 }
+
+  Color _getIconColor(String saleType) {
+  switch (saleType.toLowerCase()) {
+    case 'chicken':
+      return CustomColors.primary; 
+    case 'eggs':
+      return CustomColors.secondary; 
+    case 'manure':
+      return Colors.lightGreenAccent; 
+    default:
+      return const Color(0xFFF5F5F5); 
+  }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -59,8 +73,8 @@ class _SaleCardState extends State<SaleCard> {
                     _getIconPath(widget.sale.saleType),
                     width:  20,
                     height: 20,
-                    colorFilter: const ColorFilter.mode(
-                        Colors.grey,
+                    colorFilter: ColorFilter.mode(
+                        _getIconColor(widget.sale.saleType),
                         BlendMode.srcIn,
                       ),
                   ),

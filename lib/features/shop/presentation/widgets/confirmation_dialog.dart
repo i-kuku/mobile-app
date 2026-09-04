@@ -2,7 +2,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:ikuku/theme/app_theme.dart';
 
 class ConfirmationDialog extends StatelessWidget {
   final VoidCallback onTap;
@@ -39,8 +38,8 @@ class ConfirmationDialog extends StatelessWidget {
                         style: OutlinedButton.styleFrom(
                           backgroundColor: Colors.white,
                           side: BorderSide(
-                             color: Colors.lightGreen,
-                             width: 2.0,
+                             color: Color(0xFFAAC641),
+                             width: 1.0,
                           ),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))
                         ),
@@ -57,7 +56,7 @@ class ConfirmationDialog extends StatelessWidget {
                         
                               
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: CustomColors.lightGreen,
+                          backgroundColor: Color(0xFFAAC641),
                         ),
                         child: Text('save'.tr()),
                       ),
