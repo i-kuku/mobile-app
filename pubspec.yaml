@@ -65,6 +65,7 @@ dependencies:
   delightful_toast: ^1.1.0
   flutter_gemma: ^0.13.6
   image_picker: ^1.2.2
+  flutter_dotenv: ^6.0.1
 
 dev_dependencies:
   flutter_test:
@@ -105,4 +106,5 @@ flutter:
     - assets/icons/
     - assets/images/
     - assets/translations/
+    - .env
 

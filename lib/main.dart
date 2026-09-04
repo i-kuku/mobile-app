@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:ikuku/features/Inventory/provider/inventory_provider.dart';
 import 'package:ikuku/features/batches/provider/batch_provider.dart';
 import 'package:ikuku/features/auth/provider/auth_provider.dart';
@@ -28,9 +29,12 @@ void main() async {
   await Hive.initFlutter();
   await Hive.openBox<String>('offline_reports');
   await Hive.openBox<String>('sync_status');
+
+  await dotenv.load(fileName: ".env");
+
   await Supabase.initialize(
-  url:'https://ubzmplzgomzpczaspuyu.supabase.co' ,
-  anonKey:'sb_publishable_DuH_Ckn1wyGVRa9l-BN9gw_DCoSqQYC',
+  url: dotenv.env['SUPABASE_URL']! ,
+  anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
   );
   try {
     await SupabaseService().fixDatabaseConstraints();
