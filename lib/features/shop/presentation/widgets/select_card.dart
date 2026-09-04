@@ -20,9 +20,9 @@ class SelectCard extends StatelessWidget {
       case 'chicken':
         return CustomColors.primary;
       case 'eggs':
-        return Colors.orange;
+        return CustomColors.secondary;
       case 'manure':
-        return Colors.lightGreen.shade700;
+        return Colors.lightGreen.shade300;
       default:
         return CustomColors.primary;
     }
@@ -31,11 +31,12 @@ class SelectCard extends StatelessWidget {
   Color _getBackgroundColor() {
     switch (label.toLowerCase().trim()) {
       case 'chicken':
-        return Colors.lightGreen.shade50;
+        return Color(0xFFEFFFF4);
       case 'eggs':
-        return Colors.yellow.shade100;
+        return Colors.yellow.shade50;
       case 'manure':
-        return Colors.greenAccent.shade100;
+        return Color(0xFFEFFFF4)
+        ;
       default:
         return Colors.grey.shade100;
     }

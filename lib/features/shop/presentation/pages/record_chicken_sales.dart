@@ -135,7 +135,7 @@ class _RecordChickenSalePageState extends State<RecordChickenSalePage> {
               children: [
                 Expanded(
                   child: SelectCard(
-                    label: 'chicken',
+                    label: 'chicken'.tr(),
                     onTap: () {
                       _toggleType('chicken');
                     },
@@ -262,7 +262,6 @@ class _RecordChickenSalePageState extends State<RecordChickenSalePage> {
   void _toggleType(String type) {
     setState(() {
       if (_selectedTypes.contains(type)) {
-        // keep at least one type selected
         if (_selectedTypes.length > 1) _selectedTypes.remove(type);
       } else {
         _selectedTypes.add(type);
@@ -305,8 +304,9 @@ class _RecordChickenSalePageState extends State<RecordChickenSalePage> {
       context: context,
       builder: (dialogContext) => ConfirmationDialog(
         onTap: () {
-          Navigator.of(dialogContext).pop();
-          _handleSale();
+           
+          context.push('/my_shop');
+         _handleSale();
         },
       ),
     );

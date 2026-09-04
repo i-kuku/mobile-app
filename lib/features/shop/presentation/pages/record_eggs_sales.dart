@@ -47,7 +47,6 @@ class _RecordEggsSalePageState extends State<RecordEggsSalePage> {
   }
 
   void _showConfirmDialog() {
-    // Validate Chicken entries if chicken is selected
     if (_selectedTypes.contains('chicken')) {
       if (_selectedBirdType == null) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -68,7 +67,6 @@ class _RecordEggsSalePageState extends State<RecordEggsSalePage> {
       }
     }
 
-    // Validate Egg entries if eggs is selected
     if (_selectedTypes.contains('eggs')) {
       final eggsCount = int.tryParse(_countController.text) ?? 0;
       final eggsPrice = double.tryParse(_priceController.text) ?? 0.0;
@@ -257,7 +255,7 @@ class _RecordEggsSalePageState extends State<RecordEggsSalePage> {
                   const SizedBox(width: 8),
                   Expanded(
                     child: ChickenTypeCard(
-                      label: 'Broiler',
+                      label: 'broiler'.tr(),
                       onTap: () =>
                           setState(() => _selectedBirdType = 'broiler'),
                       isSelected: _selectedBirdType == 'broiler',
@@ -266,7 +264,7 @@ class _RecordEggsSalePageState extends State<RecordEggsSalePage> {
                   const SizedBox(width: 8),
                   Expanded(
                     child: ChickenTypeCard(
-                      label: 'Layer',
+                      label: 'layer'.tr(),
                       onTap: () => setState(() => _selectedBirdType = 'layer'),
                       isSelected: _selectedBirdType == 'layer',
                     ),

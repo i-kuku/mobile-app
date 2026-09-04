@@ -19,7 +19,7 @@ class TotalSalesCard extends StatelessWidget {
       width: double.infinity,
       padding: EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: Colors.green.shade50,
+        color: Color(0xFFEFFFF4),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
@@ -55,7 +55,7 @@ class TotalSalesCard extends StatelessWidget {
                   ),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.lightGreen,
+                  backgroundColor: Color(0xFFAAC641),
                   elevation: 0,
                   padding: EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(

@@ -23,7 +23,7 @@ class ChickenTypeCard extends StatelessWidget {
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 8, vertical: 10),
         decoration: BoxDecoration(
-          color: isSelected ? Colors.lightGreen.shade50 : Colors.white,
+          color: isSelected ? Color(0xFFEFFFF4) : Colors.white,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
             color: isSelected ? CustomColors.primary : Colors.grey.shade600,
