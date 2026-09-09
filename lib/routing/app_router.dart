@@ -339,7 +339,6 @@ class AppRouter {
         path: '/farm-summary',
         builder: (context, state) => const FinancialSummaryPage(),
       ),
-
       // GoRoute(
       //   path: '/offline-test',
       //   builder: (context, state) => const OfflineTestPage(),

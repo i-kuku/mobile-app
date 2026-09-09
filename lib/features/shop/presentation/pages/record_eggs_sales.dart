@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:ikuku/features/financial%20summaries/provider/financial_provider.dart';
 import 'package:ikuku/features/shop/model/sale_model.dart';
 import 'package:ikuku/features/shop/presentation/widgets/chicken_type_card.dart';
 import 'package:ikuku/features/shop/presentation/widgets/confirmation_dialog.dart';
@@ -129,7 +130,10 @@ class _RecordEggsSalePageState extends State<RecordEggsSalePage> {
         }
       }
 
-      if (mounted) context.pop();
+      if (mounted) {
+        context.read<FinancialSummaryProvider>().refresh();
+        context.pop();
+        }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(

@@ -4,102 +4,100 @@ import 'package:ikuku/features/batches/model/chicken_batch_model.dart';
 void main() {
   group('ChickenBatch', () {
     Map<String, dynamic> validJson({
-      String id = 'batch1',
-      String name = 'Hilda',
-      String typeOfBird = 'Broiler',
+      String id = 'batch001',
+      String name = 'hilda',
+      String ageUnit = 'weeks',
+      String typeOfBird = 'layer',
       int initialCount = 100,
-      int age = 5,
-      String ageUnit = 'days',
-      String? createdAt = '2025-01-01T00:00:00Z',
-      dynamic purchaseCost = 1500,
+      int age = 100,
+      dynamic purchaseCost = 300,
+      String createdAt = '2025-01-01T00:00:00Z',
     }) {
       return {
         'id': id,
         'name': name,
+        'age_unit': ageUnit,
         'type_of_bird': typeOfBird,
         'initial_count': initialCount,
         'age': age,
-        'age_unit': ageUnit,
-        'created_at': createdAt,
         'purchase_cost': purchaseCost,
+        'created_at': createdAt,
       };
     }
 
-    group('constructor', (){
-     test('Assigns all fields correctly when provided', () {
-       final createdAt = DateTime(2025, 1, 1);
-
-       final batch = ChickenBatch(
-        id: 'batch1', 
-        name: 'Hilda', 
-        typeOfBird: 'Broiler', 
-        initialCount: 100, 
-        age: 5, 
-        ageUnit: 'days', 
-        createdAt: createdAt,
-        purchaseCost: 1500,        
-       );
-
-       expect(batch.id, 'batch1');
-       expect(batch.name, 'Hilda');
-       expect(batch.typeOfBird, 'Broiler');
-       expect(batch.initialCount, 100);
-       expect(batch.age, 5);
-       expect(batch.ageUnit, 'days');
-       expect(batch.createdAt, createdAt);
-       expect(batch.purchaseCost, 1500);
-     });
-    });
-    group('fromJson',(){
-        test('fromJson returns a valid JSON map',(){
-          final batch = ChickenBatch.fromJson(validJson());
-
-          expect(batch.id, 'batch1');
-          expect(batch.name, 'Hilda');
-          expect(batch.typeOfBird, 'Broiler');
-          expect(batch.initialCount, 100);
-          expect(batch.age, 5);
-          expect(batch.ageUnit, 'days');
-          expect(batch.createdAt, DateTime.parse('2025-01-01T00:00:00Z'));
-          expect(batch.purchaseCost, 1500);
-        });
-
-        test('parses purchase_cost when it arrives as int',(){
-          final batch = ChickenBatch.fromJson(validJson(purchaseCost: 1000));
-
-          expect(batch.purchaseCost, 1000);
-        });
-        test(' parses purchase_cost when it arrives a sdouble',(){
-          final batch= ChickenBatch.fromJson(validJson(purchaseCost: 10.2));
-
-          expect(batch.purchaseCost, 10.2);
-        });
-    });
-
-    group('toJson',(){
-      test('serializes all fields with the correct snake_case keys', (){
-        final createdAt = DateTime.utc(2025,1,15,10,30);
+    group('Constructor', () {
+      test('Assigns all the values correctly', () {
+        final createdAt = DateTime(2025, 01, 01);
 
         final batch = ChickenBatch(
-          id: 'batch1', 
-          name: 'Hilda', 
-          typeOfBird: 'Broiler', 
-          initialCount: 100, 
-          age: 5, 
-          ageUnit: 'days', 
-          createdAt: createdAt, 
-          purchaseCost: 1500
-          );
-        final json = batch.toJson();
+          id: 'batch001',
+          name: 'hilda',
+          typeOfBird: 'layer',
+          initialCount: 100,
+          age: 100,
+          ageUnit: 'weeks',
+          createdAt: createdAt,
+          purchaseCost: 300,
+        );
 
-        expect(json['id'], 'batch1');
-        expect(json['name'], 'Hilda');
-        expect(json['type_of_bird'], 'Broiler');
-        expect(json['initial_count'], 100);
-        expect(json['age'], 5);
-        expect(json['age_unit'], 'days');
-        expect(json['created_at'], createdAt.toIso8601String());
-        expect(json['purchase_cost'], 1500);
+        expect(batch.id, 'batch001');
+        expect(batch.name, 'hilda');
+        expect(batch.typeOfBird, 'layer');
+        expect(batch.initialCount, 100);
+        expect(batch.age, 100);
+        expect(batch.ageUnit, 'weeks');
+        expect(batch.purchaseCost, 300);
+        expect(batch.createdAt, createdAt);
+      });
+
+      group('fromJson', () {
+        test(' returns a valid Json map', () {
+          final batch = ChickenBatch.fromJson(validJson());
+          expect(batch.id, 'batch001');
+          expect(batch.name, 'hilda');
+          expect(batch.typeOfBird, 'layer');
+          expect(batch.initialCount, 100);
+          expect(batch.age, 100);
+          expect(batch.ageUnit, 'weeks');
+          expect(batch.purchaseCost, 300);
+          expect(batch.createdAt, DateTime.parse('2025-01-01T00:00:00Z'));
+        });
+
+        test('parses purchase_cost correctly when it arrives as int', (){
+          final batch = ChickenBatch.fromJson(validJson(purchaseCost: 100));
+          expect(batch.purchaseCost, 100);
+        });
+         test('parses purchase_cost correctly when it arrives as double', (){
+          final batch = ChickenBatch.fromJson(validJson(purchaseCost: 500.59));
+          expect(batch.purchaseCost, 500.59);
+        });
+      });
+
+      group('toJson', (){
+        test('serializes all keys with the correct snake_case keys', (){
+          final createdAt = DateTime.utc(2025,01,01,10,10);
+
+          final batch = ChickenBatch(
+            id: 'batch001' , 
+            name: 'hilda', 
+            typeOfBird: 'layer', 
+            initialCount: 100, 
+            age: 100, 
+            ageUnit: 'weeks', 
+            createdAt: createdAt, 
+            purchaseCost: 300);
+
+            final json = batch.toJson();
+
+            expect(json['id'], 'batch001');
+            expect(json['name'], 'hilda');
+            expect(json['type_of_bird'], 'layer');
+            expect(json['initial_count'], 100);
+            expect(json['age'], 100);
+            expect(json['age_unit'], 'weeks');
+            expect(json['created_at'],createdAt.toIso8601String());
+            expect(json['purchase_cost'], 300);
+        });
       });
     });
   });
