@@ -499,5 +499,8 @@
   "select_date" : "Chagua Tarehe",
   "how_many_chickens_curled" : "Kuku wangapi wamekunjamana?",
   "how_many_chickens_stolen" : "Kuku wangapi wameibiwa?",
-  "how_many_chickens_died" : "Kuku wangapi waliokufa?"
+  "how_many_chickens_died" : "Kuku wangapi waliokufa?",
+  "notifications":"Maonevu",
+  "no_financial_records_found":"Hakuna kumbukumbu za kifedha zilizopatikana",
+  "Cost_of_chicks":"Bei ya vifaranga"
 }

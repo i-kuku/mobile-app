@@ -500,5 +500,8 @@
     "price_of_eggs": "Price of eggs",
     "how_many_chickens_curled?": "How many chickens curled?",
     "how_many_chickens_stolen?": "How many chickens were stolen?",
-    "how_many_chickens_died?": "How many chickens died?"
+    "how_many_chickens_died?": "How many chickens died?",
+    "notifications": "Notifications",
+    "no_financial_summary_records_found":"No financial summary records found",
+    "cost_of_chicks" :"Cost of chicks"
   }
