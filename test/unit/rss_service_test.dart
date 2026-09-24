@@ -6,7 +6,8 @@ import 'package:http/testing.dart';
 import 'package:ikuku/services/rss_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-String rss(String items) => '<?xml version="1.0"?>'
+String rss(String items) =>
+    '<?xml version="1.0"?>'
     '<rss xmlns:media="http://search.yahoo.com/mrss/"><channel>$items</channel></rss>';
 
 String rssItem({
@@ -49,26 +50,35 @@ void main() {
         ),
       }, () => RssService().fetchLatestNews());
 
-      expect(articles.map((a) => a.title), unorderedEquals([
-        'Poultry vaccine rollout',
-        'Chicken feed prices',
-        'New FARM subsidy',
-      ]));
+      expect(
+        articles.map((a) => a.title),
+        unorderedEquals([
+          'Poultry vaccine rollout',
+          'Chicken feed prices',
+          'New FARM subsidy',
+        ]),
+      );
       expect(articles.every((a) => a.source == 'The Poultry Site'), isTrue);
     });
 
     test('merges feeds and sorts newest first', () async {
       final articles = await withFeeds({
-        'www.thepoultrysite.com':
-            rss(rssItem(title: 'Old poultry', pubDate: '2024-01-01T00:00:00Z')),
-        'farmersreviewafrica.com':
-            rss(rssItem(title: 'New poultry', pubDate: '2025-06-01T00:00:00Z')),
-        'allafrica.com':
-            rss(rssItem(title: 'Mid poultry', pubDate: '2024-06-01T00:00:00Z')),
+        'www.thepoultrysite.com': rss(
+          rssItem(title: 'Old poultry', pubDate: '2024-01-01T00:00:00Z'),
+        ),
+        'farmersreviewafrica.com': rss(
+          rssItem(title: 'New poultry', pubDate: '2025-06-01T00:00:00Z'),
+        ),
+        'allafrica.com': rss(
+          rssItem(title: 'Mid poultry', pubDate: '2024-06-01T00:00:00Z'),
+        ),
       }, () => RssService().fetchLatestNews());
 
-      expect(articles.map((a) => a.title),
-          ['New poultry', 'Mid poultry', 'Old poultry']);
+      expect(articles.map((a) => a.title), [
+        'New poultry',
+        'Mid poultry',
+        'Old poultry',
+      ]);
       expect(articles.map((a) => a.source), [
         'Farmers Review Africa',
         'AllAfrica',
@@ -81,10 +91,10 @@ void main() {
       final articles = await withFeeds({
         'www.thepoultrysite.com': rss(
           rssItem(
-            title: 'Poultry short',
-            pubDate: '2025-01-02T00:00:00Z',
-            description: '<p>Eggs &amp; <b>chicks</b></p>',
-          ) +
+                title: 'Poultry short',
+                pubDate: '2025-01-02T00:00:00Z',
+                description: '<p>Eggs &amp; <b>chicks</b></p>',
+              ) +
               rssItem(title: 'Poultry long', description: longText),
         ),
       }, () => RssService().fetchLatestNews());
@@ -94,15 +104,14 @@ void main() {
       expect(articles[1].description, endsWith('...'));
     });
 
-    test('finds images from media:content, enclosure and inline img',
-        () async {
+    test('finds images from media:content, enclosure and inline img', () async {
       final articles = await withFeeds({
         'www.thepoultrysite.com': rss(
           rssItem(
-            title: 'Poultry media',
-            pubDate: '2025-01-04T00:00:00Z',
-            extra: '<media:content url="https://img/media.jpg"/>',
-          ) +
+                title: 'Poultry media',
+                pubDate: '2025-01-04T00:00:00Z',
+                extra: '<media:content url="https://img/media.jpg"/>',
+              ) +
               rssItem(
                 title: 'Poultry enclosure',
                 pubDate: '2025-01-03T00:00:00Z',
@@ -112,8 +121,7 @@ void main() {
               rssItem(
                 title: 'Poultry audio',
                 pubDate: '2025-01-02T00:00:00Z',
-                extra:
-                    '<enclosure url="https://img/a.mp3" type="audio/mpeg"/>',
+                extra: '<enclosure url="https://img/a.mp3" type="audio/mpeg"/>',
               ) +
               rssItem(
                 title: 'Poultry inline',
@@ -140,11 +148,94 @@ void main() {
       expect(articles.single.title, 'Poultry ok');
     });
 
+    Future<DateTime> parsedDate(String pubDate) async {
+      final articles = await withFeeds({
+        'www.thepoultrysite.com': rss(
+          rssItem(title: 'Poultry', pubDate: pubDate),
+        ),
+      }, () => RssService().fetchLatestNews());
+      return articles.single.publishDate;
+    }
+
+    test('parses RFC822 dates with numeric offsets', () async {
+      expect(
+        await parsedDate('Tue, 10 Jun 2025 10:00:00 +0300'),
+        DateTime.utc(2025, 6, 10, 7),
+      );
+      expect(
+        await parsedDate('Tue, 10 Jun 2025 10:00:00 -0530'),
+        DateTime.utc(2025, 6, 10, 15, 30),
+      );
+    });
+
+    test('parses RFC822 dates with named zones', () async {
+      expect(
+        await parsedDate('Tue, 10 Jun 2025 10:00:00 GMT'),
+        DateTime.utc(2025, 6, 10, 10),
+      );
+      expect(
+        await parsedDate('Tue, 10 Jun 2025 10:00:00 EST'),
+        DateTime.utc(2025, 6, 10, 15),
+      );
+    });
+
+    test('parses RFC822 variants without weekday, seconds or zone', () async {
+      expect(
+        await parsedDate('5 Jan 2025 08:15'),
+        DateTime.utc(2025, 1, 5, 8, 15),
+      );
+      expect(
+        await parsedDate('Sun, 05 jan 25 08:15:30'),
+        DateTime.utc(2025, 1, 5, 8, 15, 30),
+      );
+    });
+
+    test('sorts RFC822 dates across feeds', () async {
+      final articles = await withFeeds({
+        'www.thepoultrysite.com': rss(
+          rssItem(
+                title: 'Older poultry',
+                pubDate: 'Mon, 02 Jun 2025 09:00:00 GMT',
+              ) +
+              rssItem(
+                title: 'Newer poultry',
+                pubDate: 'Wed, 04 Jun 2025 09:00:00 GMT',
+              ),
+        ),
+        'farmersreviewafrica.com': rss(
+          rssItem(
+            title: 'Middle poultry',
+            pubDate: 'Tue, 03 Jun 2025 12:00:00 +0300',
+          ),
+        ),
+      }, () => RssService().fetchLatestNews());
+
+      expect(articles.map((a) => a.title), [
+        'Newer poultry',
+        'Middle poultry',
+        'Older poultry',
+      ]);
+    });
+
+    test('falls back to dc:date for RSS 1.0 feeds', () async {
+      final articles = await withFeeds({
+        'allafrica.com':
+            '<?xml version="1.0"?>'
+            '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" '
+            'xmlns:dc="http://purl.org/dc/elements/1.1/">'
+            '<item><title>Poultry RDF</title>'
+            '<dc:date>2025-06-10T10:00:00Z</dc:date></item></rdf:RDF>',
+      }, () => RssService().fetchLatestNews());
+
+      expect(articles.single.publishDate, DateTime.utc(2025, 6, 10, 10));
+    });
+
     test('unparseable dates fall back to now', () async {
       final before = DateTime.now();
       final articles = await withFeeds({
-        'www.thepoultrysite.com':
-            rss(rssItem(title: 'Poultry', pubDate: 'not a date')),
+        'www.thepoultrysite.com': rss(
+          rssItem(title: 'Poultry', pubDate: 'Tue, 10 Foo 2025 10:00:00'),
+        ),
       }, () => RssService().fetchLatestNews());
 
       expect(articles.single.publishDate.isBefore(before), isFalse);
@@ -165,8 +256,9 @@ void main() {
         ),
       ).join();
       final service = RssService();
-      await withFeeds({'www.thepoultrysite.com': rss(items)},
-          service.fetchLatestNews);
+      await withFeeds({
+        'www.thepoultrysite.com': rss(items),
+      }, service.fetchLatestNews);
 
       final cached = await service.getCachedArticles();
       expect(cached, hasLength(20));
@@ -174,8 +266,9 @@ void main() {
     });
 
     test('corrupt cache returns an empty list', () async {
-      SharedPreferences.setMockInitialValues(
-          {'cached_poultry_news': 'not json'});
+      SharedPreferences.setMockInitialValues({
+        'cached_poultry_news': 'not json',
+      });
       expect(await RssService().getCachedArticles(), isEmpty);
     });
 
