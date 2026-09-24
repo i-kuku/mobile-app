@@ -2,15 +2,37 @@
 
 I-Kuku
 
-## Getting Started
+## Local development
 
-This project is a starting point for a Flutter application.
+### Prerequisites
 
-A few resources to get you started if this is your first Flutter project:
+- **Flutter** (stable, Dart SDK `^3.8.1`). On macOS: `brew install --cask flutter`
+- **Chrome**, the quickest target to run against; it needs no extra tooling
+- **iOS / macOS targets:** full Xcode from the App Store (Command Line Tools alone are not enough) plus CocoaPods (`brew install cocoapods`). After installing Xcode, run:
+  ```bash
+  sudo xcode-select --switch /Applications/Xcode.app/Contents/Developer
+  sudo xcodebuild -runFirstLaunch
+  ```
+- **Android target:** Android Studio (`brew install --cask android-studio`). Open it once to install the SDK and create an emulator, then run `flutter doctor --android-licenses`.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+Run `flutter doctor` to see which targets are ready.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### Running the app
+
+```bash
+flutter pub get
+flutter run -d chrome        # or: flutter devices, then flutter run -d <device-id>
+```
+
+### Checks
+
+```bash
+flutter analyze
+flutter test
+```
+
+### Backend
+
+The app talks to a hosted Supabase project. Its URL and publishable key are set in `lib/main.dart`; you don't need a `.env` file.
+
+The Smart Tips feature downloads a Gemma model (several hundred MB) from Hugging Face the first time it runs.
