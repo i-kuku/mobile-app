@@ -501,7 +501,7 @@
     "how_many_chickens_curled?": "How many chickens curled?",
     "how_many_chickens_stolen?": "How many chickens were stolen?",
     "how_many_chickens_died?": "How many chickens died?",
-    "notifications": "Notifications",
-    "no_financial_summary_records_found":"No financial summary records found",
-    "cost_of_chicks" :"Cost of chicks"
+  "notifications": "Notifications",
+  "you_re_all_caught_up": "You're all caught up",
+  "come_back_later_for_reminders_health_tips_and_predictions": "Come back later for reminders,\nhealth tips and predictions"
   }
