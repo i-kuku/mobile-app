@@ -12,12 +12,14 @@ class QuickActionModel {
   final Widget icon;
   final String? route;
   final GlobalKey? targetKey;
+  final Future<void> Function(BuildContext context)? onTap; 
 
   QuickActionModel({
     required this.label,
     required this.icon,
     required this.route,
     required this.targetKey,
+       this.onTap, 
   });
 }
 
