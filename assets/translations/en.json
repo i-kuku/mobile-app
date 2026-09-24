@@ -500,5 +500,8 @@
     "price_of_eggs": "Price of eggs",
     "how_many_chickens_curled?": "How many chickens curled?",
     "how_many_chickens_stolen?": "How many chickens were stolen?",
-    "how_many_chickens_died?": "How many chickens died?"
+    "how_many_chickens_died?": "How many chickens died?",
+  "notifications": "Notifications",
+  "you_re_all_caught_up": "You're all caught up",
+  "come_back_later_for_reminders_health_tips_and_predictions": "Come back later for reminders,\nhealth tips and predictions"
   }

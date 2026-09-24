@@ -7,6 +7,7 @@ import 'package:ikuku/features/farms%20report/provider/farm_report_provider.dart
 import 'package:ikuku/features/financial%20summaries/provider/financial_provider.dart';
 import 'package:ikuku/features/home/provider/analytics_provider.dart';
 import 'package:ikuku/features/home/provider/tutorial_provider.dart';
+import 'package:ikuku/features/notifications/provider/notifications_provider.dart';
 import 'package:ikuku/features/settings/languages/provider/language_provider.dart';
 import 'package:ikuku/features/shop/provider/sales_provider.dart';
 import 'package:ikuku/theme/app_theme.dart';
@@ -65,6 +66,7 @@ void main() async {
         ChangeNotifierProvider(create: (context) => FarmReportProvider()),
         ChangeNotifierProvider(create: (context) => FinancialSummaryProvider()),
         ChangeNotifierProvider(create: (context) => SalesProvider()),
+        ChangeNotifierProvider(create: (context) => NotificationsProvider()),
       ],
       child: EasyLocalization(
         supportedLocales: const [Locale('en'), Locale('sw')],

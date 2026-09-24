@@ -108,7 +108,9 @@ class _ManageBatchPageState extends State<ManageBatchPage> {
         centerTitle: true,
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              context.push('/notifications');
+            },
             icon: Icon(Icons.notifications_none, color: Colors.black),
           ),
         ],
