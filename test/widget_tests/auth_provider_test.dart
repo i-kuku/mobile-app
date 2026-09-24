@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -63,6 +64,7 @@ void main() {
     provider.toggleAuthState();
     expect(provider.isSignUp, isFalse);
     expect(provider.errorMessage, isNull);
+    expect(provider.isConnectionError, isFalse);
   });
 
   group('register', () {
@@ -297,7 +299,39 @@ void main() {
       await run(tester, () => provider.login('a@b.co', 'secret1'));
 
       expect(provider.errorMessage, 'no_internet_connection');
+      expect(provider.isConnectionError, isTrue);
       expect(location(), '/login');
+    });
+
+    testWidgets('maps timeouts to "request_timed_out"', (tester) async {
+      backend.on(
+        'POST',
+        '/auth/v1/token',
+        (_) async => throw TimeoutException('Future not completed'),
+      );
+      final provider = await pumpAuth(tester);
+
+      await run(tester, () => provider.login('a@b.co', 'secret1'));
+
+      expect(provider.errorMessage, 'request_timed_out');
+      expect(provider.isConnectionError, isTrue);
+    });
+
+    testWidgets('credential errors are not connection errors', (tester) async {
+      backend.on(
+        'POST',
+        '/auth/v1/token',
+        (_) async => FakeSupabaseBackend.json({
+          'error': 'invalid_grant',
+          'error_description': 'Invalid login credentials',
+        }, status: 400),
+      );
+      final provider = await pumpAuth(tester);
+
+      await run(tester, () => provider.login('a@b.co', 'wrong'));
+
+      expect(provider.errorMessage, 'invalid_email_or_password');
+      expect(provider.isConnectionError, isFalse);
     });
 
     testWidgets('sets loading while the request is in flight', (tester) async {
@@ -335,6 +369,7 @@ void main() {
       await run(tester, () => provider.login('a@b.co', 'secret1'));
 
       expect(provider.errorMessage, 'unable_to_connect');
+      expect(provider.isConnectionError, isTrue);
       expect(provider.isLoading, isFalse);
       expect(backend.requestsTo('/auth/v1/token'), isEmpty);
       expect(location(), '/login');
@@ -359,6 +394,7 @@ void main() {
       await run(tester, provider.internetTest);
 
       expect(provider.errorMessage, 'connection_test_failed');
+      expect(provider.isConnectionError, isTrue);
       expect(provider.isLoading, isFalse);
     });
   });
@@ -369,6 +405,7 @@ void main() {
     await run(tester, provider.internetTest);
 
     expect(provider.errorMessage, 'connection_test_successful');
+    expect(provider.isConnectionError, isFalse);
     expect(provider.isLoading, isFalse);
   });
 }

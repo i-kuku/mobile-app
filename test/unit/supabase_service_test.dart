@@ -61,6 +61,20 @@ void main() {
       expect(await SupabaseService().testConnection(), isFalse);
     });
 
+    test('is false when the server does not answer in time', () async {
+      backend.on('GET', usersPath, (_) async {
+        await Future<void>.delayed(const Duration(milliseconds: 200));
+        return FakeSupabaseBackend.json([]);
+      });
+
+      expect(
+        await SupabaseService().testConnection(
+          timeout: const Duration(milliseconds: 20),
+        ),
+        isFalse,
+      );
+    });
+
     test('is false when the HTTP client fails', () async {
       backend.on(
         'GET',

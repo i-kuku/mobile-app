@@ -30,27 +30,40 @@ void main() {
   group('AuthErrorWidget', () {
     testWidgets('renders nothing without an error', (tester) async {
       await tester.pumpWidget(
-          wrap(AuthErrorWidget(errorMessage: null, internetTest: () {})));
+        wrap(AuthErrorWidget(errorMessage: null, internetTest: () {})),
+      );
       expect(find.byType(Text), findsNothing);
     });
 
-    testWidgets('shows the error without a retry for other failures',
-        (tester) async {
-      await tester.pumpWidget(wrap(AuthErrorWidget(
-          errorMessage: 'Invalid password', internetTest: () {})));
-      expect(find.text('Invalid password'), findsOneWidget);
+    testWidgets('shows the error without a retry by default', (tester) async {
+      await tester.pumpWidget(
+        wrap(
+          AuthErrorWidget(
+            errorMessage: 'Lost internet connection',
+            internetTest: () {},
+          ),
+        ),
+      );
+      expect(find.text('Lost internet connection'), findsOneWidget);
       expect(find.text('Test Connection'), findsNothing);
     });
 
-    for (final message in ['No internet', 'Lost connection']) {
-      testWidgets('offers a connection test for "$message"', (tester) async {
-        var tested = false;
-        await tester.pumpWidget(wrap(AuthErrorWidget(
-            errorMessage: message, internetTest: () => tested = true)));
-        await tester.tap(find.text('Test Connection'));
-        expect(tested, isTrue);
-      });
-    }
+    testWidgets('offers a connection test when asked, in any language', (
+      tester,
+    ) async {
+      var tested = false;
+      await tester.pumpWidget(
+        wrap(
+          AuthErrorWidget(
+            errorMessage: 'Imeshindikana kuunganisha na seva.',
+            internetTest: () => tested = true,
+            showConnectionTest: true,
+          ),
+        ),
+      );
+      await tester.tap(find.text('Test Connection'));
+      expect(tested, isTrue);
+    });
   });
 
   group('BatchCard', () {
@@ -64,17 +77,22 @@ void main() {
       createdAt: DateTime(2025),
     );
 
-    testWidgets('shows batch details and wires up edit/remove',
-        (tester) async {
+    testWidgets('shows batch details and wires up edit/remove', (tester) async {
       var edits = 0, deletes = 0;
       useViewport(tester, const Size(1600, 800));
-      await tester.pumpWidget(wrap(ListView(children: [
-        BatchCard(
-          batch: batch,
-          onEdit: () => edits++,
-          onDelete: () => deletes++,
+      await tester.pumpWidget(
+        wrap(
+          ListView(
+            children: [
+              BatchCard(
+                batch: batch,
+                onEdit: () => edits++,
+                onDelete: () => deletes++,
+              ),
+            ],
+          ),
         ),
-      ])));
+      );
 
       expect(find.text('Batch A'), findsOneWidget);
       expect(find.text('120 Layers'), findsOneWidget);
@@ -90,15 +108,19 @@ void main() {
   group('TipCard', () {
     testWidgets('shows the tip and handles read more', (tester) async {
       var pressed = false;
-      await tester.pumpWidget(wrap(TipCard(
-        tip: SmartTips(
-          id: '1',
-          title: 'Keep water clean',
-          description: 'Change water daily.',
-          emoji: '💧',
+      await tester.pumpWidget(
+        wrap(
+          TipCard(
+            tip: SmartTips(
+              id: '1',
+              title: 'Keep water clean',
+              description: 'Change water daily.',
+              emoji: '💧',
+            ),
+            onReadMorePressed: () => pressed = true,
+          ),
         ),
-        onReadMorePressed: () => pressed = true,
-      )));
+      );
 
       expect(find.text('Keep water clean'), findsOneWidget);
       expect(find.text('Change water daily.'), findsOneWidget);
@@ -111,12 +133,16 @@ void main() {
   group('MenuCard', () {
     testWidgets('shows the title and handles taps', (tester) async {
       var taps = 0;
-      await tester.pumpWidget(wrap(MenuCard(
-        icon: Icons.logout,
-        title: 'Log out',
-        iconColor: Colors.red,
-        onTap: () => taps++,
-      )));
+      await tester.pumpWidget(
+        wrap(
+          MenuCard(
+            icon: Icons.logout,
+            title: 'Log out',
+            iconColor: Colors.red,
+            onTap: () => taps++,
+          ),
+        ),
+      );
       expect(tester.widget<Icon>(find.byIcon(Icons.logout)).color, Colors.red);
       await tester.tap(find.text('Log out'));
       expect(taps, 1);
@@ -127,15 +153,23 @@ void main() {
     testWidgets('shows the category and handles taps', (tester) async {
       var taps = 0;
       // Mirror InventoryHubPage, which lays cards out in a full-width list.
-      await tester.pumpWidget(wrap(ListView(children: [InventoryCategoryCard(
-        category: InventoryCategory(
-          name: 'Feeds',
-          description: 'All feeds',
-          icon: const Icon(Icons.grass),
-          route: '/inventory/feedspage',
+      await tester.pumpWidget(
+        wrap(
+          ListView(
+            children: [
+              InventoryCategoryCard(
+                category: InventoryCategory(
+                  name: 'Feeds',
+                  description: 'All feeds',
+                  icon: const Icon(Icons.grass),
+                  route: '/inventory/feedspage',
+                ),
+                onTap: () => taps++,
+              ),
+            ],
+          ),
         ),
-        onTap: () => taps++,
-      )])));
+      );
       expect(find.text('Feeds'), findsOneWidget);
       expect(find.text('All feeds'), findsOneWidget);
       await tester.tap(find.text('Feeds'));
@@ -155,9 +189,9 @@ void main() {
     );
 
     Widget app(Widget child) => ChangeNotifierProvider.value(
-          value: provider,
-          child: wrapWithRouter(child),
-        );
+      value: provider,
+      child: wrapWithRouter(child),
+    );
 
     setUp(() {
       provider = InventoryProvider()..addInventoryItem(item);
@@ -202,8 +236,9 @@ void main() {
       expect(find.byType(AlertDialog), findsNothing);
     });
 
-    testWidgets('edit opens a prefilled form that updates the item',
-        (tester) async {
+    testWidgets('edit opens a prefilled form that updates the item', (
+      tester,
+    ) async {
       await tester.pumpWidget(app(InventoryItemCard(item: item)));
       await tester.tap(find.text('edit'));
       await tester.pumpAndSettle();
@@ -220,17 +255,22 @@ void main() {
       expect(provider.inventory.single.id, 'i1');
     });
 
-    testWidgets('add form validates required fields then adds an item',
-        (tester) async {
+    testWidgets('add form validates required fields then adds an item', (
+      tester,
+    ) async {
       // The dialog is 650px tall; give it room so every field is built.
       useViewport(tester, const Size(800, 1000));
       provider.clearInventory();
-      await tester.pumpWidget(app(Builder(
-        builder: (context) => TextButton(
-          onPressed: () => addItemDialog(context, 'medicines'),
-          child: const Text('open'),
+      await tester.pumpWidget(
+        app(
+          Builder(
+            builder: (context) => TextButton(
+              onPressed: () => addItemDialog(context, 'medicines'),
+              child: const Text('open'),
+            ),
+          ),
         ),
-      )));
+      );
       await tester.tap(find.text('open'));
       await tester.pumpAndSettle();
       expect(find.text('add_medicines_to_store'), findsOneWidget);
@@ -267,10 +307,14 @@ void main() {
   group('TutorialCard', () {
     testWidgets('shows progress and advances on continue', (tester) async {
       final provider = TutorialProvider();
-      await tester.pumpWidget(ChangeNotifierProvider.value(
-        value: provider,
-        child: wrap(const TutorialCard(title: 'Batches', message: 'Tap here')),
-      ));
+      await tester.pumpWidget(
+        ChangeNotifierProvider.value(
+          value: provider,
+          child: wrap(
+            const TutorialCard(title: 'Batches', message: 'Tap here'),
+          ),
+        ),
+      );
 
       final total = candidateConfigs.length;
       expect(find.text('Step 1 of $total'), findsOneWidget);

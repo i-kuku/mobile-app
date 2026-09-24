@@ -8,11 +8,18 @@ class SupabaseService {
 
   final supabase = Supabase.instance.client;
 
-  // Test Supabase connection
-  Future<bool> testConnection() async {
+  // Test Supabase connection. A probe that takes longer than [timeout]
+  // counts as unreachable so callers don't hang on a stalled network.
+  Future<bool> testConnection({
+    Duration timeout = const Duration(seconds: 10),
+  }) async {
     try {
       debugPrint('Testing Supabase connection...');
-      final response = await supabase.from('users').select('count').limit(1);
+      final response = await supabase
+          .from('users')
+          .select('count')
+          .limit(1)
+          .timeout(timeout);
       debugPrint('Connection test successful: $response');
       return true;
     } on PostgrestException catch (e) {
@@ -20,7 +27,7 @@ class SupabaseService {
       debugPrint('Supabase reachable, query rejected: ${e.message}');
       return true;
     } catch (e) {
-      // Network-level failures (no connection, DNS, TLS) never reach the server.
+      // Network failures (no connection, DNS, TLS, timeout) never reach the server.
       debugPrint('Supabase connection test failed: $e');
       debugPrint('Error type: ${e.runtimeType}');
       return false;

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -9,9 +11,19 @@ class AuthProvider with ChangeNotifier {
   bool _isLoading = false;
 
   String? _errorMessage;
+  bool _isConnectionError = false;
 
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
+
+  /// Whether [errorMessage] is about connectivity, so the UI can offer a
+  /// connection test regardless of the display language.
+  bool get isConnectionError => _isConnectionError;
+
+  void _setError(String? message, {bool isConnectionError = false}) {
+    _errorMessage = message;
+    _isConnectionError = isConnectionError;
+  }
 
   bool _isSignUp = true;
 
@@ -21,25 +33,25 @@ class AuthProvider with ChangeNotifier {
 
   void toggleAuthState() {
     _isSignUp = !_isSignUp;
-    _errorMessage = null;
+    _setError(null);
     notifyListeners();
   }
 
   Future<void> register(String email, String password, String cPassword) async {
-    _errorMessage = null;
+    _setError(null);
     _isLoading = true;
     notifyListeners();
 
     try {
       if (cPassword != password) {
-        _errorMessage = "Passwords do not match";
+        _setError("Passwords do not match");
         notifyListeners();
         return;
       }
       final supabaseService = SupabaseService();
       final isConnected = await supabaseService.testConnection();
       if (!isConnected) {
-        _errorMessage = 'unable_to_connect'.tr();
+        _setError('unable_to_connect'.tr(), isConnectionError: true);
         _isLoading = false;
         notifyListeners();
         return;
@@ -70,7 +82,7 @@ class AuthProvider with ChangeNotifier {
           }
         }
       } else {
-        _errorMessage = 'sign_up_failed'.tr();
+        _setError('sign_up_failed'.tr());
       }
     } catch (e) {
       _getRrrorMessage(e);
@@ -81,7 +93,7 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<void> login(String email, String password) async {
-    _errorMessage = null;
+    _setError(null);
     _isLoading = true;
 
     notifyListeners();
@@ -89,7 +101,7 @@ class AuthProvider with ChangeNotifier {
       final supabaseService = SupabaseService();
       final isConnected = await supabaseService.testConnection();
       if (!isConnected) {
-        _errorMessage = 'unable_to_connect'.tr();
+        _setError('unable_to_connect'.tr(), isConnectionError: true);
         _isLoading = false;
         notifyListeners();
         return;
@@ -145,7 +157,7 @@ class AuthProvider with ChangeNotifier {
           }
         }
       } else {
-        _errorMessage = 'sign_in_failed'.tr();
+        _setError('sign_in_failed'.tr());
         notifyListeners();
       }
     } catch (e) {
@@ -158,42 +170,46 @@ class AuthProvider with ChangeNotifier {
 
   void _getRrrorMessage(Object e) {
     debugPrint('Authentication error: $e');
-    if (e.toString().contains('SocketException') ||
-        e.toString().contains('Failed host lookup') ||
-        e.toString().contains('No address associated with hostname') ||
-        e.toString().contains('Network is unreachable')) {
-      _errorMessage = 'no_internet_connection'.tr();
-    } else if (e.toString().contains('Invalid login credentials')) {
-      _errorMessage = 'invalid_email_or_password'.tr();
-    } else if (e.toString().contains('Email not confirmed')) {
-      _errorMessage = 'email_not_confirmed'.tr();
-    } else if (e.toString().contains('User already registered')) {
-      _errorMessage = 'user_already_registered'.tr();
-    } else if (e.toString().contains('Invalid API key')) {
-      _errorMessage = 'configuration_error'.tr();
-    } else if (e.toString().contains('timeout')) {
-      _errorMessage = 'request_timed_out'.tr();
+    final message = e.toString();
+    if (message.contains('SocketException') ||
+        message.contains('Failed host lookup') ||
+        message.contains('No address associated with hostname') ||
+        message.contains('Network is unreachable')) {
+      _setError('no_internet_connection'.tr(), isConnectionError: true);
+    } else if (message.contains('Invalid login credentials')) {
+      _setError('invalid_email_or_password'.tr());
+    } else if (message.contains('Email not confirmed')) {
+      _setError('email_not_confirmed'.tr());
+    } else if (message.contains('User already registered')) {
+      _setError('user_already_registered'.tr());
+    } else if (message.contains('Invalid API key')) {
+      _setError('configuration_error'.tr());
+    } else if (e is TimeoutException ||
+        message.toLowerCase().contains('timeout') ||
+        message.toLowerCase().contains('timed out')) {
+      _setError('request_timed_out'.tr(), isConnectionError: true);
     } else {
-      _errorMessage = 'an_error_occurred'.tr(
-        args: [e.toString().split(':').last.trim()],
-      );
+      _setError('an_error_occurred'.tr(args: [message.split(':').last.trim()]));
     }
   }
 
   Future<void> internetTest() async {
     _isLoading = true;
-    _errorMessage = null;
+    _setError(null);
     notifyListeners();
 
     try {
       final supabaseService = SupabaseService();
       final isConnected = await supabaseService.testConnection();
 
-      _errorMessage = isConnected
-          ? 'connection_test_successful'.tr()
-          : 'connection_test_failed'.tr();
+      _setError(
+        isConnected
+            ? 'connection_test_successful'.tr()
+            : 'connection_test_failed'.tr(),
+        isConnectionError: !isConnected,
+      );
     } catch (e) {
-      _errorMessage = 'Connection test error: $e';
+      _setError('Connection test error: $e', isConnectionError: true);
     } finally {
       _isLoading = false;
       notifyListeners();
