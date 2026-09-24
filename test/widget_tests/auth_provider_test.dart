@@ -31,7 +31,10 @@ void main() {
 
   /// Mounts a router on the app's [navigatorKey], which AuthProvider reads
   /// when it is created, and returns a fresh provider.
-  Future<AuthProvider> pumpAuth(WidgetTester tester) async {
+  Future<AuthProvider> pumpAuth(
+    WidgetTester tester, {
+    Duration requestTimeout = const Duration(seconds: 20),
+  }) async {
     router = GoRouter(
       navigatorKey: navigatorKey,
       routes: [
@@ -45,7 +48,7 @@ void main() {
       initialLocation: '/login',
     );
     await tester.pumpWidget(MaterialApp.router(routerConfig: router));
-    return AuthProvider();
+    return AuthProvider(requestTimeout: requestTimeout);
   }
 
   String location() => router.routerDelegate.currentConfiguration.uri.path;
@@ -334,6 +337,50 @@ void main() {
       expect(provider.isConnectionError, isFalse);
     });
 
+    testWidgets('times out a sign-in request that never answers', (
+      tester,
+    ) async {
+      backend.on('POST', '/auth/v1/token', (_) async {
+        await Future<void>.delayed(const Duration(milliseconds: 300));
+        return FakeSupabaseBackend.json(fakeSession());
+      });
+      final provider = await pumpAuth(
+        tester,
+        requestTimeout: const Duration(milliseconds: 30),
+      );
+
+      await run(tester, () => provider.login('a@b.co', 'secret1'));
+
+      expect(provider.errorMessage, 'request_timed_out');
+      expect(provider.isConnectionError, isTrue);
+      expect(provider.isLoading, isFalse);
+      expect(location(), '/login');
+      // Let the slow response land so it doesn't leak into later tests.
+      await tester.runAsync(
+        () => Future<void>.delayed(const Duration(milliseconds: 350)),
+      );
+    });
+
+    testWidgets('times out a farm lookup that never answers', (tester) async {
+      signInSucceeds();
+      backend.on('GET', farmsPath, (_) async {
+        await Future<void>.delayed(const Duration(milliseconds: 300));
+        return FakeSupabaseBackend.json({'id': 'f1'});
+      });
+      final provider = await pumpAuth(
+        tester,
+        requestTimeout: const Duration(milliseconds: 100),
+      );
+
+      await run(tester, () => provider.login('a@b.co', 'secret1'));
+
+      expect(provider.errorMessage, 'request_timed_out');
+      expect(location(), '/login');
+      await tester.runAsync(
+        () => Future<void>.delayed(const Duration(milliseconds: 350)),
+      );
+    });
+
     testWidgets('sets loading while the request is in flight', (tester) async {
       signInSucceeds();
       backend.on(
@@ -350,6 +397,29 @@ void main() {
       expect(loadingStates.first, isTrue);
       expect(loadingStates.last, isFalse);
     });
+  });
+
+  testWidgets('can be created and log in before any navigator exists', (
+    tester,
+  ) async {
+    backend.on(
+      'POST',
+      '/auth/v1/token',
+      (_) async => FakeSupabaseBackend.json(fakeSession()),
+    );
+    backend.on(
+      'GET',
+      farmsPath,
+      (_) async => FakeSupabaseBackend.json({'id': 'f1'}),
+    );
+    await tester.pumpWidget(const SizedBox());
+    expect(navigatorKey.currentContext, isNull);
+
+    final provider = AuthProvider();
+    await tester.runAsync(() => provider.login('a@b.co', 'secret1'));
+
+    expect(provider.errorMessage, isNull);
+    expect(provider.isLoading, isFalse);
   });
 
   group('when Supabase is unreachable', () {

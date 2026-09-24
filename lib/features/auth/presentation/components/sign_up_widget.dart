@@ -4,22 +4,34 @@ import 'package:ikuku/features/auth/provider/auth_provider.dart';
 import 'package:ikuku/shared/widgets/text_field_widget.dart';
 import 'package:provider/provider.dart';
 
-class SignUpWidget extends StatelessWidget {
+class SignUpWidget extends StatefulWidget {
   final TextEditingController emailController;
   final TextEditingController passwordController;
   final TextEditingController repeatPasswordController;
-  SignUpWidget({
+  const SignUpWidget({
     super.key,
     required this.emailController,
     required this.passwordController,
     required this.repeatPasswordController,
   });
 
+  @override
+  State<SignUpWidget> createState() => _SignUpWidgetState();
+}
+
+class _SignUpWidgetState extends State<SignUpWidget> {
+  // Owned by State so focus survives rebuilds and the nodes are disposed.
   final FocusNode _emailFocus = FocusNode();
-
   final FocusNode _passwordFocus = FocusNode();
-
   final FocusNode _repeatPasswordFocus = FocusNode();
+
+  @override
+  void dispose() {
+    _emailFocus.dispose();
+    _passwordFocus.dispose();
+    _repeatPasswordFocus.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +43,7 @@ class SignUpWidget extends StatelessWidget {
           children: [
             TextFieldWidget(
               labelText: "Email",
-              controller: emailController,
+              controller: widget.emailController,
               keyboardType: TextInputType.emailAddress,
               hintText: 'type_your_email'.tr(),
               isEmail: true,
@@ -42,7 +54,7 @@ class SignUpWidget extends StatelessWidget {
 
             TextFieldWidget(
               labelText: "Password",
-              controller: passwordController,
+              controller: widget.passwordController,
               isPassword: true,
               hintText: 'type_your_password'.tr(),
               focusNode: _passwordFocus,
@@ -52,7 +64,7 @@ class SignUpWidget extends StatelessWidget {
 
             TextFieldWidget(
               labelText: 'repeat_password'.tr(),
-              controller: repeatPasswordController,
+              controller: widget.repeatPasswordController,
               isPassword: true,
               hintText: 'repeat_your_password'.tr(),
               focusNode: _repeatPasswordFocus,

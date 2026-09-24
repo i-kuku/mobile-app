@@ -95,6 +95,23 @@ void main() {
   Locale currentLocale(WidgetTester tester) =>
       EasyLocalization.of(tester.element(find.byType(Scaffold)))!.locale;
 
+  testWidgets('can be created and used before any navigator exists', (
+    tester,
+  ) async {
+    SharedPreferences.setMockInitialValues({});
+    await tester.pumpWidget(const SizedBox());
+    expect(navigatorKey.currentContext, isNull);
+
+    await tester.runAsync(() async {
+      final provider = LanguageProvider();
+      await provider.loadLanguage();
+      await provider.setLanguage('sw');
+      expect(provider.selectedLanguage, 'sw');
+    });
+    final prefs = await SharedPreferences.getInstance();
+    expect(prefs.getString('app_language'), 'sw');
+  });
+
   testWidgets('defaults to English and saves that choice', (tester) async {
     await pumpApp(tester);
 

@@ -8,6 +8,12 @@ import 'package:ikuku/shared/services/supabase_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthProvider with ChangeNotifier {
+  AuthProvider({this.requestTimeout = const Duration(seconds: 20)});
+
+  /// How long to wait for Supabase auth and profile requests before
+  /// reporting a timeout.
+  final Duration requestTimeout;
+
   bool _isLoading = false;
 
   String? _errorMessage;
@@ -29,7 +35,15 @@ class AuthProvider with ChangeNotifier {
 
   bool get isSignUp => _isSignUp;
 
-  final BuildContext context = navigatorKey.currentState!.context;
+  /// Navigates via the app navigator, if it is mounted. Looked up on use
+  /// rather than stored, so creating the provider before the navigator
+  /// exists is safe.
+  void _go(String location, {Object? extra}) {
+    final context = navigatorKey.currentContext;
+    if (context != null && context.mounted) {
+      context.go(location, extra: extra);
+    }
+  }
 
   void toggleAuthState() {
     _isSignUp = !_isSignUp;
@@ -57,10 +71,9 @@ class AuthProvider with ChangeNotifier {
         return;
       }
 
-      final res = await Supabase.instance.client.auth.signUp(
-        email: email,
-        password: password,
-      );
+      final res = await Supabase.instance.client.auth
+          .signUp(email: email, password: password)
+          .timeout(requestTimeout);
       final user = res.user;
       debugPrint(
         'Sign up response: ${res.session != null ? 'Session created' : 'No session'}',
@@ -77,9 +90,7 @@ class AuthProvider with ChangeNotifier {
         } catch (dbError) {
           debugPrint('Database error creating user record: $dbError');
         } finally {
-          if (context.mounted) {
-            context.go('/create-farm');
-          }
+          _go('/create-farm');
         }
       } else {
         _setError('sign_up_failed'.tr());
@@ -108,10 +119,9 @@ class AuthProvider with ChangeNotifier {
       }
 
       debugPrint('Attempting sign in for email: $email');
-      final res = await Supabase.instance.client.auth.signInWithPassword(
-        email: email,
-        password: password,
-      );
+      final res = await Supabase.instance.client.auth
+          .signInWithPassword(email: email, password: password)
+          .timeout(requestTimeout);
       debugPrint(
         'Sign in response: ${res.session != null ? 'Session created' : 'No session'}',
       );
@@ -142,9 +152,10 @@ class AuthProvider with ChangeNotifier {
             .from('farms')
             .select()
             .eq('user_id', user!.id)
-            .maybeSingle();
-        if (farm == null && context.mounted) {
-          context.go(
+            .maybeSingle()
+            .timeout(requestTimeout);
+        if (farm == null) {
+          _go(
             '/create-farm',
             extra: {
               'name': user.userMetadata?['full_name'] ?? '',
@@ -152,9 +163,7 @@ class AuthProvider with ChangeNotifier {
             },
           );
         } else {
-          if (context.mounted) {
-            context.go('/');
-          }
+          _go('/');
         }
       } else {
         _setError('sign_in_failed'.tr());
