@@ -12,24 +12,15 @@ class SupabaseService {
   Future<bool> testConnection() async {
     try {
       debugPrint('Testing Supabase connection...');
-
-      // Try to fetch a simple query to test connection
-      // Use a table that should exist, or try a simple RPC call
-      try {
-        final response = await supabase.from('users').select('count').limit(1);
-        debugPrint('Connection test successful: $response');
-        return true;
-      } catch (tableError) {
-        // If users table doesn't exist, try a different approach
-        debugPrint('Users table not accessible, trying alternative test...');
-        // Try to get the current user (this should work even if no user is logged in)
-        final user = supabase.auth.currentUser;
-        debugPrint(
-          'Current user check successful: ${user?.id ?? 'No user logged in'}',
-        );
-        return true;
-      }
+      final response = await supabase.from('users').select('count').limit(1);
+      debugPrint('Connection test successful: $response');
+      return true;
+    } on PostgrestException catch (e) {
+      // The server answered (e.g. RLS or a missing table), so it is reachable.
+      debugPrint('Supabase reachable, query rejected: ${e.message}');
+      return true;
     } catch (e) {
+      // Network-level failures (no connection, DNS, TLS) never reach the server.
       debugPrint('Supabase connection test failed: $e');
       debugPrint('Error type: ${e.runtimeType}');
       return false;

@@ -174,7 +174,10 @@ void main() {
       backend.on(
         'GET',
         usersPath,
-        (_) async => FakeSupabaseBackend.json({'id': fakeUserId}),
+        // testConnection selects `count`; the existence check selects `id`.
+        (request) async => request.url.queryParameters['select'] == 'id'
+            ? FakeSupabaseBackend.json({'id': fakeUserId})
+            : FakeSupabaseBackend.json([]),
       );
       backend.on(
         'GET',
@@ -312,6 +315,51 @@ void main() {
 
       expect(loadingStates.first, isTrue);
       expect(loadingStates.last, isFalse);
+    });
+  });
+
+  group('when Supabase is unreachable', () {
+    setUp(
+      () => backend.on(
+        'GET',
+        usersPath,
+        (_) async => throw const SocketException(
+          'Failed host lookup: fake.supabase.test',
+        ),
+      ),
+    );
+
+    testWidgets('login stops before contacting auth', (tester) async {
+      final provider = await pumpAuth(tester);
+
+      await run(tester, () => provider.login('a@b.co', 'secret1'));
+
+      expect(provider.errorMessage, 'unable_to_connect');
+      expect(provider.isLoading, isFalse);
+      expect(backend.requestsTo('/auth/v1/token'), isEmpty);
+      expect(location(), '/login');
+    });
+
+    testWidgets('register stops before contacting auth', (tester) async {
+      final provider = await pumpAuth(tester);
+
+      await run(
+        tester,
+        () => provider.register('a@b.co', 'secret1', 'secret1'),
+      );
+
+      expect(provider.errorMessage, 'unable_to_connect');
+      expect(provider.isLoading, isFalse);
+      expect(backend.requestsTo('/auth/v1/signup'), isEmpty);
+    });
+
+    testWidgets('internetTest reports the failure', (tester) async {
+      final provider = await pumpAuth(tester);
+
+      await run(tester, provider.internetTest);
+
+      expect(provider.errorMessage, 'connection_test_failed');
+      expect(provider.isLoading, isFalse);
     });
   });
 
