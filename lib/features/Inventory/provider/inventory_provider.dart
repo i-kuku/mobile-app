@@ -18,7 +18,9 @@ class InventoryProvider extends ChangeNotifier {
   List<InventoryItem> get others =>
       _inventory.where((item) => item.category == 'others').toList();
 
-  ///Fetches all inventory items for a logged in user
+  List get lowStockFeeds {
+    return feeds.where((item) => (item.quantity as num).toDouble() < 30.0).toList();
+  }
   Future<void> fetchInventory() async {
     final userId = Supabase.instance.client.auth.currentUser?.id;
     if (userId == null) return;
