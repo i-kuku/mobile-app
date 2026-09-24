@@ -1,9 +1,10 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:ikuku/features/batches/provider/batch_provider.dart';
 import 'package:ikuku/shared/widgets/feature_button.dart';
 import 'package:ikuku/theme/app_theme.dart';
-// import 'package:provider/provider.dart';
+import 'package:provider/provider.dart';
 
 class EditBatchPage extends StatefulWidget {
   final Map<String, dynamic> batchData;
@@ -19,6 +20,7 @@ class _EditBatchPageState extends State<EditBatchPage> {
   late TextEditingController _nameController;
   late TextEditingController _countController;
   late TextEditingController _ageController;
+  late TextEditingController _costController;
 
   late String? _selectedType;
   late String? _selectedUnit;
@@ -34,6 +36,9 @@ class _EditBatchPageState extends State<EditBatchPage> {
     _ageController = TextEditingController(
       text: widget.batchData['age']?.toString(),
     );
+    _costController = TextEditingController(
+      text: widget.batchData['purchaseCost']?.toString(),
+    );
 
     _selectedType = widget.batchData['typeOfBird'];
     _selectedUnit = widget.batchData['ageUnit'];
@@ -44,20 +49,51 @@ class _EditBatchPageState extends State<EditBatchPage> {
     _nameController.dispose();
     _countController.dispose();
     _ageController.dispose();
+    _costController.dispose();
     super.dispose();
   }
 
-  void _handleUpdate() {
-    if (_formKey.currentState!.validate()) {
-      final updatedData = {
-        'name': _nameController.text,
-        'typeOfBird': _selectedType,
-        'initialCount': _countController.text,
-        'age': _ageController.text,
-        'ageUnit': _selectedUnit,
-      };
+  bool _isUpdating = false;
 
-      context.push('/confirm_batch_page', extra: updatedData);
+  Future<void> _handleUpdate() async {
+    final messenger = ScaffoldMessenger.of(context);
+
+    if (!_formKey.currentState!.validate()) return;
+
+    final batchId = widget.batchData['id'];
+    if (batchId == null) {
+      messenger.showSnackBar(
+        SnackBar(content: Text("Missing_batch_id".tr())),
+      );
+      return;
+    }
+    setState(() => _isUpdating = true);
+
+    try {
+      await Provider.of<BatchProvider>(context, listen: false).updateBatch(
+        id: batchId,
+        name: _nameController.text.trim(),
+        typeOfBird: _selectedType ?? 'layer',
+        initialCount: int.tryParse(_countController.text) ?? 0,
+        age: int.tryParse(_ageController.text) ?? 0,
+        ageUnit: _selectedUnit ?? 'Days',
+        purchaseCost: num.tryParse(_costController.text) ?? 0,
+      );
+
+      if (mounted) {
+        messenger.showSnackBar(
+          SnackBar(content: Text('batch_updated_successfully'.tr())),
+        );
+
+        context.pop();
+      }
+    } catch (e) {
+      if (!context.mounted) return;
+      messenger.showSnackBar(
+        SnackBar(content: Text('Failed to update batch: ${e.toString()}')),
+      );
+    } finally {
+      if (mounted) setState(() => _isUpdating = false);
     }
   }
 
@@ -166,7 +202,6 @@ class _EditBatchPageState extends State<EditBatchPage> {
                               ),
                               contentPadding: EdgeInsets.zero,
                             ),
-
                             initialValue: _selectedType,
                             items: ['layer', 'broiler'].map((type) {
                               return DropdownMenuItem(
@@ -268,7 +303,7 @@ class _EditBatchPageState extends State<EditBatchPage> {
                               ),
                             ),
                             validator: (value) =>
-                      value!.isEmpty ? "Enter_the_age".tr() : null,
+                                value!.isEmpty ? "Enter_the_age".tr() : null,
                           ),
                         ],
                       ),
@@ -322,13 +357,46 @@ class _EditBatchPageState extends State<EditBatchPage> {
                   ],
                 ),
                 SizedBox(height: 48),
-                FeatureButton(label: 'update'.tr(), onTap: _handleUpdate, style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                    color: CustomColors.primary,
+                Text(
+                  'cost_of_chicks'.tr(),
+                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                    color: CustomColors.text,
                     fontSize: 20,
-                    fontFamily: 'Roboto',
-                    fontWeight: FontWeight.bold,
-                    decoration: TextDecoration.underline,
-                  ),),
+                  ),
+                ),
+                TextFormField(
+                  controller: _costController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    border: UnderlineInputBorder(
+                      borderSide: BorderSide(color: CustomColors.textDisabled),
+                    ),
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: CustomColors.textDisabled),
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(
+                        color: CustomColors.primary,
+                        width: 2,
+                      ),
+                    ),
+                    contentPadding: EdgeInsets.zero,
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "enter_the_cost".tr();
+                    }
+                    if (num.tryParse(value) == null) {
+                      return 'please_enter_a_valid_number'.tr();
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 48),
+                FeatureButton(
+                  label: _isUpdating ? 'updating...'.tr() : 'update'.tr(),
+                  onTap: _handleUpdate,
+                ),
               ],
             ),
           ),
