@@ -47,7 +47,6 @@ dependencies:
   url_launcher: ^6.3.0
   xml: ^7.0.1
   tutorial_coach_mark: ^1.2.11
-  cached_network_image: ^4.0.2
   webview_flutter: ^4.7.0
   shared_preferences: ^2.2.2
   html_unescape: ^2.0.0
