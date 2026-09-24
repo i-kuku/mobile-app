@@ -14,29 +14,39 @@ void main() {
       (LoadingButtonType.outlined, find.byType(OutlinedButton)),
       (LoadingButtonType.text, find.byType(TextButton)),
     ]) {
-      testWidgets('$type renders its child and fires onPressed',
-          (tester) async {
+      testWidgets('$type renders its child and fires onPressed', (
+        tester,
+      ) async {
         var taps = 0;
-        await tester.pumpWidget(wrap(LoadingButton(
-          type: type,
-          onPressed: () => taps++,
-          child: const Text('Save'),
-        )));
+        await tester.pumpWidget(
+          wrap(
+            LoadingButton(
+              type: type,
+              onPressed: () => taps++,
+              child: const Text('Save'),
+            ),
+          ),
+        );
 
         expect(finder, findsOneWidget);
         await tester.tap(find.text('Save'));
         expect(taps, 1);
       });
 
-      testWidgets('$type shows a spinner and is disabled while loading',
-          (tester) async {
+      testWidgets('$type shows a spinner and is disabled while loading', (
+        tester,
+      ) async {
         var taps = 0;
-        await tester.pumpWidget(wrap(LoadingButton(
-          type: type,
-          isLoading: true,
-          onPressed: () => taps++,
-          child: const Text('Save'),
-        )));
+        await tester.pumpWidget(
+          wrap(
+            LoadingButton(
+              type: type,
+              isLoading: true,
+              onPressed: () => taps++,
+              child: const Text('Save'),
+            ),
+          ),
+        );
 
         expect(find.text('Save'), findsNothing);
         expect(find.byType(CircularProgressIndicator), findsOneWidget);
@@ -47,14 +57,15 @@ void main() {
   });
 
   group('FeatureButton', () {
-    testWidgets('upper-cases the label, shows the icon and taps',
-        (tester) async {
+    testWidgets('upper-cases the label, shows the icon and taps', (
+      tester,
+    ) async {
       var taps = 0;
-      await tester.pumpWidget(wrap(FeatureButton(
-        label: 'batches',
-        icon: Icons.egg,
-        onTap: () => taps++,
-      )));
+      await tester.pumpWidget(
+        wrap(
+          FeatureButton(label: 'batches', icon: Icons.egg, onTap: () => taps++),
+        ),
+      );
 
       expect(find.text('BATCHES'), findsOneWidget);
       expect(find.byIcon(Icons.egg), findsOneWidget);
@@ -69,33 +80,43 @@ void main() {
   });
 
   group('CustomDialog', () {
-    testWidgets('uses the primary colour for success and red for errors',
-        (tester) async {
-      await tester.pumpWidget(wrap(CustomDialog(
-        title: 'Oops',
-        message: 'Failed',
-        isSuccess: false,
-        onOkPressed: () {},
-      )));
+    testWidgets('uses the primary colour for success and red for errors', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        wrap(
+          CustomDialog(
+            title: 'Oops',
+            message: 'Failed',
+            isSuccess: false,
+            onOkPressed: () {},
+          ),
+        ),
+      );
       expect(tester.widget<Text>(find.text('Oops')).style?.color, Colors.red);
       expect(find.text('Failed'), findsOneWidget);
     });
 
-    testWidgets('showCustomDialog closes the dialog then runs the callback',
-        (tester) async {
+    testWidgets('showCustomDialog closes the dialog then runs the callback', (
+      tester,
+    ) async {
       var okPressed = false;
-      await tester.pumpWidget(wrap(Builder(
-        builder: (context) => TextButton(
-          onPressed: () => showCustomDialog(
-            context: context,
-            title: 'Saved',
-            message: 'Batch saved',
-            isSuccess: true,
-            onOkPressed: () => okPressed = true,
+      await tester.pumpWidget(
+        wrap(
+          Builder(
+            builder: (context) => TextButton(
+              onPressed: () => showCustomDialog(
+                context: context,
+                title: 'Saved',
+                message: 'Batch saved',
+                isSuccess: true,
+                onOkPressed: () => okPressed = true,
+              ),
+              child: const Text('open'),
+            ),
           ),
-          child: const Text('open'),
         ),
-      )));
+      );
 
       await tester.tap(find.text('open'));
       await tester.pumpAndSettle();
@@ -129,7 +150,8 @@ void main() {
       final error = find.descendant(
         of: find.byType(TextFormField),
         matching: find.byWidgetPredicate(
-            (w) => w is Text && w.data != null && w.data!.contains(' ')),
+          (w) => w is Text && w.data != null && w.data!.contains(' '),
+        ),
       );
       final texts = tester.widgetList<Text>(error).map((t) => t.data).toList();
       return texts.isEmpty ? null : texts.last;
@@ -150,18 +172,23 @@ void main() {
       expect(error, 'Farm name is required');
     });
 
-    testWidgets('optional field with no rules passes when empty',
-        (tester) async {
-      await tester.pumpWidget(wrap(Form(
-        key: formKey,
-        child: TextFieldWidget(
-          controller: controller,
-          focusNode: FocusNode(),
-          hintText: 'Notes',
-          isLoading: false,
-          isRequired: false,
+    testWidgets('optional field with no rules passes when empty', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        wrap(
+          Form(
+            key: formKey,
+            child: TextFieldWidget(
+              controller: controller,
+              focusNode: FocusNode(),
+              hintText: 'Notes',
+              isLoading: false,
+              isRequired: false,
+            ),
+          ),
         ),
-      )));
+      );
       expect(formKey.currentState!.validate(), isTrue);
     });
 
@@ -180,8 +207,9 @@ void main() {
       expect(error, 'Name must be at least 3 characters');
     });
 
-    testWidgets('email fields validate format and show the email icon',
-        (tester) async {
+    testWidgets('email fields validate format and show the email icon', (
+      tester,
+    ) async {
       final error = await validate(
         tester,
         TextFieldWidget(
@@ -213,13 +241,17 @@ void main() {
     });
 
     testWidgets('password visibility toggles', (tester) async {
-      await tester.pumpWidget(wrap(TextFieldWidget(
-        controller: controller,
-        focusNode: FocusNode(),
-        hintText: 'Password',
-        isLoading: false,
-        isPassword: true,
-      )));
+      await tester.pumpWidget(
+        wrap(
+          TextFieldWidget(
+            controller: controller,
+            focusNode: FocusNode(),
+            hintText: 'Password',
+            isLoading: false,
+            isPassword: true,
+          ),
+        ),
+      );
 
       EditableText editable() =>
           tester.widget<EditableText>(find.byType(EditableText));
@@ -232,26 +264,68 @@ void main() {
       expect(find.byIcon(Icons.visibility_off_outlined), findsOneWidget);
     });
 
+    testWidgets('password visibility survives a parent rebuild', (
+      tester,
+    ) async {
+      final focusNode = FocusNode();
+      final rebuild = ValueNotifier(0);
+      await tester.pumpWidget(
+        wrap(
+          ValueListenableBuilder<int>(
+            valueListenable: rebuild,
+            // A fresh TextFieldWidget instance on every rebuild, like the auth
+            // form produces while it is loading.
+            builder: (_, count, _) => TextFieldWidget(
+              controller: controller,
+              focusNode: focusNode,
+              hintText: 'Password $count',
+              isLoading: count.isOdd,
+              isPassword: true,
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.byIcon(Icons.visibility_outlined));
+      await tester.pump();
+      rebuild.value++;
+      await tester.pump();
+
+      expect(find.text('Password 1'), findsOneWidget);
+      expect(
+        tester.widget<EditableText>(find.byType(EditableText)).obscureText,
+        isFalse,
+      );
+    });
+
     testWidgets('username fields show the person icon', (tester) async {
-      await tester.pumpWidget(wrap(TextFieldWidget(
-        controller: controller,
-        focusNode: FocusNode(),
-        hintText: 'Username',
-        isLoading: false,
-        isUsername: true,
-      )));
+      await tester.pumpWidget(
+        wrap(
+          TextFieldWidget(
+            controller: controller,
+            focusNode: FocusNode(),
+            hintText: 'Username',
+            isLoading: false,
+            isUsername: true,
+          ),
+        ),
+      );
       expect(find.byIcon(Icons.person_outline_outlined), findsOneWidget);
     });
 
     testWidgets('onChanged receives typed text', (tester) async {
       String? changed;
-      await tester.pumpWidget(wrap(TextFieldWidget(
-        controller: controller,
-        focusNode: FocusNode(),
-        hintText: 'Name',
-        isLoading: false,
-        onChanged: (v) => changed = v,
-      )));
+      await tester.pumpWidget(
+        wrap(
+          TextFieldWidget(
+            controller: controller,
+            focusNode: FocusNode(),
+            hintText: 'Name',
+            isLoading: false,
+            onChanged: (v) => changed = v,
+          ),
+        ),
+      );
       await tester.enterText(find.byType(TextFormField), 'Kuku');
       expect(changed, 'Kuku');
     });
@@ -259,21 +333,27 @@ void main() {
     testWidgets('submitting moves focus to the next field', (tester) async {
       final first = FocusNode();
       final next = FocusNode();
-      await tester.pumpWidget(wrap(Column(children: [
-        TextFieldWidget(
-          controller: controller,
-          focusNode: first,
-          nextFocusNode: next,
-          hintText: 'First',
-          isLoading: false,
+      await tester.pumpWidget(
+        wrap(
+          Column(
+            children: [
+              TextFieldWidget(
+                controller: controller,
+                focusNode: first,
+                nextFocusNode: next,
+                hintText: 'First',
+                isLoading: false,
+              ),
+              TextFieldWidget(
+                controller: TextEditingController(),
+                focusNode: next,
+                hintText: 'Second',
+                isLoading: false,
+              ),
+            ],
+          ),
         ),
-        TextFieldWidget(
-          controller: TextEditingController(),
-          focusNode: next,
-          hintText: 'Second',
-          isLoading: false,
-        ),
-      ])));
+      );
 
       await tester.tap(find.byType(TextFormField).first);
       await tester.pump();

@@ -52,17 +52,28 @@ void main() {
   group('emailValidator', () {
     test('requires a value', () {
       expect(emailValidator(null), 'Email is required');
-      expect(emailValidator('', fieldName: 'Work email'),
-          'Work email is required');
+      expect(
+        emailValidator('', fieldName: 'Work email'),
+        'Work email is required',
+      );
     });
 
     test('accepts valid emails', () {
       expect(emailValidator('farmer@ikuku.co.ke'), isNull);
       expect(emailValidator('first.last-name@example.com'), isNull);
+      expect(emailValidator('farmer+eggs@gmail.com'), isNull);
+      expect(emailValidator('info@kuku.online'), isNull);
+      expect(emailValidator('info@shamba.agency'), isNull);
     });
 
     test('rejects invalid emails', () {
-      for (final email in ['farmer', 'farmer@', '@ikuku.com', 'a@b', 'a b@c.com']) {
+      for (final email in [
+        'farmer',
+        'farmer@',
+        '@ikuku.com',
+        'a@b',
+        'a b@c.com',
+      ]) {
         expect(emailValidator(email), 'Enter a valid email', reason: email);
       }
     });
@@ -75,14 +86,18 @@ void main() {
     });
 
     test('enforces the default minimum of 6', () {
-      expect(passwordValidator('12345'),
-          'Password must be at least 6 characters');
+      expect(
+        passwordValidator('12345'),
+        'Password must be at least 6 characters',
+      );
       expect(passwordValidator('123456'), isNull);
     });
 
     test('respects a custom minimum', () {
-      expect(passwordValidator('1234567', minLength: 8),
-          'Password must be at least 8 characters');
+      expect(
+        passwordValidator('1234567', minLength: 8),
+        'Password must be at least 8 characters',
+      );
       expect(passwordValidator('12345678', minLength: 8), isNull);
     });
   });

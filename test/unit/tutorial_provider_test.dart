@@ -22,8 +22,9 @@ void main() {
     expect(notifications, candidateConfigs.length - 1);
   });
 
-  testWidgets('maybeShowTutorial does nothing once the tutorial was seen',
-      (tester) async {
+  testWidgets('maybeShowTutorial does nothing once the tutorial was seen', (
+    tester,
+  ) async {
     SharedPreferences.setMockInitialValues({'tutorials': true});
     final provider = TutorialProvider();
     await tester.pumpWidget(const MaterialApp(home: SizedBox()));
@@ -33,8 +34,7 @@ void main() {
     expect(provider.tutorialCoachMark, isNull);
   });
 
-  testWidgets(
-      'maybeShowTutorial marks the tutorial as seen and skips when no '
+  testWidgets('maybeShowTutorial does not mark the tutorial as seen when no '
       'targets are on screen', (tester) async {
     SharedPreferences.setMockInitialValues({});
     final provider = TutorialProvider();
@@ -43,7 +43,7 @@ void main() {
     await provider.maybeShowTutorial(tester.element(find.byType(SizedBox)));
 
     final prefs = await SharedPreferences.getInstance();
-    expect(prefs.getBool('tutorials'), isTrue);
+    expect(prefs.getBool('tutorials'), isNull);
     expect(provider.tutorialCoachMark, isNull);
   });
 }

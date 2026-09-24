@@ -11,7 +11,10 @@ void disableFontFetching() {
 /// Wraps [child] in a Scaffold inside a MaterialApp using the app theme.
 Widget wrap(Widget child) {
   disableFontFetching();
-  return MaterialApp(theme: appTheme, home: Scaffold(body: child));
+  return MaterialApp(
+    theme: appTheme,
+    home: Scaffold(body: child),
+  );
 }
 
 /// Wraps [child] in a GoRouter-backed MaterialApp, for widgets that call
@@ -20,7 +23,10 @@ Widget wrapWithRouter(Widget child) {
   disableFontFetching();
   final router = GoRouter(
     routes: [
-      GoRoute(path: '/', builder: (_, _) => Scaffold(body: child)),
+      GoRoute(
+        path: '/',
+        builder: (_, _) => Scaffold(body: child),
+      ),
     ],
   );
   return MaterialApp.router(theme: appTheme, routerConfig: router);

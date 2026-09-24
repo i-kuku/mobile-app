@@ -25,14 +25,15 @@ class TutorialProvider with ChangeNotifier {
       debugPrint('[DashboardPage] Tutorial seen: $hasSeenTutorial');
       if (hasSeenTutorial) return;
 
-      if (context.mounted) {
-        _showTutorial(context);
+      // Only remember the tour once it has actually been shown, so a
+      // screen without its targets on it doesn't use it up.
+      if (context.mounted && _showTutorial(context)) {
+        await prefs.setBool("tutorials", true);
       }
-      await prefs.setBool("tutorials", true);
     } catch (_) {}
   }
 
-  void _showTutorial(BuildContext context) {
+  bool _showTutorial(BuildContext context) {
     _targets.clear();
     notifyListeners();
     for (final config in candidateConfigs) {
@@ -61,7 +62,7 @@ class TutorialProvider with ChangeNotifier {
       debugPrint(
         '[DashboardPage] No tutorial targets available, not showing tour.',
       );
-      return;
+      return false;
     }
 
     _tutorialCoachMark = TutorialCoachMark(
@@ -95,6 +96,7 @@ class TutorialProvider with ChangeNotifier {
       if (!context.mounted) return;
       _tutorialCoachMark?.show(context: context);
     });
+    return true;
   }
 
   void nextStep() {
