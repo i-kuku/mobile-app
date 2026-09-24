@@ -9,6 +9,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 void handleForgotPassword() async {
   final phoneController = TextEditingController();
   final answerController = TextEditingController();
+  final phoneFocus = FocusNode();
+  final answerFocus = FocusNode();
   String? recoveryQuestion;
   String? userId;
   bool isVerifyingAnswer = false;
@@ -31,7 +33,7 @@ void handleForgotPassword() async {
                 Text('enter_phone_to_recover'.tr()),
                 const SizedBox(height: 16),
                 TextFieldWidget(
-                   focusNode: FocusNode(),
+                  focusNode: phoneFocus,
                   isLoading: false,
                   controller: phoneController,
                   keyboardType: TextInputType.phone,
@@ -46,7 +48,7 @@ void handleForgotPassword() async {
                 Text(recoveryQuestion?.tr() ?? ''),
                 const SizedBox(height: 16),
                 TextFieldWidget(
-                  focusNode: FocusNode(),
+                  focusNode: answerFocus,
                   isLoading: false,
                   controller: answerController,
                   hintText: 'answer_placeholder'.tr(),

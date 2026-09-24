@@ -31,8 +31,7 @@ class BatchCard extends StatelessWidget {
         children: [
           Expanded(
             child: Container(
-              height: 80,
-              width: 50,
+              constraints: const BoxConstraints(minHeight: 80),
               padding: EdgeInsets.fromLTRB(16, 8, 16, 8),
               decoration: BoxDecoration(borderRadius: BorderRadius.circular(4)),
               child: Column(

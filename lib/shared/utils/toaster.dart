@@ -1,4 +1,3 @@
-
 import 'package:delightful_toast/delight_toast.dart';
 import 'package:delightful_toast/toast/components/toast_card.dart';
 import 'package:delightful_toast/toast/utils/enums.dart';
@@ -6,9 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:ikuku/routing/app_router.dart';
 import 'package:ikuku/theme/app_theme.dart';
 
-
 void showToast(String message, {bool isError = false}) {
-  final BuildContext context = navigatorKey.currentState!.context;
+  final BuildContext? context = navigatorKey.currentContext;
+  if (context == null || !context.mounted) {
+    debugPrint('showToast before the navigator is ready: $message');
+    return;
+  }
 
   final errorColor = CustomColors.errorColor;
   final primaryColor = Theme.of(context).colorScheme.primary;
