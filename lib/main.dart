@@ -27,7 +27,7 @@ void main() async {
   await Hive.openBox<String>('sync_status');
   await Supabase.initialize(
   url:'https://ubzmplzgomzpczaspuyu.supabase.co' ,
-  anonKey:'sb_publishable_DuH_Ckn1wyGVRa9l-BN9gw_DCoSqQYC',
+  publishableKey:'sb_publishable_DuH_Ckn1wyGVRa9l-BN9gw_DCoSqQYC',
   );
   try {
     await SupabaseService().fixDatabaseConstraints();
