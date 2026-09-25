@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:ikuku/features/Inventory/presentation/widgets/inventory_list_template.dart';
 
 class FeedsPage extends StatelessWidget {
-  const FeedsPage({super.key});
+  const FeedsPage({super.key, });
 
   @override
   Widget build(BuildContext context) {
