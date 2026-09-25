@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:ikuku/features/Inventory/provider/inventory_provider.dart';
 import 'package:ikuku/features/batches/provider/batch_provider.dart';
 import 'package:ikuku/features/auth/provider/auth_provider.dart';
+import 'package:ikuku/features/farms%20report/provider/farm_report_provider.dart';
+import 'package:ikuku/features/financial%20summaries/provider/financial_provider.dart';
 import 'package:ikuku/features/home/provider/analytics_provider.dart';
 import 'package:ikuku/features/home/provider/tutorial_provider.dart';
+// import 'package:ikuku/features/notifications/provider/notifications_provider.dart';
 import 'package:ikuku/features/settings/languages/provider/language_provider.dart';
+import 'package:ikuku/features/shop/provider/sales_provider.dart';
 import 'package:ikuku/theme/app_theme.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -25,9 +30,12 @@ void main() async {
   await Hive.initFlutter();
   await Hive.openBox<String>('offline_reports');
   await Hive.openBox<String>('sync_status');
+
+  await dotenv.load(fileName: ".env");
+
   await Supabase.initialize(
-  url:'https://ubzmplzgomzpczaspuyu.supabase.co' ,
-  anonKey:'sb_publishable_DuH_Ckn1wyGVRa9l-BN9gw_DCoSqQYC',
+  url: dotenv.env['SUPABASE_URL']! ,
+  anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
   );
   try {
     await SupabaseService().fixDatabaseConstraints();
@@ -55,6 +63,10 @@ void main() async {
         ChangeNotifierProvider(create: (context) => InventoryProvider()),
         ChangeNotifierProvider(create: (context) => AnalyticsProvider()),
         ChangeNotifierProvider(create: (context) => TutorialProvider()),
+        ChangeNotifierProvider(create: (context) => FarmReportProvider()),
+        ChangeNotifierProvider(create: (context) => FinancialSummaryProvider()),
+        ChangeNotifierProvider(create: (context) => SalesProvider()),
+        // ChangeNotifierProvider(create: (context) => NotificationsProvider()),
       ],
       child: EasyLocalization(
         supportedLocales: const [Locale('en'), Locale('sw')],

@@ -6,6 +6,7 @@ import 'package:ikuku/features/Inventory/presentation/widgets/add_item_dialog.da
 import 'package:ikuku/features/Inventory/presentation/widgets/inventory_item_card.dart';
 import 'package:ikuku/features/Inventory/presentation/widgets/inventory_tip.dart';
 import 'package:ikuku/features/Inventory/provider/inventory_provider.dart';
+import 'package:ikuku/features/dashboard/presentation/components/app_bottom_nav_bar.dart';
 import 'package:ikuku/theme/app_theme.dart';
 import 'package:provider/provider.dart';
 
@@ -27,6 +28,17 @@ class InventoryListTemplate extends StatelessWidget{
   Widget build(BuildContext context) {
     final provider =context.watch<InventoryProvider>();
 
+   if (provider.isloading) {
+    return Scaffold(
+      appBar: AppBar(elevation: 0),
+      body: const Center(
+        child: CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(CustomColors.primary),
+        ),
+      ),
+      
+    );
+  }
     final items= category =="feeds"?
      provider.feeds:category=="medicines"? 
      provider.medicines : provider.others;
@@ -58,7 +70,7 @@ class InventoryListTemplate extends StatelessWidget{
         ),
       ),
       body: Padding(
-        padding:EdgeInsets.symmetric(horizontal: 16,vertical: 24),
+        padding:EdgeInsets.symmetric(horizontal: 16,vertical: 16),
         child:Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -93,7 +105,19 @@ class InventoryListTemplate extends StatelessWidget{
           ),
         
           child: const Icon(Icons.add,color: Colors.black)),
-      )
+      ),
+      bottomNavigationBar: AppBottomNavbar(
+        currentIndex: 0,
+        onTap: (index) {
+          if (index == 0) {
+            context.go('/');
+          } else if (index == 1) {
+            context.go('/shop');
+          } else if (index == 2) {
+            context.go('/profile');
+          }
+        },
+      ),
      );
 }
 Widget _buildEmptyState(BuildContext context) {
