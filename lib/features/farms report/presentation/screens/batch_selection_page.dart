@@ -23,6 +23,9 @@ class _BatchSelectionPageState extends State<BatchSelectionPage> {
   void initState() {
     super.initState();
     _batchesFuture = _fetchUserBatches();
+    WidgetsBinding.instance.addPostFrameCallback((_){
+      context.read<FarmReportProvider>().resetForm();
+    });
   }
 
   Future<List<ChickenBatch>> _fetchUserBatches() async {
@@ -79,35 +82,25 @@ class _BatchSelectionPageState extends State<BatchSelectionPage> {
     );
   }
 
-  Future<bool> _hasReportForToday(String batchId) async {
-    try {
-      final userId = Supabase.instance.client.auth.currentUser?.id;
-      if (userId == null) return false;
+ Future<bool> _hasReportForDate(String batchId, {DateTime? date}) async {
+  try {
+    final userId = Supabase.instance.client.auth.currentUser?.id;
+    if (userId == null) return false;
 
-      final todayStr = DateTime.now().toIso8601String().split('T')[0];
+    final dateStr = (date ?? DateTime.now()).toIso8601String().split('T')[0];
+    final matches = await Supabase.instance.client
+        .from('batch_records')
+        .select('id, daily_records!inner(id, user_id, report_date)')
+        .eq('batch_id', batchId)
+        .eq('daily_records.user_id', userId)
+        .eq('daily_records.report_date', dateStr);
 
-      final dailyRecord = await Supabase.instance.client
-      .from("daily_records")
-      .select('id')
-      .eq('user_id', userId)
-      .eq('report_date', todayStr)
-      .maybeSingle();
-
-      if(dailyRecord == null) return false;
-
-      final batchRecord = await Supabase.instance.client
-      .from('batch_records')
-      .select('id')
-      .eq('daily_record_id', dailyRecord['id'])
-      .eq('batch_id', batchId)
-      .maybeSingle();
-      
-      return batchRecord != null;
-    } catch (e) {
-      debugPrint("Error checking todays's report status: $e");
-      return false;
-    }
+    return (matches as List).isNotEmpty;
+  } catch (e) {
+    debugPrint("Error checking report status for date: $e");
+    return false;
   }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -169,7 +162,7 @@ class _BatchSelectionPageState extends State<BatchSelectionPage> {
                         return BatchCard(
                           batch: batch,
                           onTap: () async {
-                            final exists = await _hasReportForToday(batch.id);
+                            final exists = await _hasReportForDate(batch.id);
                             if (!context.mounted) return;
 
                             if (exists) {

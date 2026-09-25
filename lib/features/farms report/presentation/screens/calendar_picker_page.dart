@@ -6,6 +6,7 @@ import 'package:ikuku/features/farms%20report/provider/farm_report_provider.dart
 import 'package:ikuku/shared/widgets/feature_button.dart';
 import 'package:ikuku/theme/app_theme.dart';
 import 'package:provider/provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 
 class CalendarPickerPage extends StatefulWidget {
@@ -19,14 +20,16 @@ class CalendarPickerPage extends StatefulWidget {
 
 class _CalendarPickerPage extends State<CalendarPickerPage> {
   DateTime _selectedDate = DateTime.now();
+  List<DateTime> _reportedDates = [];
   final TextEditingController _dateController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    // if(widget.batch!= null){
-    //   fetchBatchRecords(widget.batch!.id);
-    // }
+     _reportedDates = widget.reportedDates;
+  if (widget.batch != null) {
+    _fetchReportedDates(widget.batch!.id);
+  }
     _dateController.text = DateFormat('yyyy-MM-dd').format(_selectedDate);
   }
 
@@ -35,6 +38,32 @@ class _CalendarPickerPage extends State<CalendarPickerPage> {
     _dateController.dispose();
     super.dispose();
   }
+  Future<void> _fetchReportedDates(String batchId) async {
+  try {
+    final userId = Supabase.instance.client.auth.currentUser?.id;
+    if (userId == null) return;
+
+    final matches = await Supabase.instance.client
+        .from('batch_records')
+        .select('daily_records!inner(report_date)')
+        .eq('batch_id', batchId)
+        .eq('daily_records.user_id', userId);
+
+    final dates = (matches as List)
+        .map((row) => DateTime.parse(
+              row['daily_records']['report_date'] as String,
+            ))
+        .toList();
+
+    if (mounted) {
+      setState(() {
+        _reportedDates = dates;
+      });
+    }
+  } catch (e) {
+    debugPrint('Error fetching reported dates: $e');
+  }
+}
 
   Future<void> _selectDate(BuildContext context) async {
     final now = DateTime.now();
@@ -50,9 +79,7 @@ class _CalendarPickerPage extends State<CalendarPickerPage> {
         if (date.isAfter(today)) {
           return false;
         }
-
-        // Disable dates that already have reports for this batch
-        return !widget.reportedDates.any(
+        return !_reportedDates.any(
           (d) =>
               d.year == date.year && d.month == date.month && d.day == date.day,
         );

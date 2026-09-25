@@ -250,11 +250,8 @@ GoRoute(
           );
 
           return FeedsSelector(
-            feeds: inventoryProvider
-                .feeds, // Pass the real feed items list fetched from Supabase
-            selectedFeeds: const [], // Start with an empty selection list map
+            selectedFeeds: const [], 
             onSelectedFeedsChanged: (updatedList) {
-              // Handle selection state saving globally if needed
             },
           );
         },

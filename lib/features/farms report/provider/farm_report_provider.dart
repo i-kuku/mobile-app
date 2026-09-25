@@ -169,63 +169,65 @@ class FarmReportProvider extends ChangeNotifier {
     return 0;
   }
   
-  Future<bool> submitDailyReport({required String batchId}) async {
-    final userId = Supabase.instance.client.auth.currentUser?.id;
-    if (userId == null) return false;
+ Future<bool> submitDailyReport({required String batchId}) async {
+  final userId = Supabase.instance.client.auth.currentUser?.id;
+  if (userId == null) return false;
 
-    _isloading = true;
-    notifyListeners();
+  _isloading = true;
+  notifyListeners();
 
-    try {
-      final todayStr = _reportDate.toIso8601String().split('T')[0];
+  try {
+    final todayStr = _reportDate.toIso8601String().split('T')[0];
 
-      if (_editingReportId != null) {
-        await Supabase.instance.client
-            .from('daily_records')
-            .update({'record_date': todayStr, 'report_date': todayStr})
-            .eq('id', _editingDailyRecordId!);
+    if (_editingReportId != null) {
+      await Supabase.instance.client
+          .from('daily_records')
+          .update({'record_date': todayStr, 'report_date': todayStr})
+          .eq('id', _editingDailyRecordId!);
 
-        final updatedReport = Report(
-          id: _editingReportId!,
-          dailyRecordId: _editingDailyRecordId!,
-          batchId: batchId,
-          chickenReduction: _chickenReduction,
-          chickensCurled: _chickensCurled,
-          chickensSold: _chickensSold,
-          chickensDied: _chickensDied,
-          chickensStolen: _chickensStolen,
-          eggCollection: _eggsCollection,
-          eggsCollected: _eggsCollected,
-          gradeEggs: _gradeEggs,
-          eggsSmall: _eggsSmall,
-          eggsDeformed: _eggsDeformed,
-          eggsStandard: _eggsStandard,
-          eggsBroken: _eggsBroken,
-          notes: _notes,
-          feedsUsed: _feedsUsed,
-          vaccinesUsed: _vaccinesUsed,
-          otherMaterialsUsed: _otherMaterialsUsed,
-          salesAmount: _salesAmount,
-          lossesBreakdown: _lossesBreakdown,
-          gainsAmount: _gainsAmount,
-        );
+      final updatedReport = Report(
+        id: _editingReportId!,
+        dailyRecordId: _editingDailyRecordId!,
+        batchId: batchId,
+        chickenReduction: _chickenReduction,
+        chickensCurled: _chickensCurled,
+        chickensSold: _chickensSold,
+        chickensDied: _chickensDied,
+        chickensStolen: _chickensStolen,
+        eggCollection: _eggsCollection,
+        eggsCollected: _eggsCollected,
+        gradeEggs: _gradeEggs,
+        eggsSmall: _eggsSmall,
+        eggsDeformed: _eggsDeformed,
+        eggsStandard: _eggsStandard,
+        eggsBroken: _eggsBroken,
+        notes: _notes,
+        feedsUsed: _feedsUsed,
+        vaccinesUsed: _vaccinesUsed,
+        otherMaterialsUsed: _otherMaterialsUsed,
+        salesAmount: _salesAmount,
+        lossesBreakdown: _lossesBreakdown,
+        gainsAmount: _gainsAmount,
+      );
 
-        await Supabase.instance.client
-            .from('batch_records')
-            .update(updatedReport.toJson())
-            .eq('id', _editingReportId!);
-      } else {
-        final parentResponse = await Supabase.instance.client
-            .from('daily_records')
-            .insert({
-              'user_id': userId,
-              'record_date': todayStr,
-              'report_date': todayStr,
-            })
-            .select('id')
-            .single();
+      await Supabase.instance.client
+          .from('batch_records')
+          .update(updatedReport.toJson())
+          .eq('id', _editingReportId!);
+    } else {
+      final parentResponse = await Supabase.instance.client
+          .from('daily_records')
+          .insert({
+            'user_id': userId,
+            'record_date': todayStr,
+            'report_date': todayStr,
+          })
+          .select('id')
+          .single();
 
-        final String generatedDailyRecordId = parentResponse['id'] as String;
+      final String generatedDailyRecordId = parentResponse['id'] as String;
+
+      try {
         final reportPayload = Report.empty(
           batchId: batchId,
           dailyRecordId: generatedDailyRecordId,
@@ -260,42 +262,51 @@ class FarmReportProvider extends ChangeNotifier {
         await Supabase.instance.client
             .from('batch_records')
             .insert(finalReport.toJson());
+      } catch (e) {
+        // The child insert failed — clean up the orphaned parent row
+        await Supabase.instance.client
+            .from('daily_records')
+            .delete()
+            .eq('id', generatedDailyRecordId);
+        rethrow;
       }
-
-      resetForm();
-      return true;
-    } catch (e) {
-      debugPrint('Error executing database submission transaction: $e');
-      return false;
-    } finally {
-      _isloading = false;
-      notifyListeners();
     }
-  }
 
-  void resetForm() {
-    _chickensCurled = 0;
-    _chickensSold = 0;
-    _chickensDied = 0;
-    _chickensStolen = 0;
-    _eggsCollected = 0;
-    _eggsSmall = 0;
-    _eggsDeformed = 0;
-    _eggsStandard = 0;
-    _eggsBroken = 0;
-    _chickenReduction = false;
-    _eggsCollection = false;
-    _gradeEggs = false;
-    _notes = null;
-    _feedsUsed = [];
-    _vaccinesUsed = [];
-    _otherMaterialsUsed = [];
-    _lossesBreakdown = [];
-    _salesAmount = 0;
-    _gainsAmount = 0;
-    _editingReportId = null;
-    _editingDailyRecordId = null;
-    _batch = null;
+    resetForm();
+    return true;
+  } catch (e) {
+    debugPrint('Error executing database submission transaction: $e');
+    return false;
+  } finally {
+    _isloading = false;
     notifyListeners();
   }
+}
+
+void resetForm() {
+  _chickensCurled = 0;
+  _chickensSold = 0;
+  _chickensDied = 0;
+  _chickensStolen = 0;
+  _eggsCollected = 0;
+  _eggsSmall = 0;
+  _eggsDeformed = 0;
+  _eggsStandard = 0;
+  _eggsBroken = 0;
+  _chickenReduction = false;
+  _eggsCollection = false;
+  _gradeEggs = false;
+  _notes = null;
+  _feedsUsed = [];
+  _vaccinesUsed = [];
+  _otherMaterialsUsed = [];
+  _lossesBreakdown = [];
+  _salesAmount = 0;
+  _gainsAmount = 0;
+  _editingReportId = null;
+  _editingDailyRecordId = null;
+  _batch = null;
+  notifyListeners();
+}
+
 }
