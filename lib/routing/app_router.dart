@@ -1,28 +1,44 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:go_router/go_router.dart'; // Added missing import
 import 'package:ikuku/features/Inventory/presentation/screens/feeds_page.dart';
 import 'package:ikuku/features/Inventory/presentation/screens/inventory_hub_page.dart';
 import 'package:ikuku/features/Inventory/presentation/screens/items_page.dart';
 import 'package:ikuku/features/Inventory/presentation/screens/medicines_page.dart';
+import 'package:ikuku/features/Inventory/provider/inventory_provider.dart';
 import 'package:ikuku/features/batches/presentation/screens/confirm_batch_page.dart';
 import 'package:ikuku/features/batches/presentation/screens/create_batch_page.dart';
 import 'package:ikuku/features/batches/presentation/screens/edit_batch_page.dart';
 import 'package:ikuku/features/batches/presentation/screens/manage_batch_page.dart';
 import 'package:ikuku/features/auth/presentation/screens/auth_page.dart';
 import 'package:ikuku/features/dashboard/presentation/pages/dashboard.dart';
+import 'package:ikuku/features/farms%20report/presentation/screens/add_report_page.dart';
+import 'package:ikuku/features/farms%20report/presentation/screens/additional_notes_page.dart';
+import 'package:ikuku/features/farms%20report/presentation/screens/batch_selection_page.dart';
+import 'package:ikuku/features/farms%20report/presentation/screens/calendar_picker_page.dart';
+import 'package:ikuku/features/farms%20report/presentation/screens/chicken_reduction_page.dart';
+import 'package:ikuku/features/farms%20report/presentation/screens/egg_production_page.dart';
+import 'package:ikuku/features/farms%20report/presentation/screens/feeds_selection_page.dart';
+import 'package:ikuku/features/farms%20report/presentation/screens/other_items_page.dart';
+import 'package:ikuku/features/farms%20report/presentation/screens/report_summary_page.dart';
+import 'package:ikuku/features/farms%20report/presentation/screens/see_all_report_page.dart';
+import 'package:ikuku/features/farms%20report/presentation/screens/vaccine_selection_page.dart';
+
+import 'package:ikuku/features/farms%20report/provider/farm_report_provider.dart';
 import 'package:ikuku/features/home/presentation/home_page.dart';
 import 'package:ikuku/features/onboarding/create_farm_page.dart';
 import 'package:ikuku/features/onboarding/onboarding_page.dart';
 import 'package:ikuku/features/onboarding/recovery_setup_page.dart';
+import 'package:ikuku/features/profile/presentation/pages/edit_profile_page.dart';
+import 'package:ikuku/features/profile/presentation/pages/otp_verification_page.dart';
 import 'package:ikuku/features/profile/presentation/pages/profile_page.dart';
+import 'package:ikuku/features/profile/presentation/pages/recovery_phone_page.dart';
 import 'package:ikuku/features/settings/languages/presentation/language_selection_page.dart';
+import 'package:ikuku/features/shop/presentation/pages/my_shop_page.dart';
 import 'package:ikuku/features/smart_tips/presentation/screens/tip_detail_page.dart';
-// import 'package:ikuku/features/shop/presentation/pages/my_shop_page.dart';
 import 'package:ikuku/features/smart_tips/presentation/screens/tips_hub.dart';
+import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
 import '../features/splash/splash_screen.dart';
-
 import 'package:shared_preferences/shared_preferences.dart';
 
 GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -45,14 +61,9 @@ class AppRouter {
       GoRoute(
         path: '/onboarding',
         builder: (context, state) =>
-            // OnboardingPage(onFinish: () => context.go('/batches')),
             OnboardingPage(onFinish: () => context.go('/auth')),
       ),
       GoRoute(path: '/auth', builder: (context, state) => const AuthPage()),
-      // GoRoute(
-      //   path: '/reset-password',
-      //   builder: (context, state) => const ResetPasswordPage(),
-      // ),
       GoRoute(
         path: '/language',
         builder: (context, state) => LanguageSelectionPage(
@@ -61,7 +72,6 @@ class AppRouter {
             if (fromProfile) {
               context.go('/profile');
             } else {
-              // Check onboarding status for robustness
               final prefs = await SharedPreferences.getInstance();
               final onboardingComplete =
                   prefs.getBool('onboarding_complete') ?? false;
@@ -78,6 +88,7 @@ class AppRouter {
         ),
       ),
 
+      // --- FIXED: Properly nested StatefulShellRoute.indexedStack ---
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
           return Dashboard(navigationShell: navigationShell);
@@ -96,22 +107,36 @@ class AppRouter {
             routes: [
               GoRoute(
                 path: '/my-shop',
-                builder: (context, state) => const TipsHub(),
+                builder: (context, state) => const MyShopPage(),
               ),
             ],
           ),
-
           StatefulShellBranch(
             routes: [
               GoRoute(
                 path: '/profile',
                 builder: (context, state) => const ProfilePage(),
+                routes: [
+                  // FIXED: Nested profile sub-routes correctly with closing parentheses
+                  GoRoute(
+                    path: 'edit_profile_page',
+                    builder: (context, state) => const EditProfilePage(),
+                  ),
+                  GoRoute(
+                    path: 'recovery_phone_page',
+                    builder: (context, state) => const RecoveryPhonePage(),
+                  ),
+                  GoRoute(
+                    path: 'otp_verification_page',
+                    builder: (context, state) => OtpVerificationPage(),
+                  ),
+                ],
               ),
             ],
           ),
         ],
       ),
-      // GoRoute(path: '/', builder: (context, state) => const DashboardPage()),
+
       GoRoute(
         path: '/batches',
         builder: (context, state) => const ManageBatchPage(),
@@ -153,46 +178,133 @@ class AppRouter {
         ],
       ),
       GoRoute(
-  path: '/smart-tips',
-  builder: (context, state) => const TipsHub(),
-  routes: [
-    GoRoute(
-      path: 'tip_detail', 
-      builder: (context, state) {
-        final rawData = state.extra;
-        final selectedBlogData = rawData is Map<String, String> ? rawData : <String, String>{};
-        return TipDetailPage(blogDataMap: selectedBlogData);
-      },
-    ),
-  ],
-),
+        path: '/smart-tips',
+        builder: (context, state) => const TipsHub(),
+        routes: [
+          GoRoute(
+            path: 'tip_detail',
+            builder: (context, state) {
+              final rawData = state.extra;
+              final selectedBlogData = rawData is Map<String, String>
+                  ? rawData
+                  : <String, String>{};
+              return TipDetailPage(blogDataMap: selectedBlogData);
+            },
+          ),
+        ],
+      ),
       // GoRoute(
       //   path: '/records',
       //   builder: (context, state) => const RecordsPage(),
       // ),
-      // GoRoute(
-      //   path: '/reports',
-      //   builder: (context, state) => const ReportsPage(),
-      // ),
+      GoRoute(
+        path: '/reports',
+        builder: (context, state) => const AddReportPage(),
+      ),
       // GoRoute(
       //   path: '/farm-summary',
       //   builder: (context, state) => const FarmSummaryPage(),
       // ),
-      // GoRoute(
-      //   path: '/report-entry',
-      //   builder: (context, state) => const FarmReportEntryPage(),
-      // ),
-      // GoRoute(
-      //   path: '/all-reports',
-      //   builder: (context, state) => const AllReportsPage(),
-      // ),
+      GoRoute(
+        path: '/report-entry',
+        builder: (context, state) => const BatchSelectionPage(),
+      ),
+      GoRoute(
+  path: '/calendar_page',
+  builder: (context, state) {
+    final batch = context.read<FarmReportProvider>().batch;
+    if (batch == null) {
+      return const Scaffold(body: Center(child: Text('No batch selected')));
+    }
+    return CalendarPickerPage(batch: batch);
+  },
+),
+GoRoute(
+  path: '/chicken_reduction',
+  builder: (context, state) {
+    final batch = context.read<FarmReportProvider>().batch;
+    if (batch == null) {
+      return const Scaffold(body: Center(child: Text('No batch selected')));
+    }
+    return ChickenReductionPage(batch: batch);
+  },
+),
+GoRoute(
+  path: '/egg_production',
+  builder: (context, state) {
+    final batch = context.read<FarmReportProvider>().batch;
+    if (batch == null) {
+      return const Scaffold(body: Center(child: Text('No batch selected')));
+    }
+    return EggProductionPage(batch: batch);
+  },
+),
+
+      GoRoute(
+        path: '/feeds_selection',
+        builder: (context, state) {
+          // 1. Read the active inventory data from your provider
+          final inventoryProvider = Provider.of<InventoryProvider>(
+            context,
+            listen: false,
+          );
+
+          return FeedsSelector(
+            selectedFeeds: const [], 
+            onSelectedFeedsChanged: (updatedList) {
+            },
+          );
+        },
+      ),
+      GoRoute(
+        path: '/vaccine_selection',
+        builder: ((context, state) {
+          return VaccineSelector(
+            selectedVaccines: [],
+            onSelectedVaccinesChanged: (updatedList) {},
+          );
+        }),
+      ),
+      GoRoute(
+        path: '/other_items_selection',
+        builder: ((context, state) {
+          return OthersSelector(
+            selectedItem: [],
+            onSelectedItemChanged: (updatedList) {},
+          );
+        }),
+      ),
+      GoRoute(
+        path: '/additional_notes',
+        builder: (context, state) {
+          return const AdditionalNotesPage();
+        },
+      ),
+     GoRoute(
+  path: '/Farm_Report_Entry_Screen',
+  builder: (context, state) {
+    final passedBatchId = state.extra as String?;
+    final providerBatch = context.read<FarmReportProvider>().batch;
+    final batchId = passedBatchId ?? providerBatch?.id;
+
+    if (batchId == null) {
+      return const Scaffold(body: Center(child: Text('No batch selected')));
+    }
+    return FarmReportEntryScreen(batchId: batchId);
+  },
+),
+      GoRoute(
+        path: '/all_reports',
+        builder: (context, state) => const AllReportsPage(),
+      ),
+//       GoRoute(
+//   path: '/farm-summary',
+//   builder: (context, state) => const FinancialSummaryPage(),
+// ),
+
       // GoRoute(
       //   path: '/offline-test',
       //   builder: (context, state) => const OfflineTestPage(),
-      // ),
-      // GoRoute(
-      //   path: '/profile',
-      //   builder: (context, state) => const ProfilePage(),
       // ),
       GoRoute(
         path: '/create-farm',
@@ -217,7 +329,6 @@ class AppRouter {
       final langSet = prefs.getString('app_language') != null;
       final onboardingComplete = await AppRouter.onboardingComplete();
 
-      // If on splash screen, let it handle its own navigation
       if (splash) return null;
 
       if (!langSet && !language) return '/language';
@@ -226,13 +337,11 @@ class AppRouter {
         if (!loggingIn && onboardingComplete) {
           return '/auth';
         }
-      } 
-       else {
-         if (loggingIn || root) {
-          //  return '/tips-hub';
-           return '/';
-       }
-       }
+      } else {
+        if (loggingIn || root) {
+          return '/';
+        }
+      }
 
       return null;
     },

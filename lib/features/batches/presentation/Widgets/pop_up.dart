@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:ikuku/theme/app_theme.dart';
 
 class PopUp extends StatelessWidget {
@@ -78,7 +79,7 @@ class PopUp extends StatelessWidget {
         children: [
           Expanded(
             child: OutlinedButton(
-              onPressed: onsecondaryAction ?? () => Navigator.pop(context),
+              onPressed: onsecondaryAction ?? () => context.pop(context),
               style: OutlinedButton.styleFrom(
                 side: BorderSide(color: CustomColors.primary),
                 padding: EdgeInsets.symmetric(vertical: 12),
