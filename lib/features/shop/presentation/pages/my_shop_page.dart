@@ -17,7 +17,10 @@ class _MyShopPageState extends State<MyShopPage> {
   @override
   void initState() {
     super.initState();
-    Future.microtask(() => context.read<SalesProvider>().fetchSales());
+    Future.microtask(() {
+      if (!mounted) return;
+      context.read<SalesProvider>().fetchSales();
+    });
   }
 
   @override
@@ -107,9 +110,7 @@ class _MyShopPageState extends State<MyShopPage> {
                   itemCount: displaySales.length,
                   itemBuilder: (context, index) {
                     final sale = displaySales[index];
-                    return SaleCard(
-                      sale: sale
-                      );
+                    return SaleCard(sale: sale);
                   },
                 ),
             ],
