@@ -23,7 +23,7 @@ class NotificationModel {
     required this.createdAt,
   });
 
-  factory NotificationModel.fromJson(Map json) {
+  factory NotificationModel.fromJson(Map<String, dynamic> json) {
     return NotificationModel(
       id: json['id'] as String,
       userId: json['user_id'] as String,
@@ -38,7 +38,7 @@ class NotificationModel {
     );
   }
 
-  Map toJson() {
+  Map<String, dynamic> toJson() {
     return {
       'user_id': userId,
       'type': type,
@@ -49,6 +49,32 @@ class NotificationModel {
       'message_sw': messageSw,
       'is_read': isRead,
     };
+  }
+
+  NotificationModel copyWith({
+    String? id,
+    String? userId,
+    String? type,
+    String? referenceKey,
+    String? titleEn,
+    String? titleSw,
+    String? messageEn,
+    String? messageSw,
+    bool? isRead,
+    DateTime? createdAt,
+  }) {
+    return NotificationModel(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      type: type ?? this.type,
+      referenceKey: referenceKey ?? this.referenceKey,
+      titleEn: titleEn ?? this.titleEn,
+      titleSw: titleSw ?? this.titleSw,
+      messageEn: messageEn ?? this.messageEn,
+      messageSw: messageSw ?? this.messageSw,
+      isRead: isRead ?? this.isRead,
+      createdAt: createdAt ?? this.createdAt,
+    );
   }
 
   String getTitle(String languageCode) {

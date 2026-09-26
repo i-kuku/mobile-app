@@ -298,4 +298,24 @@ class FarmReportProvider extends ChangeNotifier {
     _batch = null;
     notifyListeners();
   }
+  Future<bool> hasRecordedToday() async {
+  final userId = Supabase.instance.client.auth.currentUser?.id;
+  if (userId == null) return false;
+
+  final todayStr = DateTime.now().toIso8601String().split('T')[0];
+
+  try {
+    final existing = await Supabase.instance.client
+        .from('daily_records')
+        .select('id')
+        .eq('user_id', userId)
+        .eq('record_date', todayStr)
+        .maybeSingle();
+
+    return existing != null;
+  } catch (e) {
+    debugPrint('Error checking today\'s record: $e');
+    return false;
+  }
+}
 }

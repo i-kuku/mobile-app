@@ -2,7 +2,9 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:ikuku/features/Inventory/provider/inventory_provider.dart'; // Make sure this import matches your project
+import 'package:ikuku/features/Inventory/provider/inventory_provider.dart';
+import 'package:ikuku/features/batches/provider/batch_provider.dart';
+import 'package:ikuku/features/farms%20report/provider/farm_report_provider.dart';
 import 'package:ikuku/features/notifications/presentation/widgets/notifications_card.dart';
 import 'package:ikuku/features/notifications/provider/notifications_provider.dart';
 import 'package:ikuku/theme/app_theme.dart';
@@ -12,23 +14,37 @@ class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});
 
   @override
-  State createState() => _NotificationsScreenState();
+  State<NotificationsScreen> createState() => _NotificationsScreenState();
 }
 
-class _NotificationsScreenState extends State {
+class _NotificationsScreenState extends State<NotificationsScreen> {
+  Future<void> _loadNotifications() async {
+    final inventoryProvider = context.read<InventoryProvider>();
+    final batchProvider = context.read<BatchProvider>();
+    final farmReportProvider = context.read<FarmReportProvider>();
+
+    if (inventoryProvider.inventory.isEmpty) {
+      await inventoryProvider.fetchInventory();
+    }
+    if (batchProvider.batches.isEmpty) {
+      await batchProvider.fetchBatches();
+    }
+
+    final hasRecordedToday = await farmReportProvider.hasRecordedToday();
+
+    if (!mounted) return;
+
+    await context.read<NotificationsProvider>().fetchNotifications(
+      lowStockFeeds: inventoryProvider.lowStockFeeds,
+      hasRecordedToday: hasRecordedToday,
+      batches: batchProvider.batches,
+    );
+  }
+
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      // 1. Explicitly specify the InventoryProvider type
-      final lowStockItems = context.read<InventoryProvider>().lowStockFeeds;
-      
-      // 2. Explicitly specify the NotificationsProvider type and match parameter names
-      context.read<NotificationsProvider>().fetchNotifications(
-            lowStockFeeds: lowStockItems,
-            hasRecordedToday: true, // Set to true so it doesn't try to insert duplicates while testing your DB rows
-          );
-    });
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadNotifications());
   }
 
   @override
@@ -60,14 +76,7 @@ class _NotificationsScreenState extends State {
       body: isLoading
           ? const Center(child: CircularProgressIndicator(color: Colors.green))
           : RefreshIndicator(
-              onRefresh: () async {
-                final lowStockItems = context.read<InventoryProvider>().lowStockFeeds;
-
-                await context.read<NotificationsProvider>().fetchNotifications(
-                      lowStockFeeds: lowStockItems,
-                      hasRecordedToday: true,
-                    );
-              },
+              onRefresh: _loadNotifications,
               color: Colors.green,
               child: notifications.isEmpty
                   ? _buildEmptyState(context)
@@ -77,8 +86,12 @@ class _NotificationsScreenState extends State {
                         final notification = notifications[index];
                         return NotificationCard(
                           notification: notification,
-                          onTap: () {
-                            // Optional: mark as read logic when tapped
+                          onTap: () async {
+                            if (!notification.isRead) {
+                              await context
+                                  .read<NotificationsProvider>()
+                                  .markAsRead(notification.id);
+                            }
                           },
                         );
                       },
@@ -87,7 +100,6 @@ class _NotificationsScreenState extends State {
     );
   }
 
-  // Empty State Matching Design
   Widget _buildEmptyState(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
