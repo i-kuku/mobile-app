@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:ikuku/features/Inventory/provider/inventory_provider.dart';
 import 'package:ikuku/features/batches/provider/batch_provider.dart';
 import 'package:ikuku/features/auth/provider/auth_provider.dart';
@@ -31,11 +30,19 @@ void main() async {
   await Hive.openBox<String>('offline_reports');
   await Hive.openBox<String>('sync_status');
 
-  await dotenv.load(fileName: ".env");
+  // Supplied at build time: flutter run --dart-define-from-file=.env
+  const supabaseUrl = String.fromEnvironment('SUPABASE_URL');
+  const supabaseAnonKey = String.fromEnvironment('SUPABASE_ANON_KEY');
+  if (supabaseUrl.isEmpty || supabaseAnonKey.isEmpty) {
+    throw StateError(
+      'SUPABASE_URL and SUPABASE_ANON_KEY are not set. '
+      'Copy .env.example to .env and run with --dart-define-from-file=.env',
+    );
+  }
 
   await Supabase.initialize(
-  url: dotenv.env['SUPABASE_URL']! ,
-  anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
+  url: supabaseUrl,
+  anonKey: supabaseAnonKey,
   );
   try {
     await SupabaseService().fixDatabaseConstraints();
