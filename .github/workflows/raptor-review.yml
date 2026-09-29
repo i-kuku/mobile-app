@@ -11,12 +11,20 @@ permissions:
 jobs:
   review:
     runs-on: ubuntu-latest
+    env:
+      # Secrets can't be read in `if:` conditions, so expose it via env.
+      GROQKEY: ${{ secrets.GROQKEY }}
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
+      - name: Skip review (GROQKEY secret not set)
+        if: env.GROQKEY == ''
+        run: echo "::notice::GROQKEY secret is not configured; skipping AI review."
+
       - uses: dev-k99/raptorreview-ai@v1
+        if: env.GROQKEY != ''
         with:
           groq_api_key: ${{ secrets.GROQKEY }}
           model: llama-3.3-70b-versatile
