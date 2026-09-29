@@ -82,7 +82,11 @@ class RssService {
             final description = _cleanDescription(
               _getElementText(item, 'description'),
             );
-            final pubDate = _parseDate(_getElementText(item, 'pubDate'));
+            // RSS 2.0 uses pubDate; RSS 1.0 (RDF) feeds use dc:date.
+            final rawDate = _getElementText(item, 'pubDate');
+            final pubDate = _parseDate(
+              rawDate.isNotEmpty ? rawDate : _getElementText(item, 'dc:date'),
+            );
             final link = _getElementText(item, 'link');
             String? imageUrl = _findImageUrl(item);
 
@@ -129,22 +133,71 @@ class RssService {
     return description.trim();
   }
 
+  static const _months = {
+    'jan': 1,
+    'feb': 2,
+    'mar': 3,
+    'apr': 4,
+    'may': 5,
+    'jun': 6,
+    'jul': 7,
+    'aug': 8,
+    'sep': 9,
+    'oct': 10,
+    'nov': 11,
+    'dec': 12,
+  };
+
+  // RFC822 named zones, as hours from UTC. Unknown names are treated as UTC.
+  static const _zoneOffsets = {
+    'EST': -5,
+    'EDT': -4,
+    'CST': -6,
+    'CDT': -5,
+    'MST': -7,
+    'MDT': -6,
+    'PST': -8,
+    'PDT': -7,
+  };
+
+  static final _rfc822 = RegExp(
+    r'^(?:[A-Za-z]{3},\s*)?(\d{1,2})\s+([A-Za-z]{3})\s+(\d{2,4})\s+'
+    r'(\d{1,2}):(\d{2})(?::(\d{2}))?\s*([+-]\d{4}|[A-Za-z]+)?',
+  );
+
   DateTime _parseDate(String dateStr) {
-    try {
-      return DateTime.parse(dateStr);
-    } catch (_) {
-      try {
-        // Handle RFC822 format
-        final regex = RegExp(
-          r'^(?:(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun), )?(\d{1,2}) (?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) (\d{4}) (\d{2}):(\d{2}):(\d{2})',
-        );
-        final match = regex.firstMatch(dateStr);
-        if (match != null) {
-          return DateTime.parse(match.group(0)!);
-        }
-      } catch (_) {}
-      return DateTime.now();
+    // ISO 8601, as used by Atom and RSS 1.0 (dc:date).
+    final iso = DateTime.tryParse(dateStr);
+    if (iso != null) return iso;
+
+    // RFC822, as used by RSS 2.0 pubDate, e.g. "Tue, 10 Jun 2025 10:00:00 +0300".
+    final match = _rfc822.firstMatch(dateStr.trim());
+    final month = _months[match?.group(2)?.toLowerCase()];
+    if (match == null || month == null) return DateTime.now();
+
+    var year = int.parse(match.group(3)!);
+    if (year < 100) year += 2000;
+
+    final utc = DateTime.utc(
+      year,
+      month,
+      int.parse(match.group(1)!),
+      int.parse(match.group(4)!),
+      int.parse(match.group(5)!),
+      int.parse(match.group(6) ?? '0'),
+    );
+    return utc.subtract(_zoneOffset(match.group(7)));
+  }
+
+  Duration _zoneOffset(String? zone) {
+    if (zone == null) return Duration.zero;
+    if (zone.startsWith('+') || zone.startsWith('-')) {
+      final sign = zone.startsWith('-') ? -1 : 1;
+      final hours = int.parse(zone.substring(1, 3));
+      final minutes = int.parse(zone.substring(3, 5));
+      return Duration(minutes: sign * (hours * 60 + minutes));
     }
+    return Duration(hours: _zoneOffsets[zone.toUpperCase()] ?? 0);
   }
 
   String? _findImageUrl(XmlElement item) {

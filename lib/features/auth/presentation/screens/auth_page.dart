@@ -76,6 +76,7 @@ class _AuthPageState extends State<AuthPage> {
                       AuthErrorWidget(
                         errorMessage: provider.errorMessage,
                         internetTest: provider.internetTest,
+                        showConnectionTest: provider.isConnectionError,
                       ),
 
                       LoadingButton(
