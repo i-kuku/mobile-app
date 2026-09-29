@@ -110,7 +110,7 @@ Future<void> initFakeSupabase(FakeSupabaseBackend backend) async {
   backend.reset();
   await Supabase.initialize(
     url: 'https://fake.supabase.test',
-    anonKey: 'fake-anon-key',
+    publishableKey: 'fake-anon-key',
     httpClient: backend.client,
     debug: false,
     authOptions: const FlutterAuthClientOptions(
