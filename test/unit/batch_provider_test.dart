@@ -45,6 +45,7 @@ void main() {
           initialCount: 1,
           age: 1,
           ageUnit: 'days',
+          purchaseCost: 0,
         ),
         throwsA(
           isA<Exception>().having(
@@ -139,6 +140,7 @@ void main() {
         initialCount: 50,
         age: 3,
         ageUnit: 'days',
+        purchaseCost: 0,
       );
 
       final insert = backend.requestsTo(batchesPath, method: 'POST').single;
@@ -149,6 +151,7 @@ void main() {
         'initial_count': 50,
         'age': 3,
         'age_unit': 'days',
+        'purchase_cost': 0,
       });
       expect(provider.batches.single.name, 'Broilers A');
     });
@@ -168,6 +171,7 @@ void main() {
           initialCount: 1,
           age: 1,
           ageUnit: 'days',
+          purchaseCost: 0,
         ),
         throwsA(anything),
       );
@@ -196,6 +200,7 @@ void main() {
           initialCount: 90,
           age: 5,
           ageUnit: 'weeks',
+          purchaseCost: 1200,
         );
 
         final patch = backend.requestsTo(batchesPath, method: 'PATCH').single;
@@ -206,6 +211,7 @@ void main() {
           'initial_count': 90,
           'age': 5,
           'age_unit': 'weeks',
+          'purchase_cost': 1200,
         });
         final updated = provider.batches.single;
         expect(updated.name, 'Renamed');
@@ -223,6 +229,7 @@ void main() {
           initialCount: 1,
           age: 1,
           ageUnit: 'days',
+          purchaseCost: 0,
         );
         expect(provider.batches.single.name, 'Batch');
         expect(notifications, 0);
@@ -246,6 +253,7 @@ void main() {
               initialCount: 1,
               age: 1,
               ageUnit: 'days',
+              purchaseCost: 0,
             ),
             throwsA(anything),
           );

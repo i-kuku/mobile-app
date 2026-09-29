@@ -39,10 +39,18 @@ void main() {
   // separate Text widgets, so we can't use find.text() the way we did for
   // BatchCard. This pulls the whole span tree out and flattens it to plain
   // text for comparison.
-  String plainMessageText(WidgetTester tester) {
-    final richText = tester.widget<RichText>(find.byType(RichText));
-    return (richText.text as TextSpan).toPlainText();
-  }
+  // Every Text widget also renders a RichText, so pick the one built from
+  // the three message spans.
+  RichText messageRichText(WidgetTester tester) => tester.widget<RichText>(
+        find.byWidgetPredicate(
+          (w) =>
+              w is RichText &&
+              ((w.text as TextSpan).children?.length ?? 0) == 3,
+        ),
+      );
+
+  String plainMessageText(WidgetTester tester) =>
+      (messageRichText(tester).text as TextSpan).toPlainText();
 
   group('PopUp', () {
     testWidgets(
@@ -68,7 +76,7 @@ void main() {
         'Are you sure you want to delete Coop A ?',
       );
 
-      final richText = tester.widget<RichText>(find.byType(RichText));
+      final richText = messageRichText(tester);
       final spans = (richText.text as TextSpan).children!.cast<TextSpan>();
       final batchSpan = spans.firstWhere((s) => s.text == 'Coop A');
       expect(batchSpan.style?.fontWeight, FontWeight.bold);
