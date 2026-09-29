@@ -62,7 +62,8 @@ dependencies:
   provider: ^6.1.5+1
   
   delightful_toast: ^1.1.0
-  flutter_gemma: ^0.13.6
+  flutter_gemma: ^1.11.2
+  flutter_gemma_litertlm: ^1.8.5
   image_picker: ^1.2.2
 
 dev_dependencies:
