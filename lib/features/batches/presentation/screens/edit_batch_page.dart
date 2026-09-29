@@ -203,7 +203,7 @@ class _EditBatchPageState extends State<EditBatchPage> {
                               contentPadding: EdgeInsets.zero,
                             ),
                             initialValue: _selectedType,
-                            items: ['layer', 'broiler'].map((type) {
+                            items: ['layer', 'broiler','kienyeji'].map((type) {
                               return DropdownMenuItem(
                                 value: type,
                                 child: Text(type.tr()),

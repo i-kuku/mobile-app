@@ -7,15 +7,15 @@ import 'package:ikuku/shared/widgets/feature_button.dart';
 import 'package:ikuku/theme/app_theme.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
+import 'package:collection/collection.dart';
 
 class FeedsSelector extends StatefulWidget {
-  final List<InventoryItem> feeds;
   final List<Map<String, dynamic>> selectedFeeds;
   final void Function(List<Map<String, dynamic>>) onSelectedFeedsChanged;
 
   const FeedsSelector({
     super.key,
-    required this.feeds,
+    
     required this.selectedFeeds,
     required this.onSelectedFeedsChanged,
   });
@@ -54,7 +54,7 @@ class _FeedsSelectorState extends State<FeedsSelector> {
       );
     }
     return FeedsSelectionPage(
-      feeds: widget.feeds,
+      feeds: provider.feeds,
       selectedFeeds: _mergedSelectedFeeds, // <-- merged value now actually used
       onSelectedFeedsChanged: widget.onSelectedFeedsChanged,
     );
@@ -120,9 +120,7 @@ class _FeedsSelectionPage extends State<FeedsSelectionPage> {
         _controllers.remove(feed.name);
       }
       widget.onSelectedFeedsChanged(_selectedFeeds);
-      context.read<FarmReportProvider>().updateFeeds(
-        _selectedFeeds,
-      );
+      context.read<FarmReportProvider>().updateFeeds(_selectedFeeds);
     });
   }
 
@@ -132,13 +130,19 @@ class _FeedsSelectionPage extends State<FeedsSelectionPage> {
       if (idx != -1) {
         final quantity = double.tryParse(value);
         if (quantity != null && quantity >= 0) {
-          final feed = widget.feeds.firstWhere((f) => f.name == feedName);
+          final feed = widget.feeds.firstWhereOrNull((f) => f.name == feedName);
+          if (feed == null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('feed_no_longer_available'.tr())),
+          );
+          return;
+        }
           if (quantity <= feed.quantity) {
             _selectedFeeds[idx]['quantity'] = quantity;
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-               content: Text(
+                content: Text(
                   'cannot_use_more_than'.tr(
                     namedArgs: {
                       'quantity': feed.quantity.toString(),
@@ -222,9 +226,12 @@ class _FeedsSelectionPage extends State<FeedsSelectionPage> {
               const SizedBox(height: 16),
               ..._selectedFeeds.map((f) {
                 final feedName = f['name'] as String;
-                final feed = widget.feeds.firstWhere(
+                final feed = widget.feeds.firstWhereOrNull(
                   (feed) => feed.name == feedName,
                 );
+                if (feed == null) {
+                  return const SizedBox.shrink();
+                }
                 final unit = feed.unit;
 
                 return Column(
