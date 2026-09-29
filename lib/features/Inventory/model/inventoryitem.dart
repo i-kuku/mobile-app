@@ -7,7 +7,7 @@ class InventoryItem {
   final double price;
   final String category;
   final DateTime addedOn;
-  final String daily_records_id;
+  final String dailyRecordsId;
 
   InventoryItem({
     required this.id,
@@ -18,14 +18,14 @@ class InventoryItem {
     required this.price,
     required this.category,
     required this.addedOn,
-    required this.daily_records_id,
+    required this.dailyRecordsId,
   });
   factory InventoryItem.fromJson(Map<String, dynamic> json) => InventoryItem(
     id: json['id'] as String,
     userId: json['user_id'] as String,
     name: json['name'] as String,
     category: json['category'] as String,
-    daily_records_id: json['daily_records_id'] as String,
+    dailyRecordsId: json['daily_records_id'] as String,
     quantity: json['quantity'] as int,
     unit: json['unit'] as String,
     price: (json['price'] as num?)?.toDouble() ?? 0.0,
@@ -37,7 +37,7 @@ class InventoryItem {
     'user_id': userId,
     'name': name,
     'category': category,
-    'daily_records_id': daily_records_id,
+    'daily_records_id': dailyRecordsId,
     'quantity': quantity,
     'unit': unit,
     'price': price,

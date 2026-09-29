@@ -4,7 +4,6 @@ import 'package:ikuku/features/Inventory/presentation/screens/feeds_page.dart';
 import 'package:ikuku/features/Inventory/presentation/screens/inventory_hub_page.dart';
 import 'package:ikuku/features/Inventory/presentation/screens/items_page.dart';
 import 'package:ikuku/features/Inventory/presentation/screens/medicines_page.dart';
-import 'package:ikuku/features/Inventory/provider/inventory_provider.dart';
 import 'package:ikuku/features/batches/presentation/screens/confirm_batch_page.dart';
 import 'package:ikuku/features/batches/presentation/screens/create_batch_page.dart';
 import 'package:ikuku/features/batches/presentation/screens/edit_batch_page.dart';
@@ -243,12 +242,6 @@ GoRoute(
       GoRoute(
         path: '/feeds_selection',
         builder: (context, state) {
-          // 1. Read the active inventory data from your provider
-          final inventoryProvider = Provider.of<InventoryProvider>(
-            context,
-            listen: false,
-          );
-
           return FeedsSelector(
             selectedFeeds: const [], 
             onSelectedFeedsChanged: (updatedList) {
