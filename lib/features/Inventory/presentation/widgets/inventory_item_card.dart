@@ -8,19 +8,42 @@ import 'package:ikuku/theme/app_theme.dart';
 import 'package:provider/provider.dart';
 
 void addDialog(BuildContext context, InventoryItem item) {
-  final TextEditingController amountController = TextEditingController();
-
   showDialog(
     context: context,
-    builder: (context) => AlertDialog(
+    builder: (context) => _AddQuantityDialog(item: item),
+  );
+}
+
+class _AddQuantityDialog extends StatefulWidget {
+  final InventoryItem item;
+
+  const _AddQuantityDialog({required this.item});
+
+  @override
+  State<_AddQuantityDialog> createState() => _AddQuantityDialogState();
+}
+
+class _AddQuantityDialogState extends State<_AddQuantityDialog> {
+  // Owned by State so it is disposed after the dialog's exit animation.
+  final TextEditingController _amountController = TextEditingController();
+
+  @override
+  void dispose() {
+    _amountController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       // Title Label
       title: Text(
-        "${'add'.tr()} ${item.name}",
+        "${'add'.tr()} ${widget.item.name}",
         style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
       ),
       content: TextField(
-        controller: amountController,
+        controller: _amountController,
         decoration: InputDecoration(
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
           contentPadding: const EdgeInsets.symmetric(horizontal: 12),
@@ -41,12 +64,17 @@ void addDialog(BuildContext context, InventoryItem item) {
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: CustomColors.primary,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
               ),
               onPressed: () {
-                final int? addedVal = int.tryParse(amountController.text);
+                final int? addedVal = int.tryParse(_amountController.text);
                 if (addedVal != null && addedVal > 0) {
-                  context.read<InventoryProvider>().incrementQuantity(item.id, addedVal);
+                  context.read<InventoryProvider>().incrementQuantity(
+                    widget.item.id,
+                    addedVal,
+                  );
                   context.pop(context);
                 }
               },
@@ -58,8 +86,8 @@ void addDialog(BuildContext context, InventoryItem item) {
           ],
         ),
       ],
-    ),
-  );
+    );
+  }
 }
 
 class InventoryItemCard extends StatelessWidget {
@@ -113,19 +141,19 @@ class InventoryItemCard extends StatelessWidget {
                   fontWeight: FontWeight.w500,
                 ),
               ),
-             Row(
-              children: [
-                IconButton(
-                  constraints: const BoxConstraints(),
+              Row(
+                children: [
+                  IconButton(
+                    constraints: const BoxConstraints(),
                     padding: EdgeInsets.zero,
                     icon: const Icon(
                       Icons.add_circle_outline,
-                      color:CustomColors.secondary, 
+                      color: CustomColors.secondary,
                       size: 28,
                     ),
                     onPressed: () => addDialog(context, item),
-                ),
-                SizedBox(
+                  ),
+                  SizedBox(
                     height: 32,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
@@ -136,7 +164,11 @@ class InventoryItemCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(6),
                         ),
                       ),
-                      onPressed: () =>addItemDialog(context, item.category,itemToEdit: item),
+                      onPressed: () => addItemDialog(
+                        context,
+                        item.category,
+                        itemToEdit: item,
+                      ),
                       child: Text(
                         'edit'.tr(),
                         style: TextStyle(
@@ -146,10 +178,11 @@ class InventoryItemCard extends StatelessWidget {
                         ),
                       ),
                     ),
-                ),
-              ],)
+                  ),
+                ],
+              ),
             ],
-          )
+          ),
         ],
       ),
     );

@@ -10,8 +10,21 @@ import 'package:ikuku/shared/widgets/feature_button.dart';
 import 'package:ikuku/theme/app_theme.dart';
 import 'package:provider/provider.dart';
 
-class ManageBatchPage extends StatelessWidget {
+class ManageBatchPage extends StatefulWidget {
   const ManageBatchPage({super.key});
+
+  @override
+  State<ManageBatchPage> createState() => _ManageBatchPageState();
+}
+
+class _ManageBatchPageState extends State<ManageBatchPage> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<BatchProvider>(context, listen: false).fetchBatches();
+    });
+  }
 
   void _handleremovebatchsequence(BuildContext context, ChickenBatch batch) {
     showDialog(
@@ -35,41 +48,55 @@ class ManageBatchPage extends StatelessWidget {
     );
   }
 
-  void _showsuccessRemoved(BuildContext context, ChickenBatch batch) {
-    Provider.of<BatchProvider>(context, listen: false).removeBatch(batch.id);
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (dialogContext) {
-        Future.delayed(const Duration(seconds: 1), () {
-          if (dialogContext.mounted) {
-            Navigator.pop(dialogContext);
-          }
-        });
+  void _showsuccessRemoved(BuildContext context, ChickenBatch batch) async {
+    try {
+      await Provider.of<BatchProvider>(
+        context,
+        listen: false,
+      ).removeBatch(batch.id);
 
-        return PopUp(
-          icon: Image.asset(
-            'assets/icons/tip-chicken.png',
-            height: 154,
-            width: 151,
-            fit: BoxFit.contain,
-          ),
-          batchName: batch.name,
-          messageAfter: " has_been_removed".tr(),
+      if (context.mounted) {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (dialogContext) {
+            Future.delayed(const Duration(seconds: 1), () {
+              if (dialogContext.mounted) {
+                Navigator.pop(dialogContext);
+              }
+            });
+
+            return PopUp(
+              icon: Image.asset(
+                'assets/icons/tip-chicken.png',
+                height: 154,
+                width: 151,
+                fit: BoxFit.contain,
+              ),
+              batchName: batch.name,
+              messageAfter: " has_been_removed".tr(),
+            );
+          },
         );
-      },
-    );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not complete deletion request: $e')),
+        );
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: CustomColors.background,
       appBar: AppBar(
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: (){
-            context.pop();
+          onPressed: () {
+            context.go('/');
           },
         ),
         title: Text(
@@ -90,16 +117,15 @@ class ManageBatchPage extends StatelessWidget {
       ),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 16),
-          child: Consumer<BatchProvider>(
-            builder: (context, provider, child) {
-              if (provider.batches.isEmpty) {
-                return _buildEmptyState(context);
-              } else {
-                return _buildActiveState(context, provider);
-              }
-            },
-          ),
-        
+        child: Consumer<BatchProvider>(
+          builder: (context, provider, child) {
+            if (provider.batches.isEmpty) {
+              return _buildEmptyState(context);
+            } else {
+              return _buildActiveState(context, provider);
+            }
+          },
+        ),
       ),
     );
   }
@@ -126,11 +152,12 @@ class ManageBatchPage extends StatelessWidget {
                 height: 50,
                 width: 49.03,
               ),
-              SizedBox(width: 10),
+              SizedBox(width: 5),
               Text(
                 "tip_batch_definition".tr(),
                 style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                  color: CustomColors.textDisabled,fontSize: 18,
+                  color: CustomColors.textDisabled,
+                  fontSize: 18,
                 ),
               ),
             ],
@@ -139,9 +166,10 @@ class ManageBatchPage extends StatelessWidget {
         SizedBox(height: 20),
         Text(
           "my_batches".tr(),
-          style: Theme.of(
-            context,
-          ).textTheme.titleLarge!.copyWith(color: CustomColors.text, fontSize: 20),
+          style: Theme.of(context).textTheme.titleLarge!.copyWith(
+            color: CustomColors.text,
+            fontSize: 20,
+          ),
         ),
         SizedBox(height: 30),
         Center(
@@ -168,21 +196,13 @@ class ManageBatchPage extends StatelessWidget {
                 onTap: () {
                   context.push('/create_batch_page');
                 },
-                label:"create_a_batch".tr(),
-                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                    color: CustomColors.primary,
-                    fontSize: 20,
-                    fontFamily: 'Roboto',
-                    fontWeight: FontWeight.bold,
-                    decoration: TextDecoration.underline,
-                  ),
-                ),
-            ],
+                label: "create_a_batch".tr(),
               ),
+            ],
+          ),
         ),
-        
-      ]
-          );
+      ],
+    );
   }
 
   Widget _buildActiveState(BuildContext context, BatchProvider provider) {
@@ -192,9 +212,10 @@ class ManageBatchPage extends StatelessWidget {
         const SizedBox(height: 16),
         Text(
           "manage_batches".tr(),
-          style: Theme.of(
-            context,
-          ).textTheme.titleLarge!.copyWith(color: CustomColors.text,fontSize: 30),
+          style: Theme.of(context).textTheme.titleLarge!.copyWith(
+            color: CustomColors.text,
+            fontSize: 30,
+          ),
         ),
         SizedBox(height: 10),
         Row(
@@ -225,11 +246,13 @@ class ManageBatchPage extends StatelessWidget {
                   context.push(
                     '/edit_batch_page',
                     extra: {
+                      'id': batch.id,
                       'name': batch.name,
                       'typeOfBird': batch.typeOfBird,
-                      'initialCount': batch.initialNumberOfBirds.toString(),
+                      'initialCount': batch.initialCount.toString(),
                       'age': batch.age.toString(),
                       'ageUnit': batch.ageUnit,
+                      'purchaseCost': batch.purchaseCost.toString(),
                     },
                   );
                 },

@@ -19,7 +19,16 @@ class LanguageProvider with ChangeNotifier {
     await loadLanguage();
   }
 
-  final BuildContext context = navigatorKey.currentState!.context;
+  /// Applies [locale] via the app navigator's context, if it is mounted.
+  /// Looked up on use rather than stored, so creating the provider before
+  /// the navigator exists is safe.
+  void _applyLocale(Locale locale) {
+    final context = navigatorKey.currentContext;
+    if (context != null && context.mounted) {
+      context.setLocale(locale);
+    }
+  }
+
   Future<void> loadLanguage() async {
     _isLoading = true;
     notifyListeners();
@@ -28,9 +37,7 @@ class LanguageProvider with ChangeNotifier {
 
     if (savedLanguage == null) {
       await prefs.setString('app_language', 'en');
-      if (context.mounted) {
-        context.setLocale(const Locale('en'));
-      }
+      _applyLocale(const Locale('en'));
       _selectedLanguage = 'en';
     } else {
       _selectedLanguage = savedLanguage;
@@ -46,9 +53,7 @@ class LanguageProvider with ChangeNotifier {
     await prefs.setString('app_language', lang);
 
     _selectedLanguage = lang;
-    if (context.mounted) {
-      context.setLocale(Locale(lang));
-    }
+    _applyLocale(Locale(lang));
     _isLoading = false;
     notifyListeners();
   }
