@@ -86,6 +86,7 @@ class InventoryProvider extends ChangeNotifier {
           .eq('id', id);
 
       _inventory[index] = InventoryItem(
+        dailyRecordsId: currentItem.dailyRecordsId,
         id: currentItem.id,
         userId: currentItem.userId,
         name: currentItem.name,
