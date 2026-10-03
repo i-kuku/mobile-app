@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
 import 'package:ikuku/features/Inventory/model/inventoryitem.dart';
 import 'package:ikuku/features/Inventory/presentation/screens/inventory_hub_page.dart';
 import 'package:ikuku/features/Inventory/presentation/widgets/add_item_dialog.dart';
@@ -17,6 +18,7 @@ import 'package:ikuku/features/smart_tips/model/smart_tips_model.dart';
 import 'package:ikuku/features/smart_tips/presentation/widgets/tip_card.dart';
 import 'package:provider/provider.dart';
 
+import '../helpers/fake_supabase.dart';
 import '../helpers/test_app.dart';
 
 void useViewport(WidgetTester tester, Size size) {
@@ -75,6 +77,7 @@ void main() {
       age: 4,
       ageUnit: 'weeks',
       createdAt: DateTime(2025),
+      purchaseCost: 0,
     );
 
     testWidgets('shows batch details and wires up edit/remove', (tester) async {
@@ -95,8 +98,9 @@ void main() {
       );
 
       expect(find.text('Batch A'), findsOneWidget);
-      expect(find.text('120 Layers'), findsOneWidget);
-      expect(find.text('4 weeks old'), findsOneWidget);
+      expect(find.text('Bird type: Layers'), findsOneWidget);
+      expect(find.text('chicken: 120'), findsOneWidget);
+      expect(find.text(', age: 4 weeks '), findsOneWidget);
 
       await tester.tap(find.byIcon(Icons.edit));
       await tester.tap(find.byIcon(Icons.delete_outline));
@@ -178,23 +182,35 @@ void main() {
   });
 
   group('Inventory item flows', () {
+    final backend = FakeSupabaseBackend();
+    const inventoryPath = '/rest/v1/inventory_items';
     late InventoryProvider provider;
     final item = InventoryItem(
       id: 'i1',
+      userId: fakeUserId,
       name: 'Layers mash',
       quantity: 5,
       unit: 'Kg',
       price: 150,
       category: 'feeds',
+      addedOn: DateTime.utc(2025, 3, 1),
     );
+
+    setUpAll(() => initFakeSupabase(backend));
+    tearDown(signOutFakeUser);
 
     Widget app(Widget child) => ChangeNotifierProvider.value(
       value: provider,
       child: wrapWithRouter(child),
     );
 
-    setUp(() {
-      provider = InventoryProvider()..addInventoryItem(item);
+    setUp(() async {
+      backend.reset();
+      backend.on('POST', inventoryPath, (_) async => http.Response('', 201));
+      backend.on('PATCH', inventoryPath, (_) async => http.Response('', 204));
+      await signInFakeUser(backend);
+      provider = InventoryProvider();
+      await provider.addInventoryItem(item);
     });
 
     testWidgets('card shows quantity and price', (tester) async {
@@ -301,6 +317,8 @@ void main() {
       expect(added.unit, 'L');
       expect(added.category, 'medicines');
       expect(added.id, isNotEmpty);
+      expect(added.userId, fakeUserId);
+      expect(backend.requestsTo(inventoryPath, method: 'POST'), hasLength(2));
     });
   });
 

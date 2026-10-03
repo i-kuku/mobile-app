@@ -121,7 +121,7 @@ class PopUp extends StatelessWidget {
           backgroundColor: Colors.white,
           padding: EdgeInsets.symmetric(vertical: 12),
         ),
-        child: Text(mainButtonText!, style: TextStyle(color: Colors.red)),
+        child: Text(mainButtonText!.tr(), style: TextStyle(color: Colors.red)),
       ),
     );
   }
