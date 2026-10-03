@@ -12,7 +12,10 @@ class LocalAiService {
   Future<void> initLocalAi() async {
     if (_isModelReady) return;
     try {
-      await FlutterGemma.installModel(modelType: ModelType.gemmaIt)
+      await FlutterGemma.installModel(
+            modelType: ModelType.gemmaIt,
+            fileType: ModelFileType.litertlm,
+          )
           .fromNetwork(
             'https://huggingface.co/litert-community/Gemma3-1B-IT/resolve/main/Gemma3-1B-IT_multi-prefill-seq_q4_ekv4096.litertlm',
           )

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gemma/flutter_gemma.dart';
+import 'package:flutter_gemma_litertlm/flutter_gemma_litertlm.dart';
 import 'package:ikuku/features/Inventory/provider/inventory_provider.dart';
 import 'package:ikuku/features/batches/provider/batch_provider.dart';
 import 'package:ikuku/features/auth/provider/auth_provider.dart';
@@ -25,6 +27,14 @@ void main() async {
   // Initialize SharedPreferences early to check language preference
   final prefs = await SharedPreferences.getInstance();
   final savedLanguage = prefs.getString('app_language');
+
+  // Smart Tips runs a .litertlm model; flutter_gemma registers no engine by itself.
+  // LiteRT-LM is arm64-only, so older 32-bit phones run the app without Smart Tips.
+  try {
+    await FlutterGemma.initialize(inferenceEngines: const [LiteRtLmEngine()]);
+  } catch (e) {
+    debugPrint('Failed to initialize local AI engine: $e');
+  }
 
   await Hive.initFlutter();
   await Hive.openBox<String>('offline_reports');
