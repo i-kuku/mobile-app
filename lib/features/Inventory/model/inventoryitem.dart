@@ -7,7 +7,6 @@ class InventoryItem {
   final double price;
   final String category;
   final DateTime addedOn;
-  final String dailyRecordsId;
 
   InventoryItem({
     required this.id,
@@ -18,7 +17,6 @@ class InventoryItem {
     required this.price,
     required this.category,
     required this.addedOn,
-    required this.dailyRecordsId,
   });
   factory InventoryItem.fromJson(Map<String, dynamic> json) => InventoryItem(
     id: json['id'] as String,

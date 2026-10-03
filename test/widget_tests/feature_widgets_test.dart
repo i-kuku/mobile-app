@@ -193,7 +193,6 @@ void main() {
       price: 150,
       category: 'feeds',
       addedOn: DateTime.utc(2025, 3, 1),
-      dailyRecordsId: 'd1',
     );
 
     setUpAll(() => initFakeSupabase(backend));

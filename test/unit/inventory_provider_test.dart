@@ -19,7 +19,6 @@ InventoryItem item(String id, String category, {int quantity = 1}) =>
       price: 10,
       category: category,
       addedOn: DateTime.utc(2025, 3, 1),
-      dailyRecordsId: 'd$id',
     );
 
 void main() {
@@ -126,7 +125,6 @@ void main() {
     expect(patch.url.queryParameters['id'], 'eq.1');
     expect(jsonDecode(patch.body), {'quantity': 8});
     expect(provider.inventory.single.quantity, 8);
-    expect(provider.inventory.single.dailyRecordsId, 'd1');
   });
 
   test('incrementQuantity ignores unknown ids', () async {
