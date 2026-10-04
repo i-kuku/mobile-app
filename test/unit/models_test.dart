@@ -17,7 +17,6 @@ void main() {
       'unit': 'Kg',
       'price': 150,
       'added_on': '2025-01-15T08:30:00.000Z',
-      'daily_records_id': 'd1',
     };
 
     test('fromJson parses fields and converts int price to double', () {
@@ -31,7 +30,6 @@ void main() {
       expect(item.price, isA<double>());
       expect(item.userId, 'u1');
       expect(item.addedOn, DateTime.utc(2025, 1, 15, 8, 30));
-      expect(item.dailyRecordsId, 'd1');
     });
 
     test('fromJson defaults a missing price to 0', () {
