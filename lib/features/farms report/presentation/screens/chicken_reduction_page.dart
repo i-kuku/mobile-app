@@ -21,14 +21,13 @@ class ChickenReductionPage extends StatefulWidget {
 
 class _ChickenReductionPageState extends State<ChickenReductionPage> {
   String? _chickenReduction;
-  double? _salesAmount;
 
   Map<String, int> _reductionCounts = {
     'curled': 0,
     'stolen': 0,
     'death': 0,
-    'sold': 0,
   };
+
   @override
   void initState() {
     super.initState();
@@ -38,15 +37,10 @@ class _ChickenReductionPageState extends State<ChickenReductionPage> {
       'curled': report.chickensCurled,
       'stolen': report.chickensStolen,
       'death': report.chickensDied,
-      'sold': report.chickensSold,
     };
 
     final hasReduction = _reductionCounts.values.any((v) => v > 0);
     _chickenReduction = hasReduction ? 'yes' : null;
-
-    _salesAmount = report.salesAmount > 0
-        ? report.salesAmount.toDouble()
-        : null;
   }
 
   @override
@@ -62,9 +56,10 @@ class _ChickenReductionPageState extends State<ChickenReductionPage> {
               const SizedBox(width: 24),
               Text(
                 'chicken_reduction'.tr(),
-                style: Theme.of(
-                  context,
-                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                style: Theme.of(context)
+                    .textTheme
+                    .titleLarge
+                    ?.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 24),
               if (widget.batch != null)
@@ -91,7 +86,10 @@ class _ChickenReductionPageState extends State<ChickenReductionPage> {
                             CustomColors.primary,
                           ),
                         ),
-                        child: Text('yes'.tr(),style: TextStyle(color: CustomColors.text),),
+                        child: Text(
+                          'yes'.tr(),
+                          style: TextStyle(color: CustomColors.text),
+                        ),
                       ),
                       RadioMenuButton<String>(
                         value: 'no',
@@ -104,7 +102,10 @@ class _ChickenReductionPageState extends State<ChickenReductionPage> {
                             CustomColors.primary,
                           ),
                         ),
-                        child: Text('no'.tr(),style: TextStyle(color: CustomColors.text),),
+                        child: Text(
+                          'no'.tr(),
+                          style: TextStyle(color: CustomColors.text),
+                        ),
                       ),
                     ],
                   ),
@@ -121,10 +122,6 @@ class _ChickenReductionPageState extends State<ChickenReductionPage> {
                       onCountsChanged: (newCounts) {
                         setState(() => _reductionCounts = newCounts);
                       },
-                      salesAmount: _salesAmount,
-                      onSalesAmountChanged: (amount) {
-                        setState(() => _salesAmount = amount);
-                      },
                     ),
                   ],
                   const SizedBox(height: 24),
@@ -135,19 +132,12 @@ class _ChickenReductionPageState extends State<ChickenReductionPage> {
                       if (_chickenReduction == 'yes') {
                         provider.updateChicken(
                           curled: _reductionCounts['curled'],
-                          sold: _reductionCounts['sold'],
                           died: _reductionCounts['death'],
                           stolen: _reductionCounts['stolen'],
                         );
-                        if (_salesAmount != null) {
-                          provider.updateFinancialsAndNotes(
-                            sales: _salesAmount!.toInt(),
-                          );
-                        }
                       } else {
                         provider.updateChicken(
                           curled: 0,
-                          sold: 0,
                           died: 0,
                           stolen: 0,
                         );

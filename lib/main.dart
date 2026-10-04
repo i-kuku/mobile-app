@@ -5,9 +5,12 @@ import 'package:ikuku/features/Inventory/provider/inventory_provider.dart';
 import 'package:ikuku/features/batches/provider/batch_provider.dart';
 import 'package:ikuku/features/auth/provider/auth_provider.dart';
 import 'package:ikuku/features/farms%20report/provider/farm_report_provider.dart';
+import 'package:ikuku/features/financial%20summaries/provider/financial_provider.dart';
 import 'package:ikuku/features/home/provider/analytics_provider.dart';
 import 'package:ikuku/features/home/provider/tutorial_provider.dart';
+// import 'package:ikuku/features/notifications/provider/notifications_provider.dart';
 import 'package:ikuku/features/settings/languages/provider/language_provider.dart';
+import 'package:ikuku/features/shop/provider/sales_provider.dart';
 import 'package:ikuku/theme/app_theme.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -36,10 +39,21 @@ void main() async {
   await Hive.initFlutter();
   await Hive.openBox<String>('offline_reports');
   await Hive.openBox<String>('sync_status');
-  await Supabase.initialize(
-  url:'https://ubzmplzgomzpczaspuyu.supabase.co' ,
-  publishableKey:'sb_publishable_DuH_Ckn1wyGVRa9l-BN9gw_DCoSqQYC',
-  );
+
+  // Supplied at build time: flutter run --dart-define-from-file=.env
+  const supabaseUrl = String.fromEnvironment('SUPABASE_URL');
+  const supabaseAnonKey = String.fromEnvironment('SUPABASE_ANON_KEY');
+  if (supabaseUrl.isEmpty || supabaseAnonKey.isEmpty) {
+    throw StateError(
+      'SUPABASE_URL and SUPABASE_ANON_KEY are not set. '
+      'Copy .env.example to .env and run with --dart-define-from-file=.env',
+    );
+  }
+
+await Supabase.initialize(
+  url: supabaseUrl,
+  publishableKey: supabaseAnonKey,
+);
   try {
     await SupabaseService().fixDatabaseConstraints();
   } catch (e) {
@@ -67,7 +81,9 @@ void main() async {
         ChangeNotifierProvider(create: (context) => AnalyticsProvider()),
         ChangeNotifierProvider(create: (context) => TutorialProvider()),
         ChangeNotifierProvider(create: (context) => FarmReportProvider()),
-
+        ChangeNotifierProvider(create: (context) => FinancialSummaryProvider()),
+        ChangeNotifierProvider(create: (context) => SalesProvider()),
+        // ChangeNotifierProvider(create: (context) => NotificationsProvider()),
       ],
       child: EasyLocalization(
         supportedLocales: const [Locale('en'), Locale('sw')],

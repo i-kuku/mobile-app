@@ -77,6 +77,7 @@ void main() {
       age: 4,
       ageUnit: 'weeks',
       createdAt: DateTime(2025),
+      purchaseCost: 0,
     );
 
     testWidgets('shows batch details and wires up edit/remove', (tester) async {
@@ -193,7 +194,6 @@ void main() {
       price: 150,
       category: 'feeds',
       addedOn: DateTime.utc(2025, 3, 1),
-      dailyRecordsId: 'd1',
     );
 
     setUpAll(() => initFakeSupabase(backend));

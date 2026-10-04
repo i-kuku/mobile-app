@@ -3,7 +3,11 @@ import 'package:ikuku/features/batches/model/chicken_batch_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class BatchProvider extends ChangeNotifier {
+  final SupabaseClient _supabase;
   final List<ChickenBatch> _batches = [];
+
+  BatchProvider({SupabaseClient? supabase})
+  :_supabase = supabase ?? Supabase.instance.client;
 
   List<ChickenBatch> get batches => _batches;
 
@@ -11,10 +15,10 @@ class BatchProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final userId = Supabase.instance.client.auth.currentUser?.id;
+      final userId = _supabase.auth.currentUser?.id;
       if (userId == null) return;
 
-      final response = await Supabase.instance.client
+      final response = await _supabase
           .from('batches')
           .select()
           .eq('user_id', userId)
@@ -40,7 +44,7 @@ class BatchProvider extends ChangeNotifier {
     required num purchaseCost,
   }) async {
     try {
-      final userId = Supabase.instance.client.auth.currentUser?.id;
+      final userId = _supabase.auth.currentUser?.id;
       if (userId == null) throw Exception('User not authenticated');
 
       final newBatchData = {
@@ -53,7 +57,7 @@ class BatchProvider extends ChangeNotifier {
         'purchase_cost': purchaseCost,
       };
 
-      await Supabase.instance.client.from('batches').insert(newBatchData);
+      await _supabase.from('batches').insert(newBatchData);
 
       await fetchBatches();
     } catch (e) {
@@ -81,7 +85,7 @@ class BatchProvider extends ChangeNotifier {
         'purchase_cost': purchaseCost,
       };
 
-      await Supabase.instance.client
+      await _supabase
           .from('batches')
           .update(updatedData)
           .eq('id', id);
@@ -108,7 +112,7 @@ class BatchProvider extends ChangeNotifier {
 
   Future<void> removeBatch(String id) async {
     try {
-      await Supabase.instance.client.from('batches').delete().eq('id', id);
+      await _supabase.from('batches').delete().eq('id', id);
       _batches.removeWhere((batch) => batch.id == id);
       notifyListeners();
     } catch (e) {
