@@ -26,6 +26,7 @@ import 'package:ikuku/features/farms%20report/presentation/screens/vaccine_selec
 import 'package:ikuku/features/farms%20report/provider/farm_report_provider.dart';
 import 'package:ikuku/features/financial%20summaries/presentation/screens/financial_summary_page.dart';
 import 'package:ikuku/features/home/presentation/home_page.dart';
+// import 'package:ikuku/features/notifications/presentation/pages/notifications_screen.dart';
 import 'package:ikuku/features/onboarding/create_farm_page.dart';
 import 'package:ikuku/features/onboarding/onboarding_page.dart';
 import 'package:ikuku/features/onboarding/recovery_setup_page.dart';
@@ -34,7 +35,13 @@ import 'package:ikuku/features/profile/presentation/pages/otp_verification_page.
 import 'package:ikuku/features/profile/presentation/pages/profile_page.dart';
 import 'package:ikuku/features/profile/presentation/pages/recovery_phone_page.dart';
 import 'package:ikuku/features/settings/languages/presentation/language_selection_page.dart';
+import 'package:ikuku/features/shop/presentation/pages/all_sales_page.dart';
+import 'package:ikuku/features/shop/presentation/pages/record_sale_page.dart';
+import 'package:ikuku/features/shop/presentation/pages/manure_sales_page.dart';
 import 'package:ikuku/features/shop/presentation/pages/my_shop_page.dart';
+import 'package:ikuku/features/shop/presentation/pages/record_chicken_sales.dart';
+import 'package:ikuku/features/shop/presentation/pages/record_eggs_sales.dart';
+
 import 'package:ikuku/features/smart_tips/presentation/screens/tip_detail_page.dart';
 import 'package:ikuku/features/smart_tips/presentation/screens/tips_hub.dart';
 import 'package:provider/provider.dart';
@@ -107,8 +114,28 @@ class AppRouter {
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: '/my-shop',
+                path: '/my_shop',
                 builder: (context, state) => const MyShopPage(),
+              ),
+              GoRoute(
+                path: '/record_sale',
+                builder: (context, state) => const RecordSalePage(),
+              ),
+              GoRoute(
+                path: '/record_chicken_sale',
+                builder: (context, state) => const RecordChickenSalePage(),
+              ),
+              GoRoute(
+                path: '/record_eggs_sale',
+                builder: (context, state) => const RecordEggsSalePage(),
+              ),
+              GoRoute(
+                path: '/record_manure_sale',
+                builder: (context, state) => const RecordManureSalePage(),
+              ),
+              GoRoute(
+                path: '/all_sales',
+                builder: (context, state) => const AllSalesPage(),
               ),
             ],
           ),
@@ -146,6 +173,10 @@ class AppRouter {
         path: '/create_batch_page',
         builder: (context, state) => const CreateBatchPage(),
       ),
+      //  GoRoute(
+      //   path: '/notifications',
+      //   builder: (context, state) => const NotificationsScreen(),
+      // ),
       GoRoute(
         path: '/confirm_batch_page',
         builder: (context, state) {
@@ -211,35 +242,41 @@ class AppRouter {
         builder: (context, state) => const BatchSelectionPage(),
       ),
       GoRoute(
-  path: '/calendar_page',
-  builder: (context, state) {
-    final batch = context.read<FarmReportProvider>().batch;
-    if (batch == null) {
-      return const Scaffold(body: Center(child: Text('No batch selected')));
-    }
-    return CalendarPickerPage(batch: batch);
-  },
-),
-GoRoute(
-  path: '/chicken_reduction',
-  builder: (context, state) {
-    final batch = context.read<FarmReportProvider>().batch;
-    if (batch == null) {
-      return const Scaffold(body: Center(child: Text('No batch selected')));
-    }
-    return ChickenReductionPage(batch: batch);
-  },
-),
-GoRoute(
-  path: '/egg_production',
-  builder: (context, state) {
-    final batch = context.read<FarmReportProvider>().batch;
-    if (batch == null) {
-      return const Scaffold(body: Center(child: Text('No batch selected')));
-    }
-    return EggProductionPage(batch: batch);
-  },
-),
+        path: '/calendar_page',
+        builder: (context, state) {
+          final batch = context.read<FarmReportProvider>().batch;
+          if (batch == null) {
+            return const Scaffold(
+              body: Center(child: Text('No batch selected')),
+            );
+          }
+          return CalendarPickerPage(batch: batch);
+        },
+      ),
+      GoRoute(
+        path: '/chicken_reduction',
+        builder: (context, state) {
+          final batch = context.read<FarmReportProvider>().batch;
+          if (batch == null) {
+            return const Scaffold(
+              body: Center(child: Text('No batch selected')),
+            );
+          }
+          return ChickenReductionPage(batch: batch);
+        },
+      ),
+      GoRoute(
+        path: '/egg_production',
+        builder: (context, state) {
+          final batch = context.read<FarmReportProvider>().batch;
+          if (batch == null) {
+            return const Scaffold(
+              body: Center(child: Text('No batch selected')),
+            );
+          }
+          return EggProductionPage(batch: batch);
+        },
+      ),
 
       GoRoute(
         path: '/feeds_selection',
@@ -284,28 +321,29 @@ GoRoute(
           return const AdditionalNotesPage();
         },
       ),
-     GoRoute(
-  path: '/Farm_Report_Entry_Screen',
-  builder: (context, state) {
-    final passedBatchId = state.extra as String?;
-    final providerBatch = context.read<FarmReportProvider>().batch;
-    final batchId = passedBatchId ?? providerBatch?.id;
+      GoRoute(
+        path: '/Farm_Report_Entry_Screen',
+        builder: (context, state) {
+          final passedBatchId = state.extra as String?;
+          final providerBatch = context.read<FarmReportProvider>().batch;
+          final batchId = passedBatchId ?? providerBatch?.id;
 
-    if (batchId == null) {
-      return const Scaffold(body: Center(child: Text('No batch selected')));
-    }
-    return FarmReportEntryScreen(batchId: batchId);
-  },
-),
+          if (batchId == null) {
+            return const Scaffold(
+              body: Center(child: Text('No batch selected')),
+            );
+          }
+          return FarmReportEntryScreen(batchId: batchId);
+        },
+      ),
       GoRoute(
         path: '/all_reports',
         builder: (context, state) => const AllReportsPage(),
       ),
       GoRoute(
-  path: '/farm-summary',
-  builder: (context, state) => const FinancialSummaryPage(),
-),
-
+        path: '/farm-summary',
+        builder: (context, state) => const FinancialSummaryPage(),
+      ),
       // GoRoute(
       //   path: '/offline-test',
       //   builder: (context, state) => const OfflineTestPage(),

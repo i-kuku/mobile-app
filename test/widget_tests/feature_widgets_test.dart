@@ -77,6 +77,7 @@ void main() {
       age: 4,
       ageUnit: 'weeks',
       createdAt: DateTime(2025),
+      purchaseCost: 0,
     );
 
     testWidgets('shows batch details and wires up edit/remove', (tester) async {

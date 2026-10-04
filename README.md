@@ -21,7 +21,8 @@ Run `flutter doctor` to see which targets are ready.
 
 ```bash
 flutter pub get
-flutter run -d chrome        # or: flutter devices, then flutter run -d <device-id>
+cp .env.example .env         # then fill in the Supabase values
+flutter run -d chrome --dart-define-from-file=.env   # or: flutter devices, then -d <device-id>
 ```
 
 ### Checks
@@ -33,6 +34,6 @@ flutter test
 
 ### Backend
 
-The app talks to a hosted Supabase project. Its URL and publishable key are set in `lib/main.dart`; you don't need a `.env` file.
+The app talks to a hosted Supabase project. Its URL and anon key are read at build time from `.env` (gitignored) via `--dart-define-from-file=.env`; ask a maintainer for the values.
 
 The Smart Tips feature downloads a Gemma model (several hundred MB) from Hugging Face the first time it runs.
