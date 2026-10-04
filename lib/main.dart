@@ -50,10 +50,10 @@ void main() async {
     );
   }
 
-  await Supabase.initialize(
+await Supabase.initialize(
   url: supabaseUrl,
-  anonKey: supabaseAnonKey,
-  );
+  publishableKey: supabaseAnonKey,
+);
   try {
     await SupabaseService().fixDatabaseConstraints();
   } catch (e) {
