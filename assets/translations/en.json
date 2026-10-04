@@ -506,4 +506,12 @@
     "cost_of_chicks": "Cost of chicks",
     "you_re_all_caught_up": "You're all caught up",
     "come_back_later_for_reminders_health_tips_and_predictions": "Come back later for reminders,\nhealth tips and predictions"
+    "total_expenses":"Total Expenses",
+    "manure": "Manure",
+    "predicted_text":"If you sell all remaining chicken at Ksh 600 you are predicted to earn this money at the end of your cycle",
+    "total_predicted_revenue":"Total predicted revenue",
+    "total_cost_of_items_in_store": "Total cost of items in store",
+    "3_months": "3 Months",
+    "lifecycle": "Lifecycle"
+    "feed_no_longer_available":"Feeds are no longer available"
   }
