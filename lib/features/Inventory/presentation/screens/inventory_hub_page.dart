@@ -74,8 +74,7 @@ class _InventoryHubPageState extends State<InventoryHubPage> {
         actions: [
           IconButton(
             icon: const Icon(Icons.notifications_none),
-            onPressed: () {
-            },
+           onPressed: () => context.push('/notifications'),
           ),
         ]
       ),
