@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:ikuku/features/notifications/model/notifications_model.dart';
-import 'package:ikuku/theme/app_theme.dart';
 
 class NotificationCard extends StatelessWidget {
   final NotificationModel notification;

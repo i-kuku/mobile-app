@@ -32,7 +32,7 @@ class NotificationsProvider extends ChangeNotifier {
         final feedName = feed.name;
         final quantity = feed.quantity;
         final unit = feed.unit;
-        
+
         // Use a unique reference key per item so each feed gets its own alert
         final referenceKey = 'low_stock_${feed.id}';
 
@@ -42,8 +42,10 @@ class NotificationsProvider extends ChangeNotifier {
           referenceKey: referenceKey,
           titleEn: 'Low Stock: $feedName',
           titleSw: 'Mali Ndogo: $feedName',
-          messageEn: '\(feedName is running low (\)quantity $unit left). Restock soon!',
-          messageSw: '\(feedName inapungua (\)quantity $unit zimebaki). Nunua zingine!',
+          messageEn:
+              '$feedName is running low ($quantity $unit left). Restock soon!',
+          messageSw:
+              '$feedName inapungua ($quantity $unit zimebaki). Nunua zingine!',
         );
       }
       if (!hasRecordedToday) {
@@ -52,8 +54,10 @@ class NotificationsProvider extends ChangeNotifier {
           type: 'missing_record',
           titleEn: 'Missing Daily Report',
           titleSw: 'Ripoti ya Kila Siku Haipo',
-          messageEn: 'You haven’t recorded today’s batch metrics yet. Keep your data up to date!',
-          messageSw: 'Hujaweka takwimu za makundi ya leo. Weka kumbukumbu zako sawa!',
+          messageEn:
+              'You haven’t recorded today’s batch metrics yet. Keep your data up to date!',
+          messageSw:
+              'Hujaweka takwimu za makundi ya leo. Weka kumbukumbu zako sawa!',
         );
       }
 
@@ -64,20 +68,17 @@ class NotificationsProvider extends ChangeNotifier {
           .eq('user_id', userId)
           .order('created_at', ascending: false)
           .limit(6);
-        debugPrint('Fetched notifications response:');
+      debugPrint('Fetched notifications response:');
       _notifications = (response as List)
           .map((data) => NotificationModel.fromJson(data))
           .toList();
-          
     } catch (e) {
       debugPrint('Error fetching notifications: $e');
     } finally {
       _isLoading = false;
       notifyListeners();
     }
-   
   }
-  
 
   /// Helper to prevent duplicate alerts for specific items on the same calendar day
   Future _insertNotificationForSpecificItemIfNotExists({
@@ -90,7 +91,7 @@ class NotificationsProvider extends ChangeNotifier {
     required String messageSw,
   }) async {
     final todayStart = DateTime.now().toIso8601String().split('T')[0];
-    
+
     final existing = await _supabase
         .from('user_notifications')
         .select('id')
@@ -124,7 +125,7 @@ class NotificationsProvider extends ChangeNotifier {
     required String messageSw,
   }) async {
     final todayStart = DateTime.now().toIso8601String().split('T')[0];
-    
+
     final existing = await _supabase
         .from('user_notifications')
         .select('id')
