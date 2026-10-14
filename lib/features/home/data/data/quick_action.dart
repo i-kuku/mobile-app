@@ -3,23 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ikuku/features/home/data/model/quick_action.dart';
+import 'package:ikuku/shared/offline/offline_services.dart';
 import 'package:ikuku/theme/app_theme.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
-// ADD THIS WHOLE FUNCTION, above the list:
 Future<void> _handleFarmReportTap(BuildContext context) async {
-  final userId = Supabase.instance.client.auth.currentUser?.id;
-  if (userId == null) return;
+  final sync = OfflineServices.instance.sync;
+  if (sync.currentUserId == null) return;
 
-  final batches = await Supabase.instance.client
-      .from('batches')
-      .select('id')
-      .eq('user_id', userId)
-      .limit(1);
-
-  if (!context.mounted) return;
-
-  if (batches.isEmpty) {
+  // The batches on the device, so this works offline too.
+  if (sync.store.rows(LocalTables.batches).isEmpty) {
     showDialog(
       context: context,
       builder: (context) => Dialog(

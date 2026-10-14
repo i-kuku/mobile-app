@@ -1,7 +1,9 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:go_router/go_router.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:ikuku/features/auth/data/pending_registration.dart';
+import 'package:ikuku/shared/offline/offline_services.dart';
 
 class CreateFarmPage extends StatefulWidget {
   final String name;
@@ -21,11 +23,43 @@ class _CreateFarmPageState extends State<CreateFarmPage> {
   String? _error;
   bool _acceptedTerms = false;
 
+  /// Set when the account is still to be created, i.e. sign-up started
+  /// without a connection.
+  PendingRegistration? _pending;
+
   @override
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.name);
     _phoneController = TextEditingController(text: widget.phone);
+    _loadPendingRegistration();
+  }
+
+  Future<void> _loadPendingRegistration() async {
+    if (OfflineServices.instance.sync.currentUserId != null) return;
+    final pending = await PendingRegistrationStore.load();
+    if (pending == null || !mounted) return;
+    setState(() {
+      _pending = pending;
+      // Coming back to this step after a restart.
+      if (_nameController.text.isEmpty) {
+        _nameController.text = pending.fullName ?? '';
+      }
+      if (_phoneController.text.isEmpty) {
+        _phoneController.text = pending.phone ?? '';
+      }
+      _farmNameController.text = pending.farmName ?? '';
+      _farmLocationController.text = pending.farmLocation ?? '';
+    });
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _phoneController.dispose();
+    _farmNameController.dispose();
+    _farmLocationController.dispose();
+    super.dispose();
   }
 
   void _onContinue() async {
@@ -58,40 +92,63 @@ class _CreateFarmPageState extends State<CreateFarmPage> {
       });
       return;
     }
-    final user = Supabase.instance.client.auth.currentUser;
-    if (user == null) {
-      setState(() {
-        _error = 'must_be_signed_in'.tr();
-        _isLoading = false;
-      });
-      return;
-    }
+    final name = _nameController.text.trim();
+    final phone = _phoneController.text.trim();
+    final farmName = _farmNameController.text.trim();
+    final farmLocation = _farmLocationController.text.trim();
+
     try {
-      // First, update the user record with the provided information
-      await Supabase.instance.client.from('users').upsert({
-        'id': user.id,
-        'full_name': _nameController.text.trim(),
-        'phone_number': _phoneController.text.trim(),
-      });
-
-      // Then create the farm record
-      await Supabase.instance.client.from('farms').insert({
-        'user_id': user.id,
-        'farm_name': _farmNameController.text.trim(),
-        'farm_location': _farmLocationController.text.trim(),
-      });
-      if(mounted){
-
-      context.go('/recovery-setup');
+      final sync = OfflineServices.instance.sync;
+      final userId = sync.currentUserId;
+      if (userId != null) {
+        // Saved on the phone at once; it reaches the server when it can.
+        await sync.mergeRow(LocalTables.users, {
+          'id': userId,
+          'full_name': name,
+          'phone_number': phone,
+        });
+        final farm = {
+          'user_id': userId,
+          'farm_name': farmName,
+          'farm_location': farmLocation,
+        };
+        final existing = sync.store.rows(LocalTables.farms).firstOrNull;
+        if (existing == null) {
+          await sync.insertRow(LocalTables.farms, farm);
+        } else {
+          // Coming back to this step must not create a second farm.
+          await sync.updateRow(
+            LocalTables.farms,
+            localId: LocalStore.idOf(existing),
+            values: farm,
+            match: {'user_id': userId},
+          );
+        }
+      } else {
+        final pending = await PendingRegistrationStore.load();
+        if (pending == null) {
+          setState(() {
+            _error = 'must_be_signed_in'.tr();
+            _isLoading = false;
+          });
+          return;
+        }
+        // The account is created later; keep these for then.
+        await PendingRegistrationStore.save(
+          pending.copyWith(
+            fullName: name,
+            phone: phone,
+            farmName: farmName,
+            farmLocation: farmLocation,
+          ),
+        );
       }
+      if (mounted) context.go('/recovery-setup');
     } catch (e) {
-      setState(() {
-        _error = 'failed_to_create_farm'.tr(args: [e.toString()]);
-      });
+      debugPrint('Could not save the farm: $e');
+      if (mounted) setState(() => _error = friendlyErrorMessage(e));
     }
-    setState(() {
-      _isLoading = false;
-    });
+    if (mounted) setState(() => _isLoading = false);
   }
 
   @override
@@ -121,6 +178,10 @@ class _CreateFarmPageState extends State<CreateFarmPage> {
                   'enter_farm_details'.tr(),
                   style: TextStyle(fontSize: 16, color: Colors.black54),
                 ),
+                if (_pending != null) ...[
+                  SizedBox(height: 16),
+                  _OfflineSignUpNote(),
+                ],
                 SizedBox(height: 32),
                 Text(
                   'enter_full_name'.tr(),
@@ -262,6 +323,30 @@ class _CreateFarmPageState extends State<CreateFarmPage> {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// Explains that the account is created once the phone is back online.
+class _OfflineSignUpNote extends StatelessWidget {
+  const _OfflineSignUpNote();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: const Color(0xFFFEF8E2),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Icon(Icons.cloud_off_outlined, size: 20),
+          const SizedBox(width: 10),
+          Expanded(child: Text('sign_up_saved_offline'.tr())),
+        ],
       ),
     );
   }

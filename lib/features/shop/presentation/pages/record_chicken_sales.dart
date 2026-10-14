@@ -9,6 +9,7 @@ import 'package:ikuku/features/shop/presentation/widgets/record_sale_button.dart
 import 'package:ikuku/features/shop/presentation/widgets/select_card.dart';
 import 'package:ikuku/features/shop/presentation/widgets/confirmation_dialog.dart';
 import 'package:ikuku/features/shop/provider/sales_provider.dart';
+import 'package:ikuku/shared/offline/network_errors.dart';
 import 'package:ikuku/theme/app_theme.dart';
 import 'package:provider/provider.dart';
 
@@ -83,7 +84,7 @@ class _RecordChickenSalePageState extends State<RecordChickenSalePage> {
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Failed to save sale: $e')));
+        ).showSnackBar(SnackBar(content: Text(friendlyErrorMessage(e))));
       }
     }
   }

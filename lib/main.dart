@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_gemma/flutter_gemma.dart';
 import 'package:flutter_gemma_litertlm/flutter_gemma_litertlm.dart';
@@ -11,6 +13,8 @@ import 'package:ikuku/features/home/provider/tutorial_provider.dart';
 // import 'package:ikuku/features/notifications/provider/notifications_provider.dart';
 import 'package:ikuku/features/settings/languages/provider/language_provider.dart';
 import 'package:ikuku/features/shop/provider/sales_provider.dart';
+import 'package:ikuku/shared/offline/offline_services.dart';
+import 'package:ikuku/shared/widgets/sync_status_banner.dart';
 import 'package:ikuku/theme/app_theme.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -37,8 +41,8 @@ void main() async {
   }
 
   await Hive.initFlutter();
-  await Hive.openBox<String>('offline_reports');
-  await Hive.openBox<String>('sync_status');
+  // Everything the app shows lives on the device first, so it works offline.
+  final offline = await OfflineServices.init();
 
   // Supplied at build time: flutter run --dart-define-from-file=.env
   const supabaseUrl = String.fromEnvironment('SUPABASE_URL');
@@ -50,24 +54,23 @@ void main() async {
     );
   }
 
-await Supabase.initialize(
-  url: supabaseUrl,
-  publishableKey: supabaseAnonKey,
-);
-  try {
-    await SupabaseService().fixDatabaseConstraints();
-  } catch (e) {
-    debugPrint('Failed to fix database constraints: $e');
-  }
+  await Supabase.initialize(
+    url: supabaseUrl,
+    publishableKey: supabaseAnonKey,
+    // Gives up on a stalled request instead of waiting on a dead network.
+    postgrestOptions: const PostgrestClientOptions(
+      requestTimeout: Duration(seconds: 20),
+    ),
+  );
+  // Not awaited: on a weak connection this request can stall for a long
+  // time, and the app must open regardless.
+  unawaited(
+    SupabaseService().fixDatabaseConstraints().catchError(
+      (Object e) => debugPrint('Failed to fix database constraints: $e'),
+    ),
+  );
 
-  // Initialize offline services
-  try {
-    // await OfflineService.instance.initialize();
-    // await OfflineDataService.instance.initialize();
-    // await ConnectivityManager.instance.initialize();
-  } catch (e) {
-    debugPrint('Failed to initialize offline services: $e');
-  }
+  await offline.start();
 
   final startLocale = Locale(savedLanguage ?? 'en');
 
@@ -106,6 +109,9 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: appTheme,
       routerConfig: AppRouter.router,
+      // Tells the farmer when they're offline or have changes to upload.
+      builder: (context, child) =>
+          SyncStatusBanner(child: child ?? const SizedBox.shrink()),
       locale: context.locale,
       supportedLocales: context.supportedLocales,
       localizationsDelegates: context.localizationDelegates,

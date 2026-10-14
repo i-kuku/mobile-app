@@ -4,12 +4,17 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:ikuku/features/batches/model/chicken_batch_model.dart';
 import 'package:ikuku/features/batches/provider/batch_provider.dart';
+import 'package:ikuku/shared/offline/offline_services.dart';
 
 import '../helpers/fake_supabase.dart';
 
 const batchesPath = '/rest/v1/batches';
 
-Map<String, dynamic> batchRow(String id, {String name = 'Batch'}) => {
+Map<String, dynamic> batchRow(
+  String id, {
+  String name = 'Batch',
+  String createdAt = '2025-03-01T00:00:00.000Z',
+}) => {
   'id': id,
   'user_id': fakeUserId,
   'name': name,
@@ -17,17 +22,34 @@ Map<String, dynamic> batchRow(String id, {String name = 'Batch'}) => {
   'initial_count': 100,
   'age': 2,
   'age_unit': 'weeks',
-  'created_at': '2025-03-01T00:00:00.000Z',
+  'created_at': createdAt,
 };
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   final backend = FakeSupabaseBackend();
+  late SyncEngine sync;
 
   setUpAll(() => initFakeSupabase(backend));
 
-  setUp(backend.reset);
-  tearDown(signOutFakeUser);
+  setUp(() async {
+    backend.reset();
+    sync = (await initOfflineServices()).sync;
+  });
+
+  tearDown(() async {
+    await resetOfflineServices();
+    await signOutFakeUser();
+  });
+
+  Future<void> addLayers(BatchProvider provider) => provider.addBatch(
+    name: 'Broilers A',
+    typeOfBird: 'Broilers',
+    initialCount: 50,
+    age: 3,
+    ageUnit: 'days',
+    purchaseCost: 0,
+  );
 
   group('signed out', () {
     test('fetchBatches does not query the server', () async {
@@ -37,16 +59,9 @@ void main() {
       expect(backend.requestsTo(batchesPath), isEmpty);
     });
 
-    test('addBatch throws and sends nothing', () async {
+    test('addBatch throws and saves nothing', () async {
       await expectLater(
-        BatchProvider().addBatch(
-          name: 'A',
-          typeOfBird: 'Layers',
-          initialCount: 1,
-          age: 1,
-          ageUnit: 'days',
-          purchaseCost: 0,
-        ),
+        addLayers(BatchProvider()),
         throwsA(
           isA<Exception>().having(
             (e) => e.toString(),
@@ -55,7 +70,8 @@ void main() {
           ),
         ),
       );
-      expect(backend.requestsTo(batchesPath), isEmpty);
+      expect(sync.pendingCount, 0);
+      expect(sync.store.rows(LocalTables.batches), isEmpty);
     });
   });
 
@@ -70,11 +86,16 @@ void main() {
       provider.addListener(() => notifications++);
     });
 
+    tearDown(() => provider.dispose());
+
     test('fetchBatches loads the user\'s batches newest first', () async {
       backend.on(
         'GET',
         batchesPath,
-        (_) async => FakeSupabaseBackend.json([batchRow('b2'), batchRow('b1')]),
+        (_) async => FakeSupabaseBackend.json([
+          batchRow('b1', createdAt: '2025-01-01T00:00:00Z'),
+          batchRow('b2', createdAt: '2025-02-01T00:00:00Z'),
+        ]),
       );
 
       await provider.fetchBatches();
@@ -82,8 +103,16 @@ void main() {
       expect(provider.batches.map((b) => b.id), ['b2', 'b1']);
       final query = backend.requestsTo(batchesPath).single.url.queryParameters;
       expect(query['user_id'], 'eq.$fakeUserId');
-      expect(query['order'], 'created_at.desc.nullslast');
-      expect(notifications, 2);
+      expect(notifications, greaterThan(0));
+    });
+
+    test('fetchBatches shows what is on the device straight away', () async {
+      await sync.store.put(LocalTables.batches, batchRow('saved'));
+      backend.on('GET', '/rest/v1/users', unreachable);
+
+      await provider.fetchBatches();
+
+      expect(provider.batches.map((b) => b.id), ['saved']);
     });
 
     test('fetchBatches replaces previously loaded batches', () async {
@@ -98,7 +127,7 @@ void main() {
         batchesPath,
         (_) async => FakeSupabaseBackend.json([batchRow('new')]),
       );
-      await provider.fetchBatches();
+      await sync.refresh(force: true);
 
       expect(provider.batches.map((b) => b.id), ['new']);
     });
@@ -119,32 +148,26 @@ void main() {
               FakeSupabaseBackend.json({'message': 'boom'}, status: 500),
         );
 
-        await provider.fetchBatches();
+        await sync.refresh(force: true);
 
         expect(provider.batches.map((b) => b.id), ['b1']);
       },
     );
 
-    test('addBatch inserts for the current user then refreshes', () async {
+    test('addBatch shows the batch at once, then upserts it', () async {
       backend.on('POST', batchesPath, (_) async => http.Response('', 201));
-      backend.on(
-        'GET',
-        batchesPath,
-        (_) async =>
-            FakeSupabaseBackend.json([batchRow('b1', name: 'Broilers A')]),
-      );
 
-      await provider.addBatch(
-        name: 'Broilers A',
-        typeOfBird: 'Broilers',
-        initialCount: 50,
-        age: 3,
-        ageUnit: 'days',
-        purchaseCost: 0,
-      );
+      await addLayers(provider);
+
+      final batch = provider.batches.single;
+      expect(batch.name, 'Broilers A');
+      expect(backend.requests, isEmpty);
+
+      await sync.sync(pull: false);
 
       final insert = backend.requestsTo(batchesPath, method: 'POST').single;
       expect(jsonDecode(insert.body), {
+        'id': batch.id,
         'user_id': fakeUserId,
         'name': 'Broilers A',
         'type_of_bird': 'Broilers',
@@ -152,30 +175,19 @@ void main() {
         'age': 3,
         'age_unit': 'days',
         'purchase_cost': 0,
+        'created_at': batch.createdAt.toUtc().toIso8601String(),
       });
-      expect(provider.batches.single.name, 'Broilers A');
+      expect(sync.pendingCount, 0);
     });
 
-    test('addBatch rethrows server errors', () async {
-      backend.on(
-        'POST',
-        batchesPath,
-        (_) async =>
-            FakeSupabaseBackend.json({'message': 'denied'}, status: 403),
-      );
+    test('addBatch offline keeps the batch and queues it', () async {
+      backend.on('POST', batchesPath, unreachable);
 
-      await expectLater(
-        provider.addBatch(
-          name: 'A',
-          typeOfBird: 'Layers',
-          initialCount: 1,
-          age: 1,
-          ageUnit: 'days',
-          purchaseCost: 0,
-        ),
-        throwsA(anything),
-      );
-      expect(backend.requestsTo(batchesPath, method: 'GET'), isEmpty);
+      await addLayers(provider);
+      await sync.sync(pull: false);
+
+      expect(provider.batches.single.name, 'Broilers A');
+      expect(sync.pendingCount, 1);
     });
 
     group('with a loaded batch', () {
@@ -190,7 +202,7 @@ void main() {
         notifications = 0;
       });
 
-      test('updateBatch patches the row and updates it locally', () async {
+      test('updateBatch updates it locally, then patches the row', () async {
         backend.on('PATCH', batchesPath, (_) async => http.Response('', 204));
 
         await provider.updateBatch(
@@ -203,6 +215,13 @@ void main() {
           purchaseCost: 1200,
         );
 
+        final updated = provider.batches.single;
+        expect(updated.name, 'Renamed');
+        expect(updated.initialCount, 90);
+        expect(updated.createdAt, DateTime.utc(2025, 3, 1));
+        expect(notifications, greaterThan(0));
+
+        await sync.sync(pull: false);
         final patch = backend.requestsTo(batchesPath, method: 'PATCH').single;
         expect(patch.url.queryParameters['id'], 'eq.b1');
         expect(jsonDecode(patch.body), {
@@ -213,77 +232,45 @@ void main() {
           'age_unit': 'weeks',
           'purchase_cost': 1200,
         });
-        final updated = provider.batches.single;
-        expect(updated.name, 'Renamed');
-        expect(updated.initialCount, 90);
-        expect(updated.createdAt, DateTime.utc(2025, 3, 1));
-        expect(notifications, 1);
       });
 
-      test('updateBatch for an unknown id does not notify', () async {
-        backend.on('PATCH', batchesPath, (_) async => http.Response('', 204));
+      test('an edit the server hasn\'t taken yet survives a refresh', () async {
+        // Rejected once, so it is still queued when the refresh runs.
+        backend.on(
+          'PATCH',
+          batchesPath,
+          (_) async => FakeSupabaseBackend.json({
+            'code': '23502',
+            'message': 'not yet',
+          }, status: 400),
+        );
+
         await provider.updateBatch(
-          id: 'missing',
-          name: 'x',
-          typeOfBird: 'x',
+          id: 'b1',
+          name: 'Renamed',
+          typeOfBird: 'Layers',
           initialCount: 1,
           age: 1,
           ageUnit: 'days',
           purchaseCost: 0,
         );
-        expect(provider.batches.single.name, 'Batch');
-        expect(notifications, 0);
+        await sync.refresh(force: true);
+
+        expect(provider.batches.single.name, 'Renamed');
+        expect(sync.pendingCount, 1);
       });
 
-      test(
-        'updateBatch rethrows and leaves local state alone on error',
-        () async {
-          backend.on(
-            'PATCH',
-            batchesPath,
-            (_) async =>
-                FakeSupabaseBackend.json({'message': 'denied'}, status: 403),
-          );
-
-          await expectLater(
-            provider.updateBatch(
-              id: 'b1',
-              name: 'Renamed',
-              typeOfBird: 'Layers',
-              initialCount: 1,
-              age: 1,
-              ageUnit: 'days',
-              purchaseCost: 0,
-            ),
-            throwsA(anything),
-          );
-          expect(provider.batches.single.name, 'Batch');
-        },
-      );
-
-      test('removeBatch deletes the row and drops it locally', () async {
+      test('removeBatch drops it locally, then deletes the row', () async {
         backend.on('DELETE', batchesPath, (_) async => http.Response('', 204));
 
         await provider.removeBatch('b1');
 
+        expect(provider.batches, isEmpty);
+        expect(notifications, greaterThan(0));
+
+        await sync.sync(pull: false);
         final delete = backend.requestsTo(batchesPath, method: 'DELETE').single;
         expect(delete.url.queryParameters['id'], 'eq.b1');
-        expect(provider.batches, isEmpty);
-        expect(notifications, 1);
-      });
-
-      test('removeBatch keeps the batch when the server errors', () async {
-        backend.on(
-          'DELETE',
-          batchesPath,
-          (_) async =>
-              FakeSupabaseBackend.json({'message': 'denied'}, status: 403),
-        );
-
-        await provider.removeBatch('b1');
-
-        expect(provider.batches.map((b) => b.id), ['b1']);
-        expect(notifications, 0);
       });
     });
   });

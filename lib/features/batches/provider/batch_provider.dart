@@ -1,38 +1,54 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:ikuku/features/batches/model/chicken_batch_model.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:ikuku/shared/offline/offline_services.dart';
+import 'package:uuid/uuid.dart';
 
+/// The farmer's batches, read from and written to the device first. Changes
+/// reach the server in the background whenever there is a connection.
 class BatchProvider extends ChangeNotifier {
-  final SupabaseClient _supabase;
-  final List<ChickenBatch> _batches = [];
+  BatchProvider({SyncEngine? sync}) : _syncOverride = sync;
 
-  BatchProvider({SupabaseClient? supabase})
-  :_supabase = supabase ?? Supabase.instance.client;
+  final SyncEngine? _syncOverride;
+  SyncEngine get _sync => _syncOverride ?? OfflineServices.instance.sync;
+
+  StreamSubscription<String>? _subscription;
+  final List<ChickenBatch> _batches = [];
 
   List<ChickenBatch> get batches => _batches;
 
-  Future<void> fetchBatches() async {
-    notifyListeners();
+  /// Starts following the device's copy, so changes from a background sync
+  /// show up without asking.
+  void _watch() {
+    _subscription ??= _sync.store.changes
+        .where((table) => table == LocalTables.batches)
+        .listen((_) => _load());
+  }
 
-    try {
-      final userId = _supabase.auth.currentUser?.id;
-      if (userId == null) return;
-
-      final response = await _supabase
-          .from('batches')
-          .select()
-          .eq('user_id', userId)
-          .order('created_at', ascending: false);
-
-      _batches.clear();
-      for (var item in response) {
-        _batches.add(ChickenBatch.fromJson(item));
+  void _load() {
+    final loaded = <ChickenBatch>[];
+    for (final row in _sync.store.rows(LocalTables.batches)) {
+      try {
+        loaded.add(ChickenBatch.fromJson(row));
+      } catch (e) {
+        debugPrint('Skipping unreadable batch ${row['id']}: $e');
       }
-    } catch (e) {
-      debugPrint('Error fetching batches: $e');
-    } finally {
-      notifyListeners();
     }
+    loaded.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    _batches
+      ..clear()
+      ..addAll(loaded);
+    notifyListeners();
+  }
+
+  /// Shows the batches on the device at once, then refreshes them from the
+  /// server if it can be reached.
+  Future<void> fetchBatches() async {
+    if (_sync.currentUserId == null) return;
+    _watch();
+    _load();
+    await _sync.refresh();
   }
 
   Future<void> addBatch({
@@ -43,27 +59,21 @@ class BatchProvider extends ChangeNotifier {
     required String ageUnit,
     required num purchaseCost,
   }) async {
-    try {
-      final userId = _supabase.auth.currentUser?.id;
-      if (userId == null) throw Exception('User not authenticated');
+    final userId = _sync.currentUserId;
+    if (userId == null) throw Exception('User not authenticated');
 
-      final newBatchData = {
-        'user_id': userId,
-        'name': name,
-        'type_of_bird': typeOfBird,
-        'initial_count': initialCount,
-        'age': age,
-        'age_unit': ageUnit,
-        'purchase_cost': purchaseCost,
-      };
-
-      await _supabase.from('batches').insert(newBatchData);
-
-      await fetchBatches();
-    } catch (e) {
-      debugPrint('Error inserting batch: $e');
-      rethrow;
-    }
+    _watch();
+    await _sync.saveRow(LocalTables.batches, {
+      'id': const Uuid().v4(),
+      'user_id': userId,
+      'name': name,
+      'type_of_bird': typeOfBird,
+      'initial_count': initialCount,
+      'age': age,
+      'age_unit': ageUnit,
+      'purchase_cost': purchaseCost,
+      'created_at': DateTime.now().toUtc().toIso8601String(),
+    });
   }
 
   Future<void> updateBatch({
@@ -75,48 +85,30 @@ class BatchProvider extends ChangeNotifier {
     required String ageUnit,
     required num purchaseCost,
   }) async {
-    try {
-      final updatedData = {
+    _watch();
+    await _sync.updateRow(
+      LocalTables.batches,
+      localId: id,
+      values: {
         'name': name,
         'type_of_bird': typeOfBird,
         'initial_count': initialCount,
         'age': age,
         'age_unit': ageUnit,
         'purchase_cost': purchaseCost,
-      };
-
-      await _supabase
-          .from('batches')
-          .update(updatedData)
-          .eq('id', id);
-
-      final index = _batches.indexWhere((element) => element.id == id);
-      if (index != -1) {
-        _batches[index] = ChickenBatch(
-          id: id,
-          name: name,
-          typeOfBird: typeOfBird,
-          initialCount: initialCount,
-          age: age,
-          ageUnit: ageUnit,
-          createdAt: _batches[index].createdAt,
-          purchaseCost: purchaseCost,
-        );
-        notifyListeners();
-      }
-    } catch (e) {
-      debugPrint('Error updating batch: $e');
-      rethrow;
-    }
+      },
+      match: {'id': id},
+    );
   }
 
   Future<void> removeBatch(String id) async {
-    try {
-      await _supabase.from('batches').delete().eq('id', id);
-      _batches.removeWhere((batch) => batch.id == id);
-      notifyListeners();
-    } catch (e) {
-      debugPrint('Error deleting batch $e');
-    }
+    _watch();
+    await _sync.deleteRow(LocalTables.batches, id);
+  }
+
+  @override
+  void dispose() {
+    _subscription?.cancel();
+    super.dispose();
   }
 }

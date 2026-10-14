@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -7,7 +9,6 @@ import 'package:ikuku/features/farms%20report/provider/farm_report_provider.dart
 import 'package:ikuku/features/farms%20report/repository/reports_repository.dart';
 import 'package:ikuku/theme/app_theme.dart';
 import 'package:provider/provider.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AllReportsPage extends StatefulWidget {
   const AllReportsPage({super.key});
@@ -18,19 +19,49 @@ class AllReportsPage extends StatefulWidget {
 
 class _AllReportsPageState extends State<AllReportsPage> {
   final _repository = ReportsRepository();
-  late Future<List<ReportListItem>> _reportsFuture;
+  late List<ReportListItem> _reports;
+  StreamSubscription<void>? _changes;
   final _searchController = TextEditingController();
   String _searchQuery = '';
 
   @override
   void initState() {
     super.initState();
-    _reportsFuture = _loadReports();
+    _reports = _loadReports();
+    _changes = _repository.changes.listen((_) => _reload());
+    _repository.refresh();
   }
 
-  Future<List<ReportListItem>> _loadReports() async {
-    final raw = await _repository.fetchAllReports();
-    return raw.map(ReportListItem.fromJson).toList();
+  @override
+  void dispose() {
+    _changes?.cancel();
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  List<ReportListItem> _loadReports() =>
+      _repository.fetchAllReports().map(ReportListItem.fromJson).toList();
+
+  void _reload() {
+    if (mounted) setState(() => _reports = _loadReports());
+  }
+
+  Future<void> _openReport(BuildContext context, ReportListItem report) async {
+    final detail = _repository.fetchReportDetail(report.id);
+    final batchId = detail?['batch_id'] as String?;
+    final batchRow = batchId == null ? null : _repository.fetchBatch(batchId);
+    if (detail == null || batchRow == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('something_went_wrong_message'.tr())),
+      );
+      return;
+    }
+
+    final reports = context.read<FarmReportProvider>();
+    reports.loadReportForEditing(detail);
+    reports.setBatch(ChickenBatch.fromJson(batchRow));
+    await context.push('/Farm_Report_Entry_Screen', extra: batchId);
+    _reload();
   }
 
   Map<String, List<ReportListItem>> _groupByDate(List<ReportListItem> reports) {
@@ -86,17 +117,9 @@ class _AllReportsPageState extends State<AllReportsPage> {
             ),
           ),
           Expanded(
-            child: FutureBuilder<List<ReportListItem>>(
-              future: _reportsFuture,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
-                }
-
-                var reports = snapshot.data ?? [];
+            child: Builder(
+              builder: (context) {
+                var reports = _reports;
                 if (_searchQuery.isNotEmpty) {
                   reports = reports
                       .where(
@@ -133,39 +156,7 @@ class _AllReportsPageState extends State<AllReportsPage> {
                       ...entry.value.map(
                         (report) => _ReportCard(
                           report: report,
-                          onTap: () async {
-                            final detail = await _repository.fetchReportDetail(
-                              report.id,
-                            );
-                            if (detail == null || !context.mounted) return;
-
-                            context
-                                .read<FarmReportProvider>()
-                                .loadReportForEditing(detail);
-
-                            final batchId = detail['batch_id'] as String;
-
-                            final batchRow = await Supabase.instance.client
-                                .from('batches')
-                                .select()
-                                .eq('id', batchId)
-                                .single();
-
-                            if (!context.mounted) return;
-                            context.read<FarmReportProvider>().setBatch(
-                              ChickenBatch.fromJson(batchRow),
-                            );
-
-                            await context.push(
-                              '/Farm_Report_Entry_Screen',
-                              extra: batchId,
-                            );
-
-                            if (!context.mounted) return;
-                            setState(() {
-                              _reportsFuture = _loadReports();
-                            });
-                          },
+                          onTap: () => _openReport(context, report),
                         ),
                       ),
                     ];

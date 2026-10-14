@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -61,59 +62,82 @@ class RssService {
     ),
   ];
 
-  Future<List<NewsArticle>> fetchLatestNews() async {
-    List<NewsArticle> allArticles = [];
+  /// How long one feed may take before it's given up on.
+  static const feedTimeout = Duration(seconds: 15);
 
-    for (final feed in _feeds) {
-      try {
-        final response = await http.get(Uri.parse(feed.url));
-        if (response.statusCode == 200) {
-          final document = XmlDocument.parse(response.body);
-          final items = document.findAllElements('item');
+  /// The latest articles from every feed that answered. Saves them for
+  /// offline use, unless no feed could be reached, so the saved ones aren't
+  /// wiped while offline.
+  Future<List<NewsArticle>> fetchLatestNews() async =>
+      (await _fetchAll()).articles;
 
-          for (final item in items) {
-            final title = _getElementText(item, 'title');
-            if (!title.toLowerCase().contains('poultry') &&
-                !title.toLowerCase().contains('chicken') &&
-                !title.toLowerCase().contains('farm')) {
-              continue;
-            }
+  /// The latest articles, or the ones saved last time when no feed can be
+  /// reached, e.g. offline.
+  Future<NewsFeed> loadNews() async {
+    final (:articles, :reachedAnyFeed) = await _fetchAll();
+    if (reachedAnyFeed) return NewsFeed(articles, isSaved: false);
+    return NewsFeed(await getCachedArticles(), isSaved: true);
+  }
 
-            final description = _cleanDescription(
-              _getElementText(item, 'description'),
-            );
-            // RSS 2.0 uses pubDate; RSS 1.0 (RDF) feeds use dc:date.
-            final rawDate = _getElementText(item, 'pubDate');
-            final pubDate = _parseDate(
-              rawDate.isNotEmpty ? rawDate : _getElementText(item, 'dc:date'),
-            );
-            final link = _getElementText(item, 'link');
-            String? imageUrl = _findImageUrl(item);
-
-            allArticles.add(
-              NewsArticle(
-                title: title,
-                description: description,
-                publishDate: pubDate,
-                source: feed.name,
-                link: link,
-                imageUrl: imageUrl,
-              ),
-            );
-          }
-        }
-      } catch (e) {
-        debugPrint('Error fetching from ${feed.name}: $e');
-      }
-    }
+  Future<({List<NewsArticle> articles, bool reachedAnyFeed})>
+  _fetchAll() async {
+    // Fetched side by side so one slow feed doesn't hold up the others.
+    final results = await Future.wait(_feeds.map(_fetchFeed));
+    final reached = results.whereType<List<NewsArticle>>().toList();
+    final allArticles = reached.expand((articles) => articles).toList();
 
     // Sort by publication date, newest first
     allArticles.sort((a, b) => b.publishDate.compareTo(a.publishDate));
 
-    // Cache the articles
-    await _cacheArticles(allArticles);
+    if (reached.isNotEmpty) await _cacheArticles(allArticles);
+    return (articles: allArticles, reachedAnyFeed: reached.isNotEmpty);
+  }
 
-    return allArticles;
+  /// The poultry articles in [feed], or null if it couldn't be fetched.
+  Future<List<NewsArticle>?> _fetchFeed(RssFeed feed) async {
+    try {
+      final response = await http.get(Uri.parse(feed.url)).timeout(feedTimeout);
+      if (response.statusCode != 200) return null;
+
+      final allArticles = <NewsArticle>[];
+      final document = XmlDocument.parse(response.body);
+      final items = document.findAllElements('item');
+
+      for (final item in items) {
+        final title = _getElementText(item, 'title');
+        if (!title.toLowerCase().contains('poultry') &&
+            !title.toLowerCase().contains('chicken') &&
+            !title.toLowerCase().contains('farm')) {
+          continue;
+        }
+
+        final description = _cleanDescription(
+          _getElementText(item, 'description'),
+        );
+        // RSS 2.0 uses pubDate; RSS 1.0 (RDF) feeds use dc:date.
+        final rawDate = _getElementText(item, 'pubDate');
+        final pubDate = _parseDate(
+          rawDate.isNotEmpty ? rawDate : _getElementText(item, 'dc:date'),
+        );
+        final link = _getElementText(item, 'link');
+        String? imageUrl = _findImageUrl(item);
+
+        allArticles.add(
+          NewsArticle(
+            title: title,
+            description: description,
+            publishDate: pubDate,
+            source: feed.name,
+            link: link,
+            imageUrl: imageUrl,
+          ),
+        );
+      }
+      return allArticles;
+    } catch (e) {
+      debugPrint('Error fetching from ${feed.name}: $e');
+      return null;
+    }
   }
 
   String _getElementText(XmlElement item, String elementName) {
@@ -247,4 +271,12 @@ class RssFeed {
   final String name;
 
   RssFeed({required this.url, required this.name});
+}
+
+/// Articles to show, and whether they are a saved copy from earlier.
+class NewsFeed {
+  const NewsFeed(this.articles, {required this.isSaved});
+
+  final List<NewsArticle> articles;
+  final bool isSaved;
 }

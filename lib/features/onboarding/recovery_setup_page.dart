@@ -1,8 +1,9 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:ikuku/features/auth/data/pending_registration.dart';
+import 'package:ikuku/shared/offline/offline_services.dart';
 import 'package:ikuku/theme/app_theme.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../shared/widgets/loading_button.dart';
 
 class RecoverySetupPage extends StatefulWidget {
@@ -40,20 +41,33 @@ class _RecoverySetupPageState extends State<RecoverySetupPage> {
       _error = null;
     });
 
-    final user = Supabase.instance.client.auth.currentUser;
-    if (user == null) {
-      context.go('/auth');
-      return;
-    }
+    final question = _selectedQuestion!;
+    final answer = _answerController.text.trim().toLowerCase();
 
     try {
-      await Supabase.instance.client
-          .from('users')
-          .update({
-            'recovery_question': _selectedQuestion,
-            'recovery_answer': _answerController.text.trim().toLowerCase(),
-          })
-          .eq('id', user.id);
+      final sync = OfflineServices.instance.sync;
+      final userId = sync.currentUserId;
+      if (userId == null) {
+        final pending = await PendingRegistrationStore.load();
+        if (pending == null) {
+          if (mounted) context.go('/auth');
+          return;
+        }
+        // The account is created later; keep these for then.
+        await PendingRegistrationStore.save(
+          pending.copyWith(recoveryQuestion: question, recoveryAnswer: answer),
+        );
+        if (mounted) context.go('/finish-signup');
+        return;
+      }
+
+      // Queued for the server without keeping the answer on the phone.
+      await sync.queueUpdate(
+        LocalTables.users,
+        recordId: userId,
+        values: {'recovery_question': question, 'recovery_answer': answer},
+        match: {'id': userId},
+      );
 
       if (mounted) {
         ScaffoldMessenger.of(
@@ -66,11 +80,10 @@ class _RecoverySetupPageState extends State<RecoverySetupPage> {
         }
       }
     } catch (e) {
+      debugPrint('Could not save the recovery question: $e');
       setState(() {
-        _error = e.toString();
+        _error = friendlyErrorMessage(e);
       });
-    } finally {
-      // Loading handled by LoadingButton
     }
   }
 

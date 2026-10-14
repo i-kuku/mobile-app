@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 class AuthErrorWidget extends StatelessWidget {
@@ -25,7 +26,7 @@ class AuthErrorWidget extends StatelessWidget {
               if (showConnectionTest)
                 ElevatedButton(
                   onPressed: internetTest,
-                  child: Text('Test Connection'),
+                  child: Text('test_connection'.tr()),
                 ),
             ],
           )

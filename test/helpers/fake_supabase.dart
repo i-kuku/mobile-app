@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
+import 'package:ikuku/shared/offline/offline_services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -113,6 +115,8 @@ Future<void> initFakeSupabase(FakeSupabaseBackend backend) async {
     publishableKey: 'fake-anon-key',
     httpClient: backend.client,
     debug: false,
+    // A failing GET would otherwise be retried for seven seconds.
+    postgrestOptions: const PostgrestClientOptions(retryEnabled: false),
     authOptions: const FlutterAuthClientOptions(
       autoRefreshToken: false,
       detectSessionInUri: false,
@@ -134,6 +138,29 @@ Future<void> signInFakeUser(FakeSupabaseBackend backend) async {
   );
   backend.requests.clear();
 }
+
+/// A responder for a request that never reaches the server.
+Future<http.Response> unreachable(http.Request _) async =>
+    throw const SocketException('Failed host lookup: fake.supabase.test');
+
+/// Sets up [OfflineServices] in memory against the fake backend. Call from
+/// `setUp`, after [initFakeSupabase], and pair with [resetOfflineServices].
+///
+/// Pass empty [pullSpecs] to keep background syncs from fetching tables.
+Future<OfflineServices> initOfflineServices({
+  bool online = true,
+  List<PullSpec>? pullSpecs,
+}) async {
+  await OfflineServices.reset();
+  return OfflineServices.init(
+    persistence: MemoryStorePersistence(),
+    connectivity: ConnectivityService.fixed(online: online),
+    pullSpecs: pullSpecs,
+    requestTimeout: const Duration(seconds: 2),
+  );
+}
+
+Future<void> resetOfflineServices() => OfflineServices.reset();
 
 Future<void> signOutFakeUser() async {
   if (Supabase.instance.client.auth.currentUser != null) {

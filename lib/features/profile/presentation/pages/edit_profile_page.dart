@@ -1,5 +1,7 @@
 import 'dart:io';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:ikuku/shared/offline/offline_services.dart';
 import 'package:ikuku/shared/widgets/loading_button.dart';
 import 'package:ikuku/theme/app_theme.dart';
 import 'package:image_picker/image_picker.dart';
@@ -89,13 +91,22 @@ class _EditProfilePageState extends State<EditProfilePage> {
         _isUploadingImage = false;
       });
     } catch (e) {
-      setState(() => _isUploadingImage = false);
       debugPrint('Storage Upload Failed: $e');
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to upload image: $e')),
-        );
-      }
+      if (!mounted) return;
+      // Photos go straight to the server, so an unsent one isn't kept.
+      setState(() {
+        _isUploadingImage = false;
+        _localImageFile = null;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            isNetworkError(e)
+                ? 'photo_needs_internet'.tr()
+                : friendlyErrorMessage(e),
+          ),
+        ),
+      );
     }
   }
 
@@ -131,42 +142,38 @@ class _EditProfilePageState extends State<EditProfilePage> {
   Future<void> _saveProfile() async {
     if (!_formKey.currentState!.validate()) return;
     try {
-      final user = Supabase.instance.client.auth.currentUser;
-      if (user == null) {
+      final sync = OfflineServices.instance.sync;
+      final userId = sync.currentUserId;
+      if (userId == null) {
         throw Exception('User not authenticated');
       }
-      try {
-        await Supabase.instance.client.from('users').upsert({
-          'id': user.id,
-          'full_name': _nameController.text.trim(),
-          'phone_number': _phoneController.text.trim(),
-          'avatar_url':_uploadedAvatarUrl,
-        });
-      } catch (e) {
-        debugPrint('Error updating users table: $e');
-        rethrow;
-      }
-      try {
-        final farmResponse = await Supabase.instance.client
-            .from('farms')
-            .select('id')
-            .eq('user_id', user.id)
-            .maybeSingle();
 
-        if (farmResponse != null) {
-          await Supabase.instance.client
-              .from('farms')
-              .update({'farm_location': _locationController.text.trim()})
-              .eq('id', farmResponse['id']);
-        }
-      } catch (e) {
-        debugPrint('Error updating farms table: $e');
-        rethrow;
+      // Saved on the phone at once; it reaches the server when it can.
+      await sync.mergeRow(LocalTables.users, {
+        'id': userId,
+        'full_name': _nameController.text.trim(),
+        'phone_number': _phoneController.text.trim(),
+        if (_uploadedAvatarUrl != null) 'avatar_url': _uploadedAvatarUrl,
+      });
+      final farm = sync.store.rows(LocalTables.farms).firstOrNull;
+      if (farm != null) {
+        await sync.updateRow(
+          LocalTables.farms,
+          localId: LocalStore.idOf(farm),
+          values: {'farm_location': _locationController.text.trim()},
+          match: {'user_id': userId},
+        );
       }
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('profile_updated_successfully'.tr())),
+          SnackBar(
+            content: Text(
+              sync.isOnline
+                  ? 'profile_updated_successfully'.tr()
+                  : 'saved_will_upload'.tr(),
+            ),
+          ),
         );
         Navigator.pop(context, {
           'name': _nameController.text.trim(),
@@ -178,11 +185,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
     } catch (e) {
       debugPrint('Profile save error: $e');
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${tr('failed_to_update_profile')}: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(tr('failed_to_update_profile'))));
       }
-    } finally {
     }
   }
 
@@ -210,18 +216,22 @@ class _EditProfilePageState extends State<EditProfilePage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 16),
-    Center(
-      child: Column(
-        children: [
-          CircleAvatar(
-            radius: 55,
-            backgroundColor: Colors.grey[400],
-            backgroundImage: avatarImage,
-            child: avatarImage == null
-                ? Text(
-                   _nameController.text.trim().isNotEmpty
-                                      ? _nameController.text.trim()[0].toUpperCase()
-                                      : 'O',
+              Center(
+                child: Column(
+                  children: [
+                    CircleAvatar(
+                      radius: 55,
+                      backgroundColor: Colors.grey[400],
+                      backgroundImage: avatarImage,
+                      // Offline the saved photo can't load; leave the plain circle.
+                      onBackgroundImageError: avatarImage == null
+                          ? null
+                          : (_, _) {},
+                      child: avatarImage == null
+                          ? Text(
+                              _nameController.text.trim().isNotEmpty
+                                  ? _nameController.text.trim()[0].toUpperCase()
+                                  : 'O',
 
                     style: const TextStyle(fontSize: 48, color: Colors.black38),
                   )

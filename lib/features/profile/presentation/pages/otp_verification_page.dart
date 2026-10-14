@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ikuku/theme/app_theme.dart';
+import 'package:ikuku/shared/offline/offline_services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class OtpVerificationPage extends StatefulWidget {
@@ -75,17 +76,29 @@ Future<void> _handleDeleteAccount() async {
       );
       await Supabase.instance.client.rpc('delete_user_account');
 
-      
-      await Supabase.instance.client.auth.signOut();
+      try {
+        await Supabase.instance.client.auth.signOut();
+      } catch (e) {
+        // The account is gone; the session already left this phone.
+        debugPrint('Sign-out after deleting the account failed: $e');
+      }
+      await OfflineServices.instance.signedOut();
 
       if (mounted) {
         _showSnackbar('Account successfully deleted.');
-         context.go('/sign-in');
+        context.go('/auth');
       }
-    } on AuthException catch (e) {
-      _showSnackbar(e.message);
     } catch (e) {
-      _showSnackbar('Invalid verification token. Please check and try again.');
+      debugPrint('Account deletion failed: $e');
+      if (classifyFailure(e) != FailureKind.rejected) {
+        _showSnackbar(friendlyErrorMessage(e));
+      } else if (e is AuthException) {
+        _showSnackbar(e.message);
+      } else {
+        _showSnackbar(
+          'Invalid verification token. Please check and try again.',
+        );
+      }
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -105,7 +118,8 @@ Future<void> _handleDeleteAccount() async {
       _showSnackbar('A fresh verification code has been sent.');
       _startResendTimer();
     } catch (e) {
-      _showSnackbar('Error sending code: $e');
+      debugPrint('Could not resend the code: $e');
+      _showSnackbar(friendlyErrorMessage(e));
     }
   }
 

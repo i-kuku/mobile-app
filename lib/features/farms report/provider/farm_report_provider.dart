@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:ikuku/features/batches/model/chicken_batch_model.dart';
 import 'package:ikuku/features/farms%20report/%20model/report_model.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:ikuku/shared/offline/offline_services.dart';
 import 'package:uuid/uuid.dart';
 
 class FarmReportProvider extends ChangeNotifier {
+  FarmReportProvider({SyncEngine? sync}) : _syncOverride = sync;
+
+  final SyncEngine? _syncOverride;
+  SyncEngine get _sync => _syncOverride ?? OfflineServices.instance.sync;
+
   bool _isloading = false;
   bool get isloading => _isloading;
 
@@ -168,104 +173,75 @@ class FarmReportProvider extends ChangeNotifier {
     if (value is String) return int.tryParse(value) ?? 0;
     return 0;
   }
-  
+
+  /// Saves the report on the device and queues it for the server, so it
+  /// works the same offline. Returns false only if nobody is signed in or
+  /// the device itself failed to save.
   Future<bool> submitDailyReport({required String batchId}) async {
-    final userId = Supabase.instance.client.auth.currentUser?.id;
+    final userId = _sync.currentUserId;
     if (userId == null) return false;
 
     _isloading = true;
     notifyListeners();
 
     try {
-      final todayStr = _reportDate.toIso8601String().split('T')[0];
+      final dateStr = _reportDate.toIso8601String().split('T')[0];
+      final editingReportId = _editingReportId;
+      final editingDailyRecordId = _editingDailyRecordId;
+      final dailyRecordId = editingDailyRecordId ?? const Uuid().v4();
 
-      if (_editingReportId != null) {
-        await Supabase.instance.client
-            .from('daily_records')
-            .update({'record_date': todayStr, 'report_date': todayStr})
-            .eq('id', _editingDailyRecordId!);
+      final report = Report(
+        id: editingReportId ?? const Uuid().v4(),
+        dailyRecordId: dailyRecordId,
+        batchId: batchId,
+        chickenReduction: _chickenReduction,
+        chickensCurled: _chickensCurled,
+        chickensSold: _chickensSold,
+        chickensDied: _chickensDied,
+        chickensStolen: _chickensStolen,
+        eggCollection: _eggsCollection,
+        eggsCollected: _eggsCollected,
+        gradeEggs: _gradeEggs,
+        eggsSmall: _eggsSmall,
+        eggsDeformed: _eggsDeformed,
+        eggsStandard: _eggsStandard,
+        eggsBroken: _eggsBroken,
+        notes: _notes,
+        feedsUsed: _feedsUsed,
+        vaccinesUsed: _vaccinesUsed,
+        otherMaterialsUsed: _otherMaterialsUsed,
+        salesAmount: _salesAmount,
+        lossesBreakdown: _lossesBreakdown,
+        gainsAmount: _gainsAmount,
+      );
 
-        final updatedReport = Report(
-          id: _editingReportId!,
-          dailyRecordId: _editingDailyRecordId!,
-          batchId: batchId,
-          chickenReduction: _chickenReduction,
-          chickensCurled: _chickensCurled,
-          chickensSold: _chickensSold,
-          chickensDied: _chickensDied,
-          chickensStolen: _chickensStolen,
-          eggCollection: _eggsCollection,
-          eggsCollected: _eggsCollected,
-          gradeEggs: _gradeEggs,
-          eggsSmall: _eggsSmall,
-          eggsDeformed: _eggsDeformed,
-          eggsStandard: _eggsStandard,
-          eggsBroken: _eggsBroken,
-          notes: _notes,
-          feedsUsed: _feedsUsed,
-          vaccinesUsed: _vaccinesUsed,
-          otherMaterialsUsed: _otherMaterialsUsed,
-          salesAmount: _salesAmount,
-          lossesBreakdown: _lossesBreakdown,
-          gainsAmount: _gainsAmount,
+      if (editingReportId != null && editingDailyRecordId != null) {
+        await _sync.updateRow(
+          LocalTables.dailyRecords,
+          localId: editingDailyRecordId,
+          values: {'record_date': dateStr, 'report_date': dateStr},
+          match: {'id': editingDailyRecordId},
         );
-
-        await Supabase.instance.client
-            .from('batch_records')
-            .update(updatedReport.toJson())
-            .eq('id', _editingReportId!);
+        await _sync.updateRow(
+          LocalTables.batchRecords,
+          localId: editingReportId,
+          values: report.toJson(),
+          match: {'id': editingReportId},
+        );
       } else {
-        final parentResponse = await Supabase.instance.client
-            .from('daily_records')
-            .insert({
-              'user_id': userId,
-              'record_date': todayStr,
-              'report_date': todayStr,
-            })
-            .select('id')
-            .single();
-
-        final String generatedDailyRecordId = parentResponse['id'] as String;
-        final reportPayload = Report.empty(
-          batchId: batchId,
-          dailyRecordId: generatedDailyRecordId,
-          id: const Uuid().v4(),
-        );
-
-        final finalReport = Report(
-          id: reportPayload.id,
-          dailyRecordId: reportPayload.dailyRecordId,
-          batchId: reportPayload.batchId,
-          chickenReduction: _chickenReduction,
-          chickensCurled: _chickensCurled,
-          chickensSold: _chickensSold,
-          chickensDied: _chickensDied,
-          chickensStolen: _chickensStolen,
-          eggCollection: _eggsCollection,
-          eggsCollected: _eggsCollected,
-          gradeEggs: _gradeEggs,
-          eggsSmall: _eggsSmall,
-          eggsDeformed: _eggsDeformed,
-          eggsStandard: _eggsStandard,
-          eggsBroken: _eggsBroken,
-          notes: _notes,
-          feedsUsed: _feedsUsed,
-          vaccinesUsed: _vaccinesUsed,
-          otherMaterialsUsed: _otherMaterialsUsed,
-          salesAmount: _salesAmount,
-          lossesBreakdown: _lossesBreakdown,
-          gainsAmount: _gainsAmount,
-        );
-
-        await Supabase.instance.client
-            .from('batch_records')
-            .insert(finalReport.toJson());
+        await _sync.saveRow(LocalTables.dailyRecords, {
+          'id': dailyRecordId,
+          'user_id': userId,
+          'record_date': dateStr,
+          'report_date': dateStr,
+        });
+        await _sync.saveRow(LocalTables.batchRecords, report.toJson());
       }
 
       resetForm();
       return true;
     } catch (e) {
-      debugPrint('Error executing database submission transaction: $e');
+      debugPrint('Error saving the daily report: $e');
       return false;
     } finally {
       _isloading = false;
