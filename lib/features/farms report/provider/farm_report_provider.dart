@@ -274,24 +274,20 @@ class FarmReportProvider extends ChangeNotifier {
     _batch = null;
     notifyListeners();
   }
+
+  /// Whether a report is dated today, checked on the device so it works
+  /// offline and counts reports that haven't been uploaded yet.
   Future<bool> hasRecordedToday() async {
-  final userId = Supabase.instance.client.auth.currentUser?.id;
-  if (userId == null) return false;
+    final userId = _sync.currentUserId;
+    if (userId == null) return false;
 
-  final todayStr = DateTime.now().toIso8601String().split('T')[0];
-
-  try {
-    final existing = await Supabase.instance.client
-        .from('daily_records')
-        .select('id')
-        .eq('user_id', userId)
-        .eq('record_date', todayStr)
-        .maybeSingle();
-
-    return existing != null;
-  } catch (e) {
-    debugPrint('Error checking today\'s record: $e');
-    return false;
+    final todayStr = DateTime.now().toIso8601String().split('T')[0];
+    return _sync.store
+        .rows(LocalTables.dailyRecords)
+        .any(
+          (record) =>
+              record['user_id'] == userId &&
+              (record['record_date'] as String?)?.startsWith(todayStr) == true,
+        );
   }
-}
 }
