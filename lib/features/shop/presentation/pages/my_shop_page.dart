@@ -14,13 +14,14 @@ class MyShopPage extends StatefulWidget {
 }
 
 class _MyShopPageState extends State<MyShopPage> {
+  
   @override
   void initState() {
+    
     super.initState();
-    Future.microtask(() {
-      if (!mounted) return;
-      context.read<SalesProvider>().fetchSales();
-    });
+    
+    final salesProvider = context.read<SalesProvider>();
+  Future.microtask(() => salesProvider.fetchSales());
   }
 
   @override
@@ -55,7 +56,7 @@ class _MyShopPageState extends State<MyShopPage> {
         actions: [
           IconButton(
             icon: const Icon(Icons.notifications_none, color: Colors.black),
-            onPressed: () {},
+            onPressed: () => context.push('/notifications'),
           ),
         ],
       ),

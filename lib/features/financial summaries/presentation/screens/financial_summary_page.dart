@@ -53,9 +53,7 @@ class _FinancialSummaryPageState extends State<FinancialSummaryPage> {
         actions: [
           IconButton(
             icon: const Icon(Icons.notifications_none, color: Colors.black),
-            onPressed: () {
-              context.push('/notifications_page');
-            },
+            onPressed: () => context.push('/notifications'),
           ),
         ],
         backgroundColor: Colors.white,
