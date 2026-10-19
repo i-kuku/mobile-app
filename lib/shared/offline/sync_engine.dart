@@ -103,6 +103,17 @@ final List<PullSpec> defaultPullSpecs = [
     return rows;
   }),
   PullSpec(
+    LocalTables.userNotifications,
+    (client, ctx) async => _rows(
+      await client
+          .from('user_notifications')
+          .select()
+          .eq('user_id', ctx.userId)
+          .order('created_at', ascending: false)
+          .limit(50),
+    ),
+  ),
+  PullSpec(
     LocalTables.sales,
     (client, ctx) async => _rows(
       await client

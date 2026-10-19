@@ -14,6 +14,7 @@ abstract final class LocalTables {
   static const sales = 'sale';
   static const users = 'users';
   static const farms = 'farms';
+  static const userNotifications = 'user_notifications';
 
   /// Server results that can't be rebuilt from the tables above, keyed by
   /// whatever identifies the query (e.g. a financial summary per batch).
@@ -33,6 +34,7 @@ abstract final class LocalTables {
     sales,
     users,
     farms,
+    userNotifications,
     cache,
     outbox,
     meta,

@@ -30,7 +30,7 @@ class BatchCard extends StatelessWidget {
           Expanded(
             child: Container(
               constraints: const BoxConstraints(minHeight: 80),
-              padding: EdgeInsets.fromLTRB(16, 8, 16, 8),
+              padding: EdgeInsets.fromLTRB(8, 8, 12, 8),
               decoration: BoxDecoration(borderRadius: BorderRadius.circular(4)),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -51,17 +51,18 @@ class BatchCard extends StatelessWidget {
                       fontSize: 16,
                     ),
                   ),
-                  Row(
+                  Wrap(
+                    spacing: 8,
                     children: [
                       Text(
-                        "${"chicken".tr()}: ${batch.initialCount}",
+                        "${"chicken".tr()}: ${batch.initialCount},",
                         style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                           color: Colors.grey,
                           fontSize: 16,
                         ),
                       ),
                       Text(
-                        ", ${"age".tr()}: ${batch.age} ${batch.ageUnit} ",
+                        "${"age".tr()}: ${batch.age} ${batch.ageUnit}",
                         style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                           color: Colors.grey,
                           fontSize: 16,

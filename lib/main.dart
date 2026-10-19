@@ -86,7 +86,7 @@ void main() async {
         ChangeNotifierProvider(create: (context) => FarmReportProvider()),
         ChangeNotifierProvider(create: (context) => FinancialSummaryProvider()),
         ChangeNotifierProvider(create: (context) => SalesProvider()),
-        ChangeNotifierProvider(create: (context) => NotificationsProvider()),
+        ChangeNotifierProvider(create: (context) => NotificationsProvider(sync: offline.sync)),
       ],
       child: EasyLocalization(
         supportedLocales: const [Locale('en'), Locale('sw')],

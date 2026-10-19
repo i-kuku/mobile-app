@@ -38,7 +38,7 @@ class InventoryItem {
     'user_id': userId,
     'name': name,
     'category': category,
-    'daily_records_id': dailyRecordsId,
+   if (dailyRecordsId != null) 'daily_records_id': dailyRecordsId,
     'quantity': quantity,
     'unit': unit,
     'price': price,
