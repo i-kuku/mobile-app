@@ -52,17 +52,16 @@ class BatchCard extends StatelessWidget {
                     ),
                   ),
                   Wrap(
-                    spacing: 8,
                     children: [
                       Text(
-                        "${"chicken".tr()}: ${batch.initialCount},",
+                        "${"chicken".tr()}: ${batch.initialCount}",
                         style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                           color: Colors.grey,
                           fontSize: 16,
                         ),
                       ),
                       Text(
-                        "${"age".tr()}: ${batch.age} ${batch.ageUnit}",
+                        ", ${"age".tr()}: ${batch.age} ${batch.ageUnit} ",
                         style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                           color: Colors.grey,
                           fontSize: 16,
