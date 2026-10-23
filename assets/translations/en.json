@@ -543,5 +543,13 @@
     "saved_will_upload": "Saved. It will upload when you're back online.",
     "all_changes_uploaded": "All your changes are uploaded",
     "sync_status": "Sync",
-    "upload_now": "Upload now"
+    "upload_now": "Upload now",
+    "chicken": "Chicken",
+    "missing_batch_id": "Couldn't find this batch. Go back and try again.",
+    "updating": "Updating…",
+    "batch_updated_successfully": "Batch updated",
+    "enter_the_cost": "Enter the cost",
+    "no_reports_found": "No reports found",
+    "age_old": "{} old",
+    "please_select_chicken_type": "Please select a chicken type"
 }

@@ -99,9 +99,8 @@ void main() {
       );
 
       expect(find.text('Batch A'), findsOneWidget);
-      expect(find.text('Bird type: Layers'), findsOneWidget);
-      expect(find.text('chicken: 120'), findsOneWidget);
-      expect(find.text(', age: 4 weeks '), findsOneWidget);
+      expect(find.text('bird_type: Layers'), findsOneWidget);
+      expect(find.text('chicken: 120, age: 4 weeks'), findsOneWidget);
 
       await tester.tap(find.byIcon(Icons.edit));
       await tester.tap(find.byIcon(Icons.delete_outline));

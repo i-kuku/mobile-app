@@ -1,4 +1,3 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ikuku/theme/app_theme.dart';
@@ -48,12 +47,12 @@ class PopUp extends StatelessWidget {
                     text: TextSpan(
                       style: TextStyle(color: Colors.black, fontSize: 16),
                       children: [
-                        TextSpan(text: "${messagebefore.tr()} "),
+                        TextSpan(text: "$messagebefore "),
                         TextSpan(
                           text: batchName,
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
-                        TextSpan(text: " ${messageAfter.tr()}"),
+                        TextSpan(text: " $messageAfter"),
                       ],
                     ),
                   ),
@@ -85,7 +84,7 @@ class PopUp extends StatelessWidget {
                 padding: EdgeInsets.symmetric(vertical: 12),
               ),
               child: Text(
-                secondaryButtonText!.tr(),
+                secondaryButtonText!,
                 style: TextStyle(
                   color: CustomColors.primary,
                   fontWeight: FontWeight.bold,
@@ -102,7 +101,7 @@ class PopUp extends StatelessWidget {
                 padding: EdgeInsets.symmetric(vertical: 12),
               ),
               child: Text(
-                mainButtonText!.tr(),
+                mainButtonText!,
                 style: TextStyle(
                   color: Colors.red,
                   fontWeight: FontWeight.bold,
@@ -121,7 +120,7 @@ class PopUp extends StatelessWidget {
           backgroundColor: Colors.white,
           padding: EdgeInsets.symmetric(vertical: 12),
         ),
-        child: Text(mainButtonText!.tr(), style: TextStyle(color: Colors.red)),
+        child: Text(mainButtonText!, style: TextStyle(color: Colors.red)),
       ),
     );
   }

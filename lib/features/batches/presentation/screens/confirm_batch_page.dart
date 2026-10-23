@@ -26,7 +26,7 @@ class ConfirmBatchPage extends StatelessWidget {
               Icon(Icons.arrow_back, size: 18, color: Colors.black),
               SizedBox(width: 4),
               Text(
-                "Back".tr(),
+                "back".tr(),
                 style: TextStyle(
                   color: CustomColors.text,
                   fontSize: 16,

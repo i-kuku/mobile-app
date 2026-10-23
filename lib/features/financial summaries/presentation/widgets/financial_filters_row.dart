@@ -49,8 +49,8 @@ class FinancialFiltersRow extends StatelessWidget {
               isExpanded: true,
               underline: SizedBox.shrink(),
               items: [
-                DropdownMenuItem(value: '3 months', child: Text('3 months'.tr())),
-                DropdownMenuItem(value: 'LifeCycle', child: Text('LifeCycle'.tr())),
+                DropdownMenuItem(value: '3 months', child: Text('3_months'.tr())),
+                DropdownMenuItem(value: 'LifeCycle', child: Text('lifecycle'.tr())),
               ],
               onChanged: (value) {
                 if (value != null) provider.setTimeframe(value);

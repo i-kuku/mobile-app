@@ -77,7 +77,7 @@ class _CreateBatchPageState extends State<CreateBatchPage> {
               const Icon(Icons.arrow_back, color: Colors.black, size: 18),
               const SizedBox(width: 4),
               Text(
-                'Back'.tr(),
+                'back'.tr(),
                 style: TextStyle(
                   color: Colors.black,
                   fontSize: 16,

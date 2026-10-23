@@ -131,7 +131,7 @@ class BatchErrorScreen extends StatelessWidget {
             child: StatusFeedback(
               heading: 'batch_failed'.tr(),
               bodyText: 'batch_failed_message'.tr(),
-              buttonLabel: 'retry'.tr(),
+              buttonLabel: 'try_again'.tr(),
               statusType: StatusType.error,
               imagePath: 'assets/icons/large_error_cross.svg',
               onButtonPressed: onRetry ?? () => Navigator.pop(context),
