@@ -51,7 +51,8 @@ class _RecordSalePageState extends State<RecordSalePage> {
               children: [
                 Expanded(
                   child: SelectCard(
-                    label: 'Chicken',
+                    label: 'chicken'.tr(),
+                    type: 'chicken',
                     onTap: () {
                       context.push('/record_chicken_sale');
                     },
@@ -68,7 +69,8 @@ class _RecordSalePageState extends State<RecordSalePage> {
                 SizedBox(width: 8),
                 Expanded(
                   child: SelectCard(
-                    label: 'Eggs',
+                    label: 'eggs'.tr(),
+                    type: 'eggs',
                     onTap: () {
                       context.push('/record_eggs_sale');
                     },
@@ -85,7 +87,8 @@ class _RecordSalePageState extends State<RecordSalePage> {
                 SizedBox(width: 8),
                 Expanded(
                   child: SelectCard(
-                    label: 'Manure',
+                    label: 'manure'.tr(),
+                    type: 'manure',
                     onTap: () {
                       context.push('/record_manure_sale');
                     },
