@@ -64,7 +64,7 @@ class _EditBatchPageState extends State<EditBatchPage> {
     final batchId = widget.batchData['id'];
     if (batchId == null) {
       messenger.showSnackBar(
-        SnackBar(content: Text("Missing_batch_id".tr())),
+        SnackBar(content: Text("missing_batch_id".tr())),
       );
       return;
     }
@@ -111,7 +111,7 @@ class _EditBatchPageState extends State<EditBatchPage> {
               const Icon(Icons.arrow_back, color: Colors.black, size: 18),
               const SizedBox(width: 4),
               Text(
-                "Back".tr(),
+                "back".tr(),
                 style: TextStyle(
                   color: Colors.black,
                   fontSize: 16,
@@ -163,7 +163,7 @@ class _EditBatchPageState extends State<EditBatchPage> {
                     contentPadding: EdgeInsets.zero,
                   ),
                   validator: (value) =>
-                      value!.isEmpty ? "Enter_a_name".tr() : null,
+                      value!.isEmpty ? "enter_a_name".tr() : null,
                 ),
                 SizedBox(height: 48),
 
@@ -302,7 +302,7 @@ class _EditBatchPageState extends State<EditBatchPage> {
                               ),
                             ),
                             validator: (value) =>
-                                value!.isEmpty ? "Enter_the_age".tr() : null,
+                                value!.isEmpty ? "enter_the_age".tr() : null,
                           ),
                         ],
                       ),
@@ -393,7 +393,7 @@ class _EditBatchPageState extends State<EditBatchPage> {
                 ),
                 SizedBox(height: 48),
                 FeatureButton(
-                  label: _isUpdating ? 'updating...'.tr() : 'update'.tr(),
+                  label: _isUpdating ? 'updating'.tr() : 'update'.tr(),
                   onTap: _handleUpdate,
                 ),
               ],

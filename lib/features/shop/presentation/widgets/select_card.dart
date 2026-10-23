@@ -3,6 +3,10 @@ import 'package:ikuku/theme/app_theme.dart';
 
 class SelectCard extends StatelessWidget {
   final String label;
+
+  /// What the card stands for ('chicken', 'eggs' or 'manure'), which sets its
+  /// colors. Defaults to [label], which only works untranslated.
+  final String? type;
   final Widget? icon;
   final VoidCallback onTap;
   final bool isSelected;
@@ -10,13 +14,16 @@ class SelectCard extends StatelessWidget {
   const SelectCard({
     super.key,
     required this.label,
+    this.type,
     this.icon,
     required this.onTap,
     required this.isSelected,
   });
 
+  String get _kind => (type ?? label).toLowerCase().trim();
+
   Color _getPrimaryColor() {
-    switch (label.toLowerCase().trim()) {
+    switch (_kind) {
       case 'chicken':
         return CustomColors.primary;
       case 'eggs':
@@ -29,7 +36,7 @@ class SelectCard extends StatelessWidget {
   }
 
   Color _getBackgroundColor() {
-    switch (label.toLowerCase().trim()) {
+    switch (_kind) {
       case 'chicken':
         return Color(0xFFEFFFF4);
       case 'eggs':

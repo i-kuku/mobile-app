@@ -70,9 +70,10 @@ void main() {
        );
        await tester.pumpAndSettle();
        expect(find.text('Hilda'), findsOneWidget);
-       expect(find.text('Bird type: Broiler'), findsOneWidget);
-       expect(find.text('chicken: 100'), findsOneWidget);
-       expect(find.text(', age: 5 days '), findsOneWidget);
+       // No translations are loaded here, so keys show as themselves.
+       expect(find.text('bird_type: Broiler'), findsOneWidget);
+       // One line, so wrapping never starts a line with the comma.
+       expect(find.text('chicken: 100, age: 5 days'), findsOneWidget);
     });
     testWidgets('renders Edit and Remove actions with their icons', (tester) async{
       await tester.pumpWidget(

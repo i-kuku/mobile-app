@@ -137,6 +137,7 @@ class _RecordChickenSalePageState extends State<RecordChickenSalePage> {
                 Expanded(
                   child: SelectCard(
                     label: 'chicken'.tr(),
+                    type: 'chicken',
                     onTap: () {
                       _toggleType('chicken');
                     },
@@ -154,6 +155,7 @@ class _RecordChickenSalePageState extends State<RecordChickenSalePage> {
                 Expanded(
                   child: SelectCard(
                     label: 'eggs'.tr(),
+                    type: 'eggs',
                     onTap: () => _toggleType('eggs'),
 
                     isSelected: false,
@@ -170,6 +172,7 @@ class _RecordChickenSalePageState extends State<RecordChickenSalePage> {
                 Expanded(
                   child: SelectCard(
                     label: 'manure'.tr(),
+                    type: 'manure',
                     onTap: () => context.pushReplacement('/record_manure_sale'),
                     isSelected: false,
                     icon: SvgPicture.asset(
@@ -194,7 +197,7 @@ class _RecordChickenSalePageState extends State<RecordChickenSalePage> {
                 children: [
                   Expanded(
                     child: ChickenTypeCard(
-                      label: 'Kienyeji',
+                      label: 'kienyeji'.tr(),
                       onTap: () =>
                           setState(() => _selectedBirdType = 'kienyeji'),
                       isSelected: _selectedBirdType == 'kienyeji',

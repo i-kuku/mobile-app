@@ -45,29 +45,21 @@ class BatchCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    "${"Bird type".tr()}: ${batch.typeOfBird}",
+                    "${"bird_type".tr()}: ${batch.typeOfBird.tr()}",
                     style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                       color: Colors.grey,
                       fontSize: 16,
                     ),
                   ),
-                  Wrap(
-                    children: [
-                      Text(
-                        "${"chicken".tr()}: ${batch.initialCount}",
-                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                          color: Colors.grey,
-                          fontSize: 16,
-                        ),
-                      ),
-                      Text(
-                        ", ${"age".tr()}: ${batch.age} ${batch.ageUnit} ",
-                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                          color: Colors.grey,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ],
+                  // One Text, so a narrow screen wraps it between words and
+                  // never starts a line with the comma.
+                  Text(
+                    "${"chicken".tr()}: ${batch.initialCount}, "
+                    "${"age".tr()}: ${batch.age} ${batch.ageUnit.tr()}",
+                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                      color: Colors.grey,
+                      fontSize: 16,
+                    ),
                   ),
                 ],
               ),

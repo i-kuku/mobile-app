@@ -101,7 +101,7 @@ class _ManageBatchPageState extends State<ManageBatchPage> {
           },
         ),
         title: Text(
-          "Batches".tr(),
+          "batches".tr(),
           style: Theme.of(
             context,
           ).textTheme.titleLarge!.copyWith(color: CustomColors.text),
