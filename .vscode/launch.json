@@ -10,6 +10,21 @@
             "type": "dart"
         },
         {
+            "name": "mobile-app (dev backend)",
+            "request": "launch",
+            "type": "dart",
+            "toolArgs": ["--dart-define=IKUKU_DEV_BACKEND=true"]
+        },
+        {
+            "name": "mobile-app (dev backend, reset data)",
+            "request": "launch",
+            "type": "dart",
+            "toolArgs": [
+                "--dart-define=IKUKU_DEV_BACKEND=true",
+                "--dart-define=IKUKU_DEV_RESET=true"
+            ]
+        },
+        {
             "name": "mobile-app (profile mode)",
             "request": "launch",
             "type": "dart",
