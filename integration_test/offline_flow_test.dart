@@ -159,12 +159,12 @@ void main() {
     await tapThen(
       tester,
       find.text('Farm report'),
-      find.widgetWithText(FeatureButton, 'Add Farm Report'),
+      find.widgetWithText(FeatureButton, 'ADD FARM REPORT'),
     );
     await screenshot(tester, 'reports_offline');
     await tapThen(
       tester,
-      find.widgetWithText(FeatureButton, 'Add Farm Report'),
+      find.widgetWithText(FeatureButton, 'ADD FARM REPORT'),
       find.text('Select the batch you are reporting for'),
     );
     await tapThen(
