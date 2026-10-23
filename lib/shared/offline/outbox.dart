@@ -34,6 +34,7 @@ class PendingChange {
     this.attempts = 0,
     this.lastError,
     this.parked = false,
+    this.dropIfDuplicate = false,
   });
 
   /// The change's key in the queue, derived from [seq].
@@ -61,6 +62,11 @@ class PendingChange {
   /// on its own. Parked changes wait for the farmer to retry or discard them.
   final bool parked;
 
+  /// Set when the server refusing this as a duplicate means it already has
+  /// the same thing under another id, e.g. a notification with the same
+  /// reference key. The change and its local copy are then dropped.
+  final bool dropIfDuplicate;
+
   PendingChange copyWith({int? attempts, String? lastError, bool? parked}) =>
       PendingChange(
         id: id,
@@ -74,6 +80,7 @@ class PendingChange {
         attempts: attempts ?? this.attempts,
         lastError: lastError ?? this.lastError,
         parked: parked ?? this.parked,
+        dropIfDuplicate: dropIfDuplicate,
       );
 
   Map<String, dynamic> toJson() => {
@@ -88,6 +95,7 @@ class PendingChange {
     'attempts': attempts,
     'last_error': lastError,
     'parked': parked,
+    'drop_if_duplicate': dropIfDuplicate,
   };
 
   factory PendingChange.fromJson(Map<String, dynamic> json) => PendingChange(
@@ -102,6 +110,7 @@ class PendingChange {
     attempts: json['attempts'] as int? ?? 0,
     lastError: json['last_error'] as String?,
     parked: json['parked'] as bool? ?? false,
+    dropIfDuplicate: json['drop_if_duplicate'] as bool? ?? false,
   );
 }
 
@@ -115,12 +124,21 @@ class Outbox {
   // Zero-padded so the stored keys sort in queue order.
   static String keyFor(int seq) => seq.toString().padLeft(12, '0');
 
-  /// Every change, oldest first, parked ones included.
+  List<PendingChange>? _cache;
+  int _cacheRevision = -1;
+
+  /// Every change, oldest first, parked ones included. Decoded once per
+  /// change to the queue rather than on every read.
   List<PendingChange> get all {
-    final changes =
+    final revision = _store.revisionOf(LocalTables.outbox);
+    if (_cache == null || _cacheRevision != revision) {
+      _cache = List.unmodifiable(
         _store.rows(LocalTables.outbox).map(PendingChange.fromJson).toList()
-          ..sort((a, b) => a.seq.compareTo(b.seq));
-    return changes;
+          ..sort((a, b) => a.seq.compareTo(b.seq)),
+      );
+      _cacheRevision = revision;
+    }
+    return _cache!;
   }
 
   /// Changes still being sent, oldest first.
@@ -129,7 +147,7 @@ class Outbox {
   /// Changes the server kept rejecting.
   List<PendingChange> get parked => all.where((c) => c.parked).toList();
 
-  bool get isEmpty => _store.rows(LocalTables.outbox).isEmpty;
+  bool get isEmpty => all.isEmpty;
 
   int _nextSeq() {
     final changes = all;
@@ -142,6 +160,7 @@ class Outbox {
     String? recordId,
     Map<String, dynamic> payload = const {},
     Map<String, dynamic> match = const {},
+    bool dropIfDuplicate = false,
   }) async {
     final seq = _nextSeq();
     final change = PendingChange(
@@ -153,6 +172,7 @@ class Outbox {
       payload: payload,
       match: match,
       createdAt: DateTime.now(),
+      dropIfDuplicate: dropIfDuplicate,
     );
     await _save(change);
     return change;

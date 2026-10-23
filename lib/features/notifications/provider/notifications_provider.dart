@@ -3,13 +3,12 @@ import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
 import 'package:ikuku/features/notifications/model/notifications_model.dart';
-import 'package:ikuku/shared/offline/local_store.dart';
-import 'package:ikuku/shared/offline/sync_engine.dart';
+import 'package:ikuku/shared/offline/offline_services.dart';
 
 class NotificationsProvider extends ChangeNotifier {
-  NotificationsProvider({required SyncEngine sync})
-      : _sync = sync,
-        _store = sync.store {
+  NotificationsProvider({SyncEngine? sync})
+      : _sync = sync ?? OfflineServices.instance.sync,
+        _store = (sync ?? OfflineServices.instance.sync).store {
     _sub = _store.changes
         .where((t) => t == LocalTables.userNotifications)
         .listen((_) {
@@ -36,7 +35,14 @@ class NotificationsProvider extends ChangeNotifier {
 
   void _loadFromStore() {
     final userId = _sync.currentUserId;
-    if (userId == null) return;
+    if (userId == null) {
+      // Signed out: don't leave the last user's notifications showing.
+      if (_notifications.isNotEmpty) {
+        _notifications = [];
+        notifyListeners();
+      }
+      return;
+    }
     DateTime when(Map<String, dynamic> r) =>
         DateTime.tryParse('${r['created_at']}') ??
         DateTime.fromMillisecondsSinceEpoch(0);
@@ -47,7 +53,16 @@ class NotificationsProvider extends ChangeNotifier {
         .toList()
       ..sort((a, b) => when(b).compareTo(when(a)));
 
-    _notifications = rows.take(20).map(NotificationModel.fromJson).toList();
+    final loaded = <NotificationModel>[];
+    for (final row in rows) {
+      if (loaded.length == 20) break;
+      try {
+        loaded.add(NotificationModel.fromJson(row));
+      } catch (e) {
+        debugPrint('Skipping unreadable notification ${row['id']}: $e');
+      }
+    }
+    _notifications = loaded;
     notifyListeners();
   }
 
@@ -64,10 +79,11 @@ class NotificationsProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // First run: get the server's copy first so we don't create a
-      // duplicate of something that already exists there.
-      if (_sync.lastPulledAt == null && _sync.isOnline) {
-        await _sync.refresh();
+      // Notifications are only made once the server's copy is on this
+      // phone; otherwise ones that already exist there would be made again.
+      if (!_sync.hasPulled(LocalTables.userNotifications)) {
+        await _sync.refresh(force: true);
+        if (!_sync.hasPulled(LocalTables.userNotifications)) return;
       }
       final now = DateTime.now();
 
@@ -112,7 +128,6 @@ class NotificationsProvider extends ChangeNotifier {
             titleSw: 'Ushauri wa Afya',
             messageEn: 'Remember to vaccinate ${batch.name}.',
             messageSw: 'Kumbuka kuchanja ${batch.name}.',
-            oncePerDay: false,
           );
         }
       }
@@ -131,7 +146,6 @@ class NotificationsProvider extends ChangeNotifier {
           titleSw: 'Utabiri',
           messageEn: 'Your monthly prediction is ready.',
           messageSw: 'Utabiri wako wa mwezi uko tayari.',
-          oncePerDay: false,
         );
       }
     } catch (e) {
@@ -143,9 +157,9 @@ class NotificationsProvider extends ChangeNotifier {
     }
   }
 
- bool _exists(String userId, String type, String key) =>
-    _store.rows(LocalTables.userNotifications).any((r) =>
-        r['user_id'] == userId && r['reference_key'] == key);
+  bool _exists(String userId, String key) => _store
+      .rows(LocalTables.userNotifications)
+      .any((r) => r['user_id'] == userId && r['reference_key'] == key);
 
   Future<void> _create({
     required String userId,
@@ -155,11 +169,13 @@ class NotificationsProvider extends ChangeNotifier {
     required String titleSw,
     required String messageEn,
     required String messageSw,
-    bool oncePerDay = true,
   }) async {
-    if (_exists(userId, type, referenceKey)) return;
+    // Keys carry the date for notifications that may repeat daily.
+    if (_exists(userId, referenceKey)) return;
     try {
-      // Client-made uuid, so saveRow is an idempotent upsert.
+      // Client-made uuid, so sending twice is harmless. If the server
+      // already has this reference key under another id, the copy is
+      // dropped rather than retried.
       await _sync.saveRow(LocalTables.userNotifications, {
         'id': const Uuid().v4(),
         'user_id': userId,
@@ -171,7 +187,7 @@ class NotificationsProvider extends ChangeNotifier {
         'message_sw': messageSw,
         'is_read': false,
         'created_at': DateTime.now().toUtc().toIso8601String(),
-      });
+      }, dropIfDuplicate: true);
     } catch (e) {
       debugPrint('Could not create $type notification: $e');
     }

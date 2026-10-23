@@ -65,6 +65,18 @@ void main() {
     expect(outbox.all, hasLength(2));
   });
 
+  test('sees changes made to the store directly', () async {
+    final store = await LocalStore.inMemory();
+    final queue = Outbox(store);
+    await queue.add(kind: ChangeKind.rpc, target: 'a');
+    expect(queue.all, hasLength(1));
+
+    await store.clear();
+
+    expect(queue.all, isEmpty);
+    expect(queue.isEmpty, isTrue);
+  });
+
   test('reports which rows have changes on their way', () async {
     await outbox.add(kind: ChangeKind.upsert, target: 'batches', recordId: 'a');
     await outbox.add(kind: ChangeKind.delete, target: 'batches', recordId: 'b');

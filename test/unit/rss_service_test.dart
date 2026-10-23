@@ -272,6 +272,48 @@ void main() {
       expect(await RssService().getCachedArticles(), isEmpty);
     });
 
+    void saveOne() => SharedPreferences.setMockInitialValues({
+      'cached_poultry_news': jsonEncode([
+        {
+          'title': 'Cached poultry',
+          'description': 'd',
+          'publishDate': '2025-02-02T00:00:00.000Z',
+          'source': 'AllAfrica',
+          'link': 'https://example.com',
+          'imageUrl': null,
+        },
+      ]),
+    });
+
+    test('offline, shows the saved articles and keeps them', () async {
+      saveOne();
+      final client = MockClient(
+        (_) async => throw http.ClientException('Failed host lookup'),
+      );
+
+      final feed = await http.runWithClient(
+        () => RssService().loadNews(),
+        () => client,
+      );
+
+      expect(feed.isSaved, isTrue);
+      expect(feed.articles.single.title, 'Cached poultry');
+      expect(await RssService().getCachedArticles(), hasLength(1));
+    });
+
+    test('keeps the saved articles when feeds have no poultry stories',
+        () async {
+      saveOne();
+
+      final feed = await withFeeds({
+        'www.thepoultrysite.com': rss(rssItem(title: 'Football results')),
+      }, () => RssService().loadNews());
+
+      expect(feed.isSaved, isFalse);
+      expect(feed.articles.single.title, 'Cached poultry');
+      expect(await RssService().getCachedArticles(), hasLength(1));
+    });
+
     test('reads a previously cached list', () async {
       SharedPreferences.setMockInitialValues({
         'cached_poultry_news': jsonEncode([

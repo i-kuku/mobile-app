@@ -102,6 +102,8 @@ final List<PullSpec> defaultPullSpecs = [
     }
     return rows;
   }),
+  // All of them, not just the latest: NotificationsProvider checks this copy
+  // to avoid creating a notification the server already has.
   PullSpec(
     LocalTables.userNotifications,
     (client, ctx) async => _rows(
@@ -109,8 +111,7 @@ final List<PullSpec> defaultPullSpecs = [
           .from('user_notifications')
           .select()
           .eq('user_id', ctx.userId)
-          .order('created_at', ascending: false)
-          .limit(50),
+          .order('created_at', ascending: false),
     ),
   ),
   PullSpec(
@@ -213,6 +214,14 @@ class SyncEngine extends ChangeNotifier with WidgetsBindingObserver {
   /// When the device last had everything from the server.
   DateTime? get lastPulledAt => _lastPulledAt;
 
+  static String _pulledKey(String table) => 'pulled:$table';
+
+  /// Whether [table] has been fetched from the server on this device since
+  /// its current owner signed in, so its local copy can be trusted to be
+  /// complete.
+  bool hasPulled(String table) =>
+      store.contains(LocalTables.meta, _pulledKey(table));
+
   SupabaseClient? get _clientOrNull {
     try {
       return _client();
@@ -245,10 +254,12 @@ class SyncEngine extends ChangeNotifier with WidgetsBindingObserver {
 
   void _onConnectivityChanged() {
     _notify();
-    if (connectivity.isOnline) {
-      _backoff = _minBackoff;
-      unawaited(sync());
-    }
+    if (!connectivity.isOnline) return;
+    _backoff = _minBackoff;
+    // A running sync is usually what just reached the server; starting
+    // another would fetch every table twice.
+    if (_syncing) return;
+    unawaited(sync());
   }
 
   void _onOutboxChanged() {
@@ -264,16 +275,32 @@ class SyncEngine extends ChangeNotifier with WidgetsBindingObserver {
 
   // --- writing ------------------------------------------------------------
 
+  // Each write below changes the device's copy and queues the change before
+  // awaiting either, so both are in memory before anything else can run. A
+  // pull landing while the write is saved to disk would otherwise find the
+  // row with no queued change and replace it with the server's copy.
+
   /// Saves [row] on the device and queues it for the server. For tables
   /// whose ids the app creates, so sending it twice is harmless.
-  Future<void> saveRow(String table, Map<String, dynamic> row) async {
-    await store.put(table, row);
-    await outbox.add(
-      kind: ChangeKind.upsert,
-      target: table,
-      recordId: LocalStore.idOf(row),
-      payload: row,
-    );
+  ///
+  /// Set [dropIfDuplicate] when the server rejecting the row as a duplicate
+  /// means it already has the same thing under another id; the change and
+  /// this local copy are then dropped instead of retried.
+  Future<void> saveRow(
+    String table,
+    Map<String, dynamic> row, {
+    bool dropIfDuplicate = false,
+  }) async {
+    await Future.wait([
+      store.put(table, row),
+      outbox.add(
+        kind: ChangeKind.upsert,
+        target: table,
+        recordId: LocalStore.idOf(row),
+        payload: row,
+        dropIfDuplicate: dropIfDuplicate,
+      ),
+    ]);
   }
 
   /// Merges [fields], which must include the `id`, into the local row and
@@ -281,13 +308,15 @@ class SyncEngine extends ChangeNotifier with WidgetsBindingObserver {
   /// columns on than the app knows about, such as `users`.
   Future<void> mergeRow(String table, Map<String, dynamic> fields) async {
     final id = LocalStore.idOf(fields);
-    await store.put(table, {...?store.row(table, id), ...fields});
-    await outbox.add(
-      kind: ChangeKind.upsert,
-      target: table,
-      recordId: id,
-      payload: fields,
-    );
+    await Future.wait([
+      store.put(table, {...?store.row(table, id), ...fields}),
+      outbox.add(
+        kind: ChangeKind.upsert,
+        target: table,
+        recordId: id,
+        payload: fields,
+      ),
+    ]);
   }
 
   /// Saves [row] on the device under a temporary id and queues it for a
@@ -295,13 +324,15 @@ class SyncEngine extends ChangeNotifier with WidgetsBindingObserver {
   /// takes its real id at the next refresh after it's sent.
   Future<String> insertRow(String table, Map<String, dynamic> row) async {
     final localId = '$localIdPrefix${const Uuid().v4()}';
-    await store.put(table, {...row, 'id': localId});
-    await outbox.add(
-      kind: ChangeKind.insert,
-      target: table,
-      recordId: localId,
-      payload: Map.of(row)..remove('id'),
-    );
+    await Future.wait([
+      store.put(table, {...row, 'id': localId}),
+      outbox.add(
+        kind: ChangeKind.insert,
+        target: table,
+        recordId: localId,
+        payload: Map.of(row)..remove('id'),
+      ),
+    ]);
     return localId;
   }
 
@@ -318,14 +349,16 @@ class SyncEngine extends ChangeNotifier with WidgetsBindingObserver {
   }) async {
     if (match.isEmpty) throw ArgumentError('An update needs a match filter');
     final current = store.row(table, localId);
-    if (current != null) await store.put(table, {...current, ...values});
-    await outbox.add(
-      kind: ChangeKind.update,
-      target: table,
-      recordId: localId,
-      payload: values,
-      match: match,
-    );
+    await Future.wait([
+      if (current != null) store.put(table, {...current, ...values}),
+      outbox.add(
+        kind: ChangeKind.update,
+        target: table,
+        recordId: localId,
+        payload: values,
+        match: match,
+      ),
+    ]);
   }
 
   /// Queues an update of the server rows matching [match] without touching
@@ -348,22 +381,25 @@ class SyncEngine extends ChangeNotifier with WidgetsBindingObserver {
 
   /// Removes row [id] from the device and queues its deletion.
   Future<void> deleteRow(String table, String id) async {
-    await store.remove(table, id);
     if (id.startsWith(localIdPrefix)) {
       // The server never had it; forget the queued insert instead.
-      for (final change in outbox.all) {
-        if (change.target == table && change.recordId == id) {
-          await outbox.remove(change);
-        }
-      }
+      await Future.wait([
+        store.remove(table, id),
+        for (final change in outbox.all)
+          if (change.target == table && change.recordId == id)
+            outbox.remove(change),
+      ]);
       return;
     }
-    await outbox.add(
-      kind: ChangeKind.delete,
-      target: table,
-      recordId: id,
-      match: {'id': id},
-    );
+    await Future.wait([
+      store.remove(table, id),
+      outbox.add(
+        kind: ChangeKind.delete,
+        target: table,
+        recordId: id,
+        match: {'id': id},
+      ),
+    ]);
   }
 
   /// Queues a call to the database function [function].
@@ -514,10 +550,21 @@ class SyncEngine extends ChangeNotifier with WidgetsBindingObserver {
             tried.remove(next.id);
           case FailureKind.rejected:
             connectivity.reportReachable();
-            if (next.kind == ChangeKind.insert && isDuplicateRow(e)) {
-              // An earlier send landed but its answer was lost.
-              await outbox.remove(next);
-              continue;
+            if (isDuplicateRow(e)) {
+              if (next.kind == ChangeKind.insert) {
+                // An earlier send landed but its answer was lost.
+                await outbox.remove(next);
+                continue;
+              }
+              if (next.dropIfDuplicate) {
+                // The server has the same thing under another id; this
+                // copy is a duplicate, and the next pull brings the original.
+                await outbox.remove(next);
+                if (next.recordId case final id?) {
+                  await store.remove(next.target, id);
+                }
+                continue;
+              }
             }
             final attempts = next.attempts + 1;
             debugPrint('[Sync] Server rejected ${next.target} change: $e');
@@ -588,6 +635,12 @@ class SyncEngine extends ChangeNotifier with WidgetsBindingObserver {
         connectivity.reportReachable();
         context.pulled[spec.table] = rows;
         await _merge(spec.table, rows);
+        if (!hasPulled(spec.table)) {
+          await store.put(LocalTables.meta, {
+            'id': _pulledKey(spec.table),
+            'at': DateTime.now().toUtc().toIso8601String(),
+          });
+        }
       } catch (e) {
         if (isNetworkError(e)) {
           connectivity.reportUnreachable();
@@ -599,7 +652,8 @@ class SyncEngine extends ChangeNotifier with WidgetsBindingObserver {
         if (classifyFailure(e) != FailureKind.rejected) complete = false;
       }
     }
-    _lastPulledAt = DateTime.now();
+    // A pull that hit a passing failure is retried rather than counted.
+    if (complete) _lastPulledAt = DateTime.now();
     return complete;
   }
 

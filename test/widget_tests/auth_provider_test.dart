@@ -703,6 +703,28 @@ void main() {
       expect(await tester.runAsync(PendingRegistrationStore.load), isNotNull);
     });
 
+    testWidgets('signing in with another account drops the unfinished '
+        'sign-up', (tester) async {
+      backend.on(
+        'POST',
+        '/auth/v1/token',
+        (_) async => FakeSupabaseBackend.json(fakeSession()),
+      );
+      backend.on(
+        'GET',
+        farmsPath,
+        (_) async => FakeSupabaseBackend.json({'id': 'f1'}),
+      );
+      await savePending(tester);
+      final provider = await pumpAuth(tester);
+
+      await run(tester, () => provider.login('other@b.co', 'secret1'));
+
+      expect(location(), '/');
+      expect(await tester.runAsync(PendingRegistrationStore.load), isNull);
+      expect(queued(), isEmpty);
+    });
+
     testWidgets('signing in with the same email later applies the details', (
       tester,
     ) async {
