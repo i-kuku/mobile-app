@@ -465,6 +465,10 @@ class SyncEngine extends ChangeNotifier with WidgetsBindingObserver {
   }
 
   Future<void> _run(bool pull) async {
+    // Screens start syncs from initState, i.e. while widgets build. Yield
+    // first, so listeners such as the status banner aren't told to rebuild
+    // in the middle of a build.
+    await Future<void>.value();
     final client = _clientOrNull;
     final userId = client?.auth.currentUser?.id;
     if (client == null || userId == null || _disposed) return;

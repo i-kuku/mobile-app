@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:ikuku/shared/offline/offline_services.dart';
@@ -249,36 +250,38 @@ void main() {
       expect(store.row('batches', 'b1')?['name'], 'Server');
     });
 
-    test('a pull landing while a write is saved to disk keeps the write',
-        () async {
-      final disk = _SlowDisk();
-      final slowStore = await LocalStore.open(disk);
-      final engine = SyncEngine(
-        store: slowStore,
-        connectivity: ConnectivityService.fixed(),
-        requestTimeout: const Duration(seconds: 2),
-      );
-      addTearDown(engine.dispose);
-      // Rejected once, so it is still queued when the pull runs, and the
-      // server doesn't have the row yet.
-      backend.on(
-        'POST',
-        batchesPath,
-        (_) async => FakeSupabaseBackend.json({
-          'code': '23502',
-          'message': 'not yet',
-        }, status: 400),
-      );
+    test(
+      'a pull landing while a write is saved to disk keeps the write',
+      () async {
+        final disk = _SlowDisk();
+        final slowStore = await LocalStore.open(disk);
+        final engine = SyncEngine(
+          store: slowStore,
+          connectivity: ConnectivityService.fixed(),
+          requestTimeout: const Duration(seconds: 2),
+        );
+        addTearDown(engine.dispose);
+        // Rejected once, so it is still queued when the pull runs, and the
+        // server doesn't have the row yet.
+        backend.on(
+          'POST',
+          batchesPath,
+          (_) async => FakeSupabaseBackend.json({
+            'code': '23502',
+            'message': 'not yet',
+          }, status: 400),
+        );
 
-      disk.gate = Completer();
-      final saving = engine.saveRow('batches', batch('new'));
-      await engine.sync();
-      disk.gate!.complete();
-      await saving;
+        disk.gate = Completer();
+        final saving = engine.saveRow('batches', batch('new'));
+        await engine.sync();
+        disk.gate!.complete();
+        await saving;
 
-      expect(slowStore.row('batches', 'new'), isNotNull);
-      expect(engine.pendingCount, 1);
-    });
+        expect(slowStore.row('batches', 'new'), isNotNull);
+        expect(engine.pendingCount, 1);
+      },
+    );
 
     test('a duplicate the server has under another id is dropped', () async {
       backend.on(
@@ -318,38 +321,43 @@ void main() {
       expect(store.row('batches', 'b1'), isNotNull);
     });
 
-    test('reaching the server mid-sync does not start a second full pull',
-        () async {
-      connectivity.reportUnreachable();
+    test(
+      'reaching the server mid-sync does not start a second full pull',
+      () async {
+        connectivity.reportUnreachable();
 
-      sync.start();
-      // Waits for the run start() began, then sends without pulling.
-      await sync.sync(pull: false);
+        sync.start();
+        // Waits for the run start() began, then sends without pulling.
+        await sync.sync(pull: false);
 
-      expect(connectivity.isOnline, isTrue);
-      expect(backend.requestsTo('/rest/v1/users'), hasLength(1));
-    });
+        expect(connectivity.isOnline, isTrue);
+        expect(backend.requestsTo('/rest/v1/users'), hasLength(1));
+      },
+    );
 
-    test('records which tables were pulled; only complete pulls count',
-        () async {
-      backend.on(
-        'GET',
-        salePath,
-        (_) async => FakeSupabaseBackend.json({'message': 'down'}, status: 503),
-      );
+    test(
+      'records which tables were pulled; only complete pulls count',
+      () async {
+        backend.on(
+          'GET',
+          salePath,
+          (_) async =>
+              FakeSupabaseBackend.json({'message': 'down'}, status: 503),
+        );
 
-      await sync.sync();
+        await sync.sync();
 
-      expect(sync.hasPulled('batches'), isTrue);
-      expect(sync.hasPulled('sale'), isFalse);
-      expect(sync.lastPulledAt, isNull);
+        expect(sync.hasPulled('batches'), isTrue);
+        expect(sync.hasPulled('sale'), isFalse);
+        expect(sync.lastPulledAt, isNull);
 
-      backend.on('GET', salePath, (_) async => FakeSupabaseBackend.json([]));
-      await sync.sync();
+        backend.on('GET', salePath, (_) async => FakeSupabaseBackend.json([]));
+        await sync.sync();
 
-      expect(sync.hasPulled('sale'), isTrue);
-      expect(sync.lastPulledAt, isNotNull);
-    });
+        expect(sync.hasPulled('sale'), isTrue);
+        expect(sync.lastPulledAt, isNotNull);
+      },
+    );
 
     test('a duplicate insert counts as sent', () async {
       backend.on(
@@ -603,6 +611,24 @@ void main() {
       );
     });
 
+    testWidgets('starting a sync while a widget builds doesn\'t notify '
+        'listeners mid-build', (tester) async {
+      // Pages start a refresh from initState, under the status banner that
+      // listens to the engine.
+      await tester.pumpWidget(
+        MaterialApp(
+          home: ListenableBuilder(
+            listenable: sync,
+            builder: (_, _) => _StartsSyncWhenBuilt(sync),
+          ),
+        ),
+      );
+      await tester.pump(const Duration(seconds: 3));
+
+      expect(tester.takeException(), isNull);
+      expect(backend.requestsTo('/rest/v1/users'), isNotEmpty);
+    });
+
     test('folds calls made during a sync into one follow-up', () async {
       final first = sync.sync();
       final second = sync.sync();
@@ -657,4 +683,24 @@ void main() {
       });
     });
   });
+}
+
+class _StartsSyncWhenBuilt extends StatefulWidget {
+  const _StartsSyncWhenBuilt(this.sync);
+
+  final SyncEngine sync;
+
+  @override
+  State<_StartsSyncWhenBuilt> createState() => _StartsSyncWhenBuiltState();
+}
+
+class _StartsSyncWhenBuiltState extends State<_StartsSyncWhenBuilt> {
+  @override
+  void initState() {
+    super.initState();
+    widget.sync.refresh();
+  }
+
+  @override
+  Widget build(BuildContext context) => const SizedBox();
 }
