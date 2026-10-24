@@ -1,5 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:ikuku/dev/dev_backend.dart';
+import 'package:ikuku/dev/dev_tools.dart';
 import 'package:ikuku/features/auth/presentation/components/auth_error_widget.dart';
 import 'package:ikuku/features/auth/presentation/components/auth_header.dart';
 import 'package:ikuku/features/auth/presentation/components/auth_state_toggle.dart';
@@ -92,6 +94,12 @@ class _AuthPageState extends State<AuthPage> {
                         ),
                       ),
                       AuthStateToggle(),
+                      if (DevBackend.enabled)
+                        DevSignInButton(
+                          onSignIn: (email, password) => context
+                              .read<AuthProvider>()
+                              .login(email, password),
+                        ),
                     ],
                   ),
                 ),

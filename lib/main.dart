@@ -1,8 +1,11 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gemma/flutter_gemma.dart';
 import 'package:flutter_gemma_litertlm/flutter_gemma_litertlm.dart';
+import 'package:ikuku/dev/dev_backend.dart';
+import 'package:ikuku/dev/dev_tools.dart';
 import 'package:ikuku/features/Inventory/provider/inventory_provider.dart';
 import 'package:ikuku/features/batches/provider/batch_provider.dart';
 import 'package:ikuku/features/auth/provider/auth_provider.dart';
@@ -44,31 +47,50 @@ void main() async {
   // Everything the app shows lives on the device first, so it works offline.
   final offline = await OfflineServices.init();
 
-  // Supplied at build time: flutter run --dart-define-from-file=.env
-  const supabaseUrl = String.fromEnvironment('SUPABASE_URL');
-  const supabaseAnonKey = String.fromEnvironment('SUPABASE_ANON_KEY');
-  if (supabaseUrl.isEmpty || supabaseAnonKey.isEmpty) {
-    throw StateError(
-      'SUPABASE_URL and SUPABASE_ANON_KEY are not set. '
-      'Copy .env.example to .env and run with --dart-define-from-file=.env',
+  // Gives up on a stalled request instead of waiting on a dead network.
+  const postgrestOptions = PostgrestClientOptions(
+    requestTimeout: Duration(seconds: 20),
+  );
+
+  if (DevBackend.enabled) {
+    // Development without Supabase: flutter run --dart-define=IKUKU_DEV_BACKEND=true
+    if (kReleaseMode) {
+      throw StateError('IKUKU_DEV_BACKEND is for development builds only.');
+    }
+    final backend = await DevBackend.open(reset: DevBackend.resetOnStart);
+    // A fresh backend doesn't know this phone's old data or session.
+    if (DevBackend.resetOnStart) await offline.store.clear();
+    await Supabase.initialize(
+      url: DevBackend.url,
+      publishableKey: DevBackend.publishableKey,
+      httpClient: backend,
+      postgrestOptions: postgrestOptions,
+    );
+  } else {
+    // Supplied at build time: flutter run --dart-define-from-file=.env
+    const supabaseUrl = String.fromEnvironment('SUPABASE_URL');
+    const supabaseAnonKey = String.fromEnvironment('SUPABASE_ANON_KEY');
+    if (supabaseUrl.isEmpty || supabaseAnonKey.isEmpty) {
+      throw StateError(
+        'SUPABASE_URL and SUPABASE_ANON_KEY are not set. '
+        'Copy .env.example to .env and run with --dart-define-from-file=.env, '
+        'or develop without Supabase: --dart-define=IKUKU_DEV_BACKEND=true',
+      );
+    }
+
+    await Supabase.initialize(
+      url: supabaseUrl,
+      publishableKey: supabaseAnonKey,
+      postgrestOptions: postgrestOptions,
+    );
+    // Not awaited: on a weak connection this request can stall for a long
+    // time, and the app must open regardless.
+    unawaited(
+      SupabaseService().fixDatabaseConstraints().catchError(
+        (Object e) => debugPrint('Failed to fix database constraints: $e'),
+      ),
     );
   }
-
-  await Supabase.initialize(
-    url: supabaseUrl,
-    publishableKey: supabaseAnonKey,
-    // Gives up on a stalled request instead of waiting on a dead network.
-    postgrestOptions: const PostgrestClientOptions(
-      requestTimeout: Duration(seconds: 20),
-    ),
-  );
-  // Not awaited: on a weak connection this request can stall for a long
-  // time, and the app must open regardless.
-  unawaited(
-    SupabaseService().fixDatabaseConstraints().catchError(
-      (Object e) => debugPrint('Failed to fix database constraints: $e'),
-    ),
-  );
 
   await offline.start();
 
@@ -110,8 +132,11 @@ class MyApp extends StatelessWidget {
       theme: appTheme,
       routerConfig: AppRouter.router,
       // Tells the farmer when they're offline or have changes to upload.
-      builder: (context, child) =>
-          SyncStatusBanner(child: child ?? const SizedBox.shrink()),
+      builder: (context, child) {
+        final app = SyncStatusBanner(child: child ?? const SizedBox.shrink());
+        final dev = DevBackend.enabled ? DevBackend.instance : null;
+        return dev == null ? app : DevOfflineSwitch(backend: dev, child: app);
+      },
       locale: context.locale,
       supportedLocales: context.supportedLocales,
       localizationsDelegates: context.localizationDelegates,
