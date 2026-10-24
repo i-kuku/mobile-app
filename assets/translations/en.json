@@ -512,10 +512,19 @@
     "session_expired_message": "Please sign in again to continue.",
     "something_went_wrong_message": "Something went wrong. Please try again.",
     "offline_banner": "You're offline. Everything you enter is saved on this phone.",
-    "offline_banner_pending": "You're offline. {} changes will upload when you're back online.",
+    "offline_banner_pending": {
+        "one": "You're offline. {} change will upload when you're back online.",
+        "other": "You're offline. {} changes will upload when you're back online."
+    },
     "syncing_banner": "Uploading your changes…",
-    "pending_banner": "{} changes waiting to upload",
-    "parked_banner": "{} changes couldn't be uploaded. Tap to review.",
+    "pending_banner": {
+        "one": "{} change waiting to upload",
+        "other": "{} changes waiting to upload"
+    },
+    "parked_banner": {
+        "one": "{} change couldn't be uploaded. Tap to review.",
+        "other": "{} changes couldn't be uploaded. Tap to review."
+    },
     "sync_problem_title": "Some changes couldn't be uploaded",
     "sync_problem_message": "The server didn't accept {} of your changes. You can send them again, or discard them and keep what's on the server.",
     "discard": "Discard",
@@ -533,7 +542,10 @@
     "create_account_now": "Create my account",
     "change_sign_up_details": "Change email or password",
     "go_to_sign_in": "Go to sign in",
-    "logout_unsynced_warning": "{} changes on this phone haven't been uploaded yet. If you log out now, they will be lost.",
+    "logout_unsynced_warning": {
+        "one": "{} change on this phone hasn't been uploaded yet. If you log out now, it will be lost.",
+        "other": "{} changes on this phone haven't been uploaded yet. If you log out now, they will be lost."
+    },
     "logout_anyway": "Log out anyway",
     "photo_needs_internet": "Connect to the internet to change your photo.",
     "news_offline": "You're offline. Showing news saved on this phone.",

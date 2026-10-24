@@ -102,7 +102,7 @@ class _ProfilePageState extends State<ProfilePage> {
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: Text('logout_confirmation_title'.tr()),
-        content: Text('logout_unsynced_warning'.tr(args: ['$unsent'])),
+        content: Text('logout_unsynced_warning'.plural(unsent)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, false),
@@ -370,13 +370,9 @@ class _SyncStatusCard extends StatelessWidget {
         final subtitle = switch (state) {
           null => 'all_changes_uploaded'.tr(),
           SyncBannerState.offline => 'offline_banner'.tr(),
-          SyncBannerState.parked => 'parked_banner'.tr(
-            args: ['${sync.parkedCount}'],
-          ),
+          SyncBannerState.parked => 'parked_banner'.plural(sync.parkedCount),
           SyncBannerState.syncing => 'syncing_banner'.tr(),
-          SyncBannerState.pending => 'pending_banner'.tr(
-            args: ['${sync.pendingCount}'],
-          ),
+          SyncBannerState.pending => 'pending_banner'.plural(sync.pendingCount),
         };
         return Card(
           elevation: 2,
