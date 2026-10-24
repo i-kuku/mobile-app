@@ -20,7 +20,8 @@ void main() {
       autoRefreshToken: false,
       authFlowType: AuthFlowType.implicit,
     ),
-    // A failing GET would otherwise be retried for seven seconds.
+    // Stops .rpc() retrying. Table queries don't get these options in
+    // supabase 2.x, so a failing GET there still retries for seven seconds.
     postgrestOptions: const PostgrestClientOptions(retryEnabled: false),
   );
 
@@ -225,6 +226,66 @@ void main() {
       );
     });
 
+    test('refuses reports against another user\'s day', () async {
+      await signIn();
+      await expectLater(
+        client.from('batch_records').insert({
+          'daily_record_id': 'someone-elses-day',
+          'eggs_collected': 10,
+        }),
+        throwsA(
+          isA<PostgrestException>().having((e) => e.code, 'code', '42501'),
+        ),
+      );
+    });
+
+    test('sorts and filters NULLs as PostgreSQL does', () async {
+      await signIn();
+      // Unlike the seeded batches, this one has no age unit.
+      await client.from('batches').insert({
+        'id': 'b-null',
+        'user_id': DevSeed.userId,
+        'name': 'No age',
+      });
+
+      final ascending = await client
+          .from('batches')
+          .select('id')
+          .order('age_unit', ascending: true);
+      final descending = await client
+          .from('batches')
+          .select('id')
+          .order('age_unit', ascending: false);
+      final notDays = await client
+          .from('batches')
+          .select('id')
+          .neq('age_unit', 'days');
+
+      expect(ascending.last['id'], 'b-null');
+      expect(descending.last['id'], 'b-null');
+      expect(notDays.map((r) => r['id']), isNot(contains('b-null')));
+    });
+
+    test('rejects queries it can\'t answer like PostgREST', () async {
+      await signIn();
+      final rejected = throwsA(
+        isA<PostgrestException>().having((e) => e.code, 'code', 'PGRST100'),
+      );
+
+      await expectLater(
+        client.from('batches').select().not('name', 'is', null),
+        rejected,
+      );
+      await expectLater(
+        client.from('batches').select().or('name.eq.a,name.eq.b'),
+        rejected,
+      );
+      await expectLater(
+        client.from('batch_records').select('daily_records!inner(record_date)'),
+        rejected,
+      );
+    });
+
     test('answers unknown tables like PostgREST', () async {
       await signIn();
       await expectLater(
@@ -251,6 +312,17 @@ void main() {
       expect(summary['total_sales'], 6400);
       expect(summary['eggs_sales'], 2100);
       expect(summary['total_expenses'], greaterThan(0));
+    });
+
+    test('delete_user_account removes the user\'s reports too', () async {
+      await signIn();
+      expect(backend.rows('batch_records'), isNotEmpty);
+
+      await client.rpc('delete_user_account');
+
+      expect(backend.rows('daily_records'), isEmpty);
+      expect(backend.rows('batch_records'), isEmpty);
+      expect(backend.rows('batches'), isEmpty);
     });
 
     test('exec_sql does not exist, as in production', () async {
