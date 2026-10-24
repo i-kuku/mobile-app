@@ -147,8 +147,13 @@ void main() {
     await settle(tester, const Duration(seconds: 3));
     await waitFor(tester, find.text('Add New Batch'));
     await waitFor(tester, find.text('Offline Batch'));
-    await waitFor(tester, find.textContaining('changes will upload'));
     expect(sync().pendingCount, pendingAtStart + 1);
+    await waitFor(
+      tester,
+      find.textContaining(
+        pendingAtStart == 0 ? '1 change will upload' : 'changes will upload',
+      ),
+    );
     await screenshot(tester, 'batch_saved_offline');
 
     await tapThen(tester, find.byIcon(Icons.arrow_back), home);
@@ -264,7 +269,7 @@ void main() {
     expect(serverValues('daily_records', 'id'), hasLength(4));
     expect(serverValues('sale', 'quantity'), contains(30));
     expect(offlineBanner, findsNothing);
-    expect(find.textContaining('changes will upload'), findsNothing);
+    expect(find.textContaining('will upload'), findsNothing);
     await waitFor(tester, find.text('30 Eggs'));
     await screenshot(tester, 'shop_back_online');
   });
