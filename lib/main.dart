@@ -59,7 +59,12 @@ void main() async {
     }
     final backend = await DevBackend.open(reset: DevBackend.resetOnStart);
     // A fresh backend doesn't know this phone's old data or session.
-    if (DevBackend.resetOnStart) await offline.store.clear();
+    if (DevBackend.resetOnStart) {
+      await offline.store.clear();
+      await (await SharedPreferences.getInstance()).remove(
+        DevBackend.sessionKey,
+      );
+    }
     await Supabase.initialize(
       url: DevBackend.url,
       publishableKey: DevBackend.publishableKey,
