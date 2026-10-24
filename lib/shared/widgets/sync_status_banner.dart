@@ -80,12 +80,12 @@ class _Strip extends StatelessWidget {
         CustomColors.text,
         pending == 0
             ? 'offline_banner'.tr()
-            : 'offline_banner_pending'.tr(args: ['$pending']),
+            : 'offline_banner_pending'.plural(pending),
       ),
       SyncBannerState.parked => (
         Icons.error_outline,
         CustomColors.errorColor,
-        'parked_banner'.tr(args: ['${sync.parkedCount}']),
+        'parked_banner'.plural(sync.parkedCount),
       ),
       SyncBannerState.syncing => (
         Icons.cloud_upload_outlined,
@@ -95,7 +95,7 @@ class _Strip extends StatelessWidget {
       SyncBannerState.pending => (
         Icons.cloud_upload_outlined,
         CustomColors.primary,
-        'pending_banner'.tr(args: ['$pending']),
+        'pending_banner'.plural(pending),
       ),
     };
 
