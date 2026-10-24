@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ikuku/features/batches/presentation/Widgets/pop_up.dart';
 import 'package:ikuku/features/batches/provider/batch_provider.dart';
+import 'package:ikuku/shared/offline/network_errors.dart';
 import 'package:ikuku/theme/app_theme.dart';
 import 'package:provider/provider.dart';
 
@@ -149,11 +150,7 @@ class ConfirmBatchPage extends StatelessWidget {
                         } catch (e) {
                           if (context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  "Failed to save batch to database: $e",
-                                ),
-                              ),
+                              SnackBar(content: Text(friendlyErrorMessage(e))),
                             );
                           }
                         }

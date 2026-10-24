@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -12,7 +14,6 @@ import 'package:ikuku/features/farms%20report/provider/farm_report_provider.dart
 import 'package:ikuku/features/farms%20report/repository/reports_repository.dart';
 import 'package:ikuku/shared/widgets/feature_button.dart';
 import 'package:ikuku/theme/app_theme.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AddReportPage extends StatefulWidget {
   const AddReportPage({super.key});
@@ -23,17 +24,46 @@ class AddReportPage extends StatefulWidget {
 
 class _AddReportPageState extends State<AddReportPage> {
   final _repository = ReportsRepository();
-  late Future<List<ReportSummary>> _recentReportsFuture;
+  late List<ReportSummary> _recentReports;
+  StreamSubscription<void>? _changes;
 
   @override
   void initState() {
     super.initState();
-    _recentReportsFuture = _loadReports();
+    _recentReports = _loadReports();
+    _changes = _repository.changes.listen((_) => _reload());
+    _repository.refresh();
   }
 
-  Future<List<ReportSummary>> _loadReports() async {
-    final rawReports = await _repository.fetchRecentReports();
-    return rawReports.map(ReportSummary.fromJson).toList();
+  @override
+  void dispose() {
+    _changes?.cancel();
+    super.dispose();
+  }
+
+  List<ReportSummary> _loadReports() =>
+      _repository.fetchRecentReports().map(ReportSummary.fromJson).toList();
+
+  void _reload() {
+    if (mounted) setState(() => _recentReports = _loadReports());
+  }
+
+  Future<void> _openReport(BuildContext context, ReportSummary report) async {
+    final detail = _repository.fetchReportDetail(report.id);
+    final batchId = detail?['batch_id'] as String?;
+    final batchRow = batchId == null ? null : _repository.fetchBatch(batchId);
+    if (detail == null || batchRow == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('something_went_wrong_message'.tr())),
+      );
+      return;
+    }
+
+    final reports = context.read<FarmReportProvider>();
+    reports.loadReportForEditing(detail);
+    reports.setBatch(ChickenBatch.fromJson(batchRow));
+    await context.push('/Farm_Report_Entry_Screen', extra: batchId);
+    _reload();
   }
 
   @override
@@ -61,10 +91,7 @@ class _AddReportPageState extends State<AddReportPage> {
               label: 'add_farm_report'.tr(),
               onTap: () async {
                 await context.push('/report-entry');
-                if (!context.mounted) return;
-                setState(() {
-                  _recentReportsFuture = _loadReports();
-                });
+                _reload();
               },
               icon: Icons.add,
             ),
@@ -100,70 +127,24 @@ class _AddReportPageState extends State<AddReportPage> {
             ),
           ),
           Expanded(
-            child: FutureBuilder<List<ReportSummary>>(
-              future: _recentReportsFuture,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
-                }
-                final reports = snapshot.data ?? [];
-                if (reports.isEmpty) {
-                  return Center(
+            child: _recentReports.isEmpty
+                ? Center(
                     child: Text(
                       'no_reports_yet'.tr(),
                       style: TextStyle(color: Colors.grey.shade600),
                     ),
-                  );
-                }
-                return ListView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  itemCount: reports.length,
-                  itemBuilder: (context, index) {
-                    final report = reports[index];
-                    return ReportSummaryCard(
-                      report: report,
-                      onTap: () async {
-                        final detail = await _repository.fetchReportDetail(
-                          report.id,
-                        );
-                        if (detail == null || !context.mounted) return;
-
-                        context.read<FarmReportProvider>().loadReportForEditing(
-                          detail,
-                        );
-
-                        final batchId = detail['batch_id'] as String;
-
-                        // fetch the full batch and set the notifier, same as BatchSelectionPage does
-                        final batchRow = await Supabase.instance.client
-                            .from('batches')
-                            .select()
-                            .eq('id', batchId)
-                            .single();
-
-                        if (!context.mounted) return;
-                        context.read<FarmReportProvider>().setBatch(
-                          ChickenBatch.fromJson(batchRow),
-                        );
-                        if (!context.mounted) return;
-                        await context.push(
-                          '/Farm_Report_Entry_Screen',
-                          extra: batchId,
-                        );
-
-                        if (!context.mounted) return;
-                        setState(() {
-                          _recentReportsFuture = _loadReports();
-                        });
-                      },
-                    );
-                  },
-                );
-              },
-            ),
+                  )
+                : ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    itemCount: _recentReports.length,
+                    itemBuilder: (context, index) {
+                      final report = _recentReports[index];
+                      return ReportSummaryCard(
+                        report: report,
+                        onTap: () => _openReport(context, report),
+                      );
+                    },
+                  ),
           ),
         ],
       ),

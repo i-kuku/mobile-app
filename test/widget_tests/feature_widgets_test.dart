@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:ikuku/shared/offline/offline_services.dart';
 import 'package:http/http.dart' as http;
 import 'package:ikuku/features/Inventory/model/inventoryitem.dart';
 import 'package:ikuku/features/Inventory/presentation/screens/inventory_hub_page.dart';
@@ -47,7 +48,7 @@ void main() {
         ),
       );
       expect(find.text('Lost internet connection'), findsOneWidget);
-      expect(find.text('Test Connection'), findsNothing);
+      expect(find.text('test_connection'), findsNothing);
     });
 
     testWidgets('offers a connection test when asked, in any language', (
@@ -63,7 +64,7 @@ void main() {
           ),
         ),
       );
-      await tester.tap(find.text('Test Connection'));
+      await tester.tap(find.text('test_connection'));
       expect(tested, isTrue);
     });
   });
@@ -197,7 +198,10 @@ void main() {
     );
 
     setUpAll(() => initFakeSupabase(backend));
-    tearDown(signOutFakeUser);
+    tearDown(() async {
+      await resetOfflineServices();
+      await signOutFakeUser();
+    });
 
     Widget app(Widget child) => ChangeNotifierProvider.value(
       value: provider,
@@ -208,6 +212,7 @@ void main() {
       backend.reset();
       backend.on('POST', inventoryPath, (_) async => http.Response('', 201));
       backend.on('PATCH', inventoryPath, (_) async => http.Response('', 204));
+      await initOfflineServices();
       await signInFakeUser(backend);
       provider = InventoryProvider();
       await provider.addInventoryItem(item);
@@ -310,7 +315,8 @@ void main() {
       await tester.tap(find.text('add_item'));
       await tester.pumpAndSettle();
 
-      final added = provider.inventory.single;
+      // The list reloads from the phone, so the feed item is back too.
+      final added = provider.medicines.single;
       expect(added.name, 'Newcastle vaccine');
       expect(added.quantity, 10);
       expect(added.price, 45.5);
@@ -318,7 +324,8 @@ void main() {
       expect(added.category, 'medicines');
       expect(added.id, isNotEmpty);
       expect(added.userId, fakeUserId);
-      expect(backend.requestsTo(inventoryPath, method: 'POST'), hasLength(2));
+      // Both items wait in the outbox until the next sync.
+      expect(OfflineServices.instance.sync.pendingCount, 2);
     });
   });
 

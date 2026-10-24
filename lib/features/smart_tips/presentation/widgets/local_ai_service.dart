@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gemma/flutter_gemma.dart';
 
@@ -35,7 +36,8 @@ class LocalAiService {
   }
     Future<String> summarizeArticle(String title, String content) async {
     if (!_isModelReady || _modelInstance == null) {
-      return "AI Model is loading offline data...";
+      // The model is fetched once over the internet, then runs offline.
+      return 'ai_summary_needs_download'.tr();
     }
     try {
       final chat = await _modelInstance.createChat();
@@ -43,9 +45,10 @@ class LocalAiService {
           "You are a poultry expert assistant. Summarize this African poultry news article in 2 bullet points.\nTitle: $title\nContent: $content";
       await chat.addQueryChunk(Message.text(text: prompt, isUser: true));
       final response = await chat.sendMessage();
-      return response ?? "could not generate summary.";
+      return response ?? 'ai_summary_failed'.tr();
     } catch (e) {
-      return "Error processing summary:$e";
+      debugPrint('Summarising failed: $e');
+      return 'ai_summary_failed'.tr();
     }
   }
 

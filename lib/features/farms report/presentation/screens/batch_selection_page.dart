@@ -1,12 +1,12 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:ikuku/features/batches/model/chicken_batch_model.dart';
+import 'package:ikuku/features/batches/provider/batch_provider.dart';
 import 'package:ikuku/features/farms%20report/presentation/widgets/batch_card.dart';
 import 'package:ikuku/features/farms%20report/provider/farm_report_provider.dart';
+import 'package:ikuku/features/farms%20report/repository/reports_repository.dart';
 import 'package:ikuku/theme/app_theme.dart';
 import 'package:provider/provider.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 class BatchSelectionPage extends StatefulWidget {
   const BatchSelectionPage({super.key});
@@ -16,33 +16,15 @@ class BatchSelectionPage extends StatefulWidget {
 }
 
 class _BatchSelectionPageState extends State<BatchSelectionPage> {
-  late Future<List<ChickenBatch>> _batchesFuture;
+  final _repository = ReportsRepository();
   String? _selectedBatchId;
 
   @override
   void initState() {
     super.initState();
-    _batchesFuture = _fetchUserBatches();
-  }
-
-  Future<List<ChickenBatch>> _fetchUserBatches() async {
-    final session = Supabase.instance.client.auth.currentSession;
-
-    if (session == null) {
-      debugPrint('User is not logged in. Redirect to login screen.');
-      return [];
-    }
-    final userId = session.user.id;
-    final response = await Supabase.instance.client
-        .from('batches')
-        .select()
-        .eq('user_id', userId)
-        .order('created_at', ascending: false);
-
-    final List<dynamic> data = response;
-    return data
-        .map((json) => ChickenBatch.fromJson(json as Map<String, dynamic>))
-        .toList();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) context.read<BatchProvider>().fetchBatches();
+    });
   }
 
   Color _getBirdTypeColor(String type) {
@@ -79,36 +61,6 @@ class _BatchSelectionPageState extends State<BatchSelectionPage> {
     );
   }
 
-  Future<bool> _hasReportForToday(String batchId) async {
-    try {
-      final userId = Supabase.instance.client.auth.currentUser?.id;
-      if (userId == null) return false;
-
-      final todayStr = DateTime.now().toIso8601String().split('T')[0];
-
-      final dailyRecord = await Supabase.instance.client
-      .from("daily_records")
-      .select('id')
-      .eq('user_id', userId)
-      .eq('report_date', todayStr)
-      .maybeSingle();
-
-      if(dailyRecord == null) return false;
-
-      final batchRecord = await Supabase.instance.client
-      .from('batch_records')
-      .select('id')
-      .eq('daily_record_id', dailyRecord['id'])
-      .eq('batch_id', batchId)
-      .maybeSingle();
-      
-      return batchRecord != null;
-    } catch (e) {
-      debugPrint("Error checking todays's report status: $e");
-      return false;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -143,26 +95,15 @@ class _BatchSelectionPageState extends State<BatchSelectionPage> {
                 ),
               ),
               Expanded(
-                child: FutureBuilder<List<ChickenBatch>>(
-                  future: _batchesFuture,
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-
-                    if (snapshot.hasError) {
-                      return Center(
-                        child: Text('Error loading batches: ${snapshot.error}'),
-                      );
-                    }
-
-                    if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                child: Consumer<BatchProvider>(
+                  builder: (context, provider, _) {
+                    if (provider.batches.isEmpty) {
                       return const Center(
                         child: Text('No active batches found.'),
                       );
                     }
 
-                    final batches = snapshot.data!;
+                    final batches = provider.batches;
                     return ListView.builder(
                       itemCount: batches.length,
                       itemBuilder: (context, index) {
@@ -170,10 +111,10 @@ class _BatchSelectionPageState extends State<BatchSelectionPage> {
                         return BatchCard(
                           batch: batch,
                           onTap: () async {
-                            final exists = await _hasReportForToday(batch.id);
-                            if (!context.mounted) return;
-
-                            if (exists) {
+                            if (_repository.hasReportOn(
+                              batch.id,
+                              DateTime.now(),
+                            )) {
                               _alreadyReportedDialog(context, batch.name);
                               return;
                             }

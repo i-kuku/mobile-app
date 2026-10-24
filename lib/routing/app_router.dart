@@ -9,7 +9,9 @@ import 'package:ikuku/features/batches/presentation/screens/confirm_batch_page.d
 import 'package:ikuku/features/batches/presentation/screens/create_batch_page.dart';
 import 'package:ikuku/features/batches/presentation/screens/edit_batch_page.dart';
 import 'package:ikuku/features/batches/presentation/screens/manage_batch_page.dart';
+import 'package:ikuku/features/auth/data/pending_registration.dart';
 import 'package:ikuku/features/auth/presentation/screens/auth_page.dart';
+import 'package:ikuku/features/auth/presentation/screens/finish_sign_up_page.dart';
 import 'package:ikuku/features/dashboard/presentation/pages/dashboard.dart';
 import 'package:ikuku/features/farms%20report/presentation/screens/add_report_page.dart';
 import 'package:ikuku/features/farms%20report/presentation/screens/additional_notes_page.dart';
@@ -53,6 +55,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 class AppRouter {
+  /// Screens of a sign-up that can be filled in before the account exists.
+  static const _signUpSteps = {
+    '/create-farm',
+    '/recovery-setup',
+    '/finish-signup',
+  };
+
   static Future<bool> onboardingComplete() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool('onboarding_complete') ?? false;
@@ -364,6 +373,10 @@ class AppRouter {
         path: '/recovery-setup',
         builder: (context, state) => const RecoverySetupPage(),
       ),
+      GoRoute(
+        path: '/finish-signup',
+        builder: (context, state) => const FinishSignUpPage(),
+      ),
     ],
     redirect: (context, state) async {
       final user = Supabase.instance.client.auth.currentUser;
@@ -381,6 +394,14 @@ class AppRouter {
       if (!langSet && !language) return '/language';
       if (!onboardingComplete && !onboarding && langSet) return '/onboarding';
       if (user == null) {
+        // A sign-up started offline can carry on without an account yet.
+        final pending = await PendingRegistrationStore.load();
+        if (pending != null) {
+          if (loggingIn || _signUpSteps.contains(state.matchedLocation)) {
+            return null;
+          }
+          return pending.nextStep;
+        }
         if (!loggingIn && onboardingComplete) {
           return '/auth';
         }
@@ -388,6 +409,7 @@ class AppRouter {
         if (loggingIn || root) {
           return '/';
         }
+        if (state.matchedLocation == '/finish-signup') return '/';
       }
 
       return null;

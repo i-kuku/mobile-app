@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:collection/collection.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -6,6 +9,8 @@ import 'package:ikuku/features/profile/presentation/pages/edit_profile_page.dart
 // import 'package:ikuku/features/profile/presentation/pages/recovery_phone_page.dart';
 import 'package:ikuku/features/profile/presentation/widgets/menu_card.dart';
 import 'package:ikuku/features/profile/presentation/widgets/pop_up.dart';
+import 'package:ikuku/shared/offline/offline_services.dart';
+import 'package:ikuku/shared/widgets/sync_status_banner.dart';
 import 'package:ikuku/theme/app_theme.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -24,65 +29,96 @@ class _ProfilePageState extends State<ProfilePage> {
   String? farmLocation;
   String? avatarUrl;
   bool loading = true;
+  bool _avatarFailed = false;
+  StreamSubscription<String>? _changes;
+
+  SyncEngine get _sync => OfflineServices.instance.sync;
 
   @override
   void initState() {
     super.initState();
-    _fetchProfile();
+    _loadProfile();
+    _changes = _sync.store.changes
+        .where((t) => t == LocalTables.users || t == LocalTables.farms)
+        .listen((_) => _loadProfile());
+    _sync.refresh();
   }
 
-  Future<void> _fetchProfile() async {
-    setState(() => loading = true);
-    final user = Supabase.instance.client.auth.currentUser;
-    if (user == null) {
-      setState(() => loading = false);
-      return;
-    }
-    try {
-      final userResponse = await Supabase.instance.client
-          .from('users')
-          .select()
-          .eq('id', user.id)
-          .maybeSingle();
+  @override
+  void dispose() {
+    _changes?.cancel();
+    super.dispose();
+  }
 
-      final farmResponse = await Supabase.instance.client
-          .from('farms')
-          .select()
-          .eq('user_id', user.id)
-          .maybeSingle();
-      setState(() {
-        name =
-            userResponse?['full_name'] ??
-            user.email?.split('@').first ??
-            'Farmer';
-        phone = userResponse?['phone_number'] ?? user.phone ?? '0701 234 567';
-        farmName = farmResponse?['farm_name'] ?? 'No Farm';
-        farmLocation = farmResponse?['farm_location'] ?? 'No Location';
-        location = farmLocation;
-        avatarUrl = userResponse?['avatar_url'];
-        loading = false;
-      });
-    } catch (e) {
-      setState(() {
-        name = user.email?.split('@').first ?? 'Farmer';
-        phone = user.phone ?? '0701 234 567';
-        farmName = 'No Farm';
-        farmLocation = 'No Location';
-        location = farmLocation;
-        loading = false;
-        avatarUrl = null;
-      });
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to load profile. Showing defaults.')),
-        );
-      }
-    }
+  static String? _text(Object? value) =>
+      value is String && value.trim().isNotEmpty ? value : null;
+
+  /// Shows the profile saved on this phone; a background sync keeps it
+  /// current.
+  void _loadProfile() {
+    if (!mounted) return;
+    final user = Supabase.instance.client.auth.currentUser;
+    final userId = _sync.currentUserId;
+    final profile = userId == null
+        ? null
+        : _sync.store.row(LocalTables.users, userId);
+    final farm = _sync.store.rows(LocalTables.farms).firstOrNull;
+
+    setState(() {
+      name =
+          _text(profile?['full_name']) ??
+          user?.email?.split('@').first ??
+          'Farmer';
+      phone = _text(profile?['phone_number']) ?? user?.phone ?? '0701 234 567';
+      farmName = _text(farm?['farm_name']) ?? 'No Farm';
+      farmLocation = _text(farm?['farm_location']) ?? 'No Location';
+      location = farmLocation;
+      final newAvatar = _text(profile?['avatar_url']);
+      if (newAvatar != avatarUrl) _avatarFailed = false;
+      avatarUrl = newAvatar;
+      loading = false;
+    });
   }
 
   Future<void> _logout() async {
-    await Supabase.instance.client.auth.signOut();
-    if (mounted) context.go('/sign-in');
+    // Give unsent changes a last chance to upload.
+    if (_sync.pendingCount > 0) await _sync.sync(pull: false);
+    final unsent = _sync.pendingCount + _sync.parkedCount;
+    if (unsent > 0 && !await _confirmLosingChanges(unsent)) return;
+
+    try {
+      await Supabase.instance.client.auth.signOut();
+    } catch (e) {
+      // The session is already gone from this phone; only telling the
+      // server failed, and it forgets the session when it expires.
+      debugPrint('Could not tell the server about the sign-out: $e');
+    }
+    await OfflineServices.instance.signedOut();
+    if (mounted) context.go('/auth');
+  }
+
+  Future<bool> _confirmLosingChanges(int unsent) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text('logout_confirmation_title'.tr()),
+        content: Text('logout_unsynced_warning'.plural(unsent)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: Text('cancel'.tr()),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: Text(
+              'logout_anyway'.tr(),
+              style: const TextStyle(color: CustomColors.errorColor),
+            ),
+          ),
+        ],
+      ),
+    );
+    return confirmed ?? false;
   }
 
   Future<void> _initiateAccountDeletion() async {
@@ -103,10 +139,12 @@ class _ProfilePageState extends State<ProfilePage> {
         context.push('/profile/otp_verification_page');
       }
     } catch (e) {
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to request verification code: $e')),
-      );
+      debugPrint('Could not request a verification code: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(friendlyErrorMessage(e))));
+      }
     }
   }
 
@@ -137,13 +175,15 @@ class _ProfilePageState extends State<ProfilePage> {
                       CircleAvatar(
                         radius: 44,
                         backgroundColor: Colors.grey[300],
-                        backgroundImage:
-                            (avatarUrl != null && avatarUrl!.isNotEmpty)
-                            ? NetworkImage(
-                                '$avatarUrl',
-                              )
+                        backgroundImage: avatarUrl != null && !_avatarFailed
+                            ? NetworkImage('$avatarUrl')
                             : null,
-                        child: (avatarUrl == null || avatarUrl!.isEmpty)
+                        // Offline, the photo can't load; show the initial.
+                        onBackgroundImageError:
+                            avatarUrl != null && !_avatarFailed
+                            ? (_, _) => setState(() => _avatarFailed = true)
+                            : null,
+                        child: avatarUrl == null || _avatarFailed
                             ? Text(
                                 name != null && name!.isNotEmpty
                                     ? name![0].toUpperCase()
@@ -210,6 +250,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   initialName: name,
                                   initialLocation: farmLocation,
                                   initialPhone: phone,
+                                  initialAvatarUrl: avatarUrl,
                                 ),
                               ),
                             );
@@ -246,6 +287,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       context.push('/profile/recovery_phone_page');
                     },
                   ),
+                  const _SyncStatusCard(),
                   MenuCard(
                     icon: Icons.logout,
                     title: 'logout'.tr(),
@@ -310,6 +352,67 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
 
       //  bottomNavigationBar: BottomNavigationBar(items: 2),
+    );
+  }
+}
+
+/// Whether everything entered on this phone has reached the server.
+class _SyncStatusCard extends StatelessWidget {
+  const _SyncStatusCard();
+
+  @override
+  Widget build(BuildContext context) {
+    final sync = OfflineServices.instance.sync;
+    return ListenableBuilder(
+      listenable: Listenable.merge([sync, sync.connectivity]),
+      builder: (context, _) {
+        final state = syncBannerStateFor(sync);
+        final subtitle = switch (state) {
+          null => 'all_changes_uploaded'.tr(),
+          SyncBannerState.offline => 'offline_banner'.tr(),
+          SyncBannerState.parked => 'parked_banner'.plural(sync.parkedCount),
+          SyncBannerState.syncing => 'syncing_banner'.tr(),
+          SyncBannerState.pending => 'pending_banner'.plural(sync.pendingCount),
+        };
+        return Card(
+          elevation: 2,
+          color: Colors.white,
+          margin: const EdgeInsets.symmetric(vertical: 8),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: ListTile(
+            leading: Icon(
+              state == null
+                  ? Icons.cloud_done_outlined
+                  : state == SyncBannerState.offline
+                  ? Icons.cloud_off_outlined
+                  : Icons.cloud_upload_outlined,
+              color: state == SyncBannerState.parked
+                  ? CustomColors.errorColor
+                  : CustomColors.primary,
+              size: 20,
+            ),
+            title: Text(
+              'sync_status'.tr(),
+              style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                color: CustomColors.text,
+                fontSize: 20,
+              ),
+            ),
+            subtitle: Text(subtitle),
+            trailing: state == SyncBannerState.pending
+                ? TextButton(
+                    onPressed: sync.sync,
+                    child: Text('upload_now'.tr()),
+                  )
+                : null,
+            onTap: state == SyncBannerState.parked
+                ? () => showSyncProblemsDialog(sync)
+                : null,
+          ),
+        );
+      },
     );
   }
 }

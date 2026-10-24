@@ -96,39 +96,29 @@ class TipsHub extends StatefulWidget {
 }
 
 class _TipsHubState extends State<TipsHub> {
-  late Future<List<NewsArticle>> _newsFuture;
+  late Future<NewsFeed> _newsFuture;
 
   @override
   void initState() {
     super.initState();
-    _newsFuture = RssService().fetchLatestNews();
+    // Falls back to the articles saved last time when offline.
+    _newsFuture = RssService().loadNews();
   }
 
   Future<void> _openArticle(String url) async {
-    if (url.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Invalid article URL')));
-      return;
-    }
-
+    final uri = Uri.tryParse(url);
+    var opened = false;
     try {
-      final uri = Uri.parse(url);
-      if (await canLaunchUrl(uri)) {
-        await launchUrl(uri, mode: LaunchMode.externalApplication);
-      } else {
-        if (mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text('Cannot open URL: $url')));
-        }
+      if (uri != null && url.isNotEmpty && await canLaunchUrl(uri)) {
+        opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
       }
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error opening article: $e')));
-      }
+      debugPrint('Could not open $url: $e');
+    }
+    if (!opened && mounted) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('could_not_open_article'.tr())));
     }
   }
 
@@ -210,7 +200,7 @@ class _TipsHubState extends State<TipsHub> {
                 ),
               ),
               SizedBox(height: 16),
-              FutureBuilder<List<NewsArticle>>(
+              FutureBuilder<NewsFeed>(
                 future: _newsFuture,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
@@ -222,26 +212,51 @@ class _TipsHubState extends State<TipsHub> {
                     );
                   }
 
-                  if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Text(
-                          'no_news_articles_available'.tr(),
-                          style: TextStyle(color: CustomColors.text),
-                        ),
-                      ),
-                    );
-                  }
+                  final feed = snapshot.data;
+                  final articles = feed?.articles ?? const <NewsArticle>[];
+                  final offline = feed?.isSaved ?? true;
                   return Column(
-                    children: snapshot.data!.map((currentArticle) {
-                      return NewsArticleCard(
-                        article: currentArticle,
-                        onTap: () {
-                          _openArticle(currentArticle.link);
-                        },
-                      );
-                    }).toList(),
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (offline)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.cloud_off_outlined,
+                                size: 18,
+                                color: Colors.grey,
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  'news_offline'.tr(),
+                                  style: const TextStyle(color: Colors.grey),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      if (articles.isEmpty)
+                        Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Text(
+                              'no_news_articles_available'.tr(),
+                              style: TextStyle(color: CustomColors.text),
+                            ),
+                          ),
+                        )
+                      else
+                        for (final currentArticle in articles)
+                          NewsArticleCard(
+                            article: currentArticle,
+                            onTap: () {
+                              _openArticle(currentArticle.link);
+                            },
+                          ),
+                    ],
                   );
                 },
               ),

@@ -1,8 +1,8 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:ikuku/shared/offline/offline_services.dart';
 import 'package:ikuku/theme/app_theme.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 class RecoveryPhonePage extends StatefulWidget {
   const RecoveryPhonePage({super.key});
@@ -17,10 +17,10 @@ class _RecoveryPhonePageState extends State<RecoveryPhonePage> {
 
   String _recoveryNumber1 = '---';
   String? _recoveryNumber2;
-  bool isloading=false;
+  bool isloading = false;
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
     _loadRecoveryNumbers();
   }
@@ -31,79 +31,67 @@ class _RecoveryPhonePageState extends State<RecoveryPhonePage> {
     super.dispose();
   }
 
- Future <void> _loadRecoveryNumbers() async{
-  setState(() =>isloading=false);
+  static const _noNumber = '---';
 
-  try{
-    final user = Supabase.instance.client.auth.currentUser;
-    if(user== null) return;
-
-    final data = await Supabase.instance.client
-    .from('users')
-    .select('recovery_phone_1, recovery_phone_2')
-    .eq('id',user)
-    .maybeSingle();
-
-    if (data!= null && mounted){
-      setState(() {
-        _recoveryNumber1 =data['recovery_phone_1'] ??'___';
-        _recoveryNumber2 = data['recovery_phone_2'];
-      });
-    }
-  }catch(e){
-    debugPrint('Error loading recovery numbers: $e');
-  }finally{
-    if(mounted) setState(() => isloading=false);
+  /// Reads the numbers saved on this phone.
+  Future<void> _loadRecoveryNumbers() async {
+    final sync = OfflineServices.instance.sync;
+    final userId = sync.currentUserId;
+    if (userId == null) return;
+    final profile = sync.store.row(LocalTables.users, userId);
+    setState(() {
+      _recoveryNumber1 = profile?['recovery_phone_1'] as String? ?? _noNumber;
+      _recoveryNumber2 = profile?['recovery_phone_2'] as String?;
+    });
   }
- }
- Future<void> _handleInstantSave() async{
+
+  Future<void> _handleInstantSave() async {
     if (!_formKey.currentState!.validate()) return;
-    
-      final newNumber = _phoneController.text.trim();
-      if(newNumber.isEmpty) return;
-       
-      //  setState(() => _isloading = true);
 
-      try{
-        final user=Supabase.instance.client.auth.currentUser;
-        if(user == null) throw Exception('User not authenticated');
-      
-       String targetNum1 = _recoveryNumber1;
-       String? targetNum2 = _recoveryNumber2;
+    final newNumber = _phoneController.text.trim();
+    if (newNumber.isEmpty) return;
 
-      if (_recoveryNumber1 == '---' || _recoveryNumber1.isEmpty) {
+    try {
+      final sync = OfflineServices.instance.sync;
+      final userId = sync.currentUserId;
+      if (userId == null) throw Exception('User not authenticated');
+
+      String targetNum1 = _recoveryNumber1;
+      String? targetNum2 = _recoveryNumber2;
+
+      if (_recoveryNumber1 == _noNumber || _recoveryNumber1.isEmpty) {
         targetNum1 = newNumber;
       } else {
-       targetNum2 = newNumber;
+        targetNum2 = newNumber;
       }
 
-      await Supabase.instance.client.from('users').upsert({
-        'id':user.id,
-        'recovery_phone_1':targetNum1,
-        'recovery_phone_2':targetNum2,
+      // Saved on the phone at once; it reaches the server when it can.
+      await sync.mergeRow(LocalTables.users, {
+        'id': userId,
+        'recovery_phone_1': targetNum1,
+        'recovery_phone_2': targetNum2,
       });
-      if(mounted){
-        setState((){
+      if (mounted) {
+        setState(() {
           _recoveryNumber1 = targetNum1;
           _recoveryNumber2 = targetNum2;
           _phoneController.clear();
         });
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Recovery phone number added successfully')),
-    );
-  }
-}catch (e) {
-      debugPrint('Error saving recovery phone: $e');
-      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to save number: $e')),
+          const SnackBar(
+            content: Text('Recovery phone number added successfully'),
+          ),
         );
       }
-    } finally {
-      // if (mounted) setState(() => _isloading = false);
+    } catch (e) {
+      debugPrint('Error saving recovery phone: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(friendlyErrorMessage(e))));
+      }
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -177,8 +165,9 @@ class _RecoveryPhonePageState extends State<RecoveryPhonePage> {
                         const SizedBox(height: 4),
                         Text(
                           _recoveryNumber2 ?? '----',
-                          style: Theme.of(context).textTheme.bodyLarge!
-                              .copyWith(color: Colors.black),
+                          style: Theme.of(
+                            context,
+                          ).textTheme.bodyLarge!.copyWith(color: Colors.black),
                         ),
                       ],
                     ),

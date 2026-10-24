@@ -1,17 +1,25 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:ikuku/features/shop/model/sale_model.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:ikuku/shared/offline/offline_services.dart';
 
+/// Sales, read from and recorded on the device first. New sales reach the
+/// server in the background whenever there is a connection.
 class SalesProvider extends ChangeNotifier {
-  final SupabaseClient _supabase = Supabase.instance.client;
+  SalesProvider({SyncEngine? sync}) : _syncOverride = sync;
 
+  final SyncEngine? _syncOverride;
+  SyncEngine get _sync => _syncOverride ?? OfflineServices.instance.sync;
+
+  StreamSubscription<String>? _subscription;
   List<SaleModel> _sales = [];
   bool _isLoading = false;
-  String? _errorMessage;
 
   List<SaleModel> get sales => _sales;
+
+  /// True only while a first-ever load waits on the server.
   bool get isLoading => _isLoading;
-  String? get errorMessage => _errorMessage;
 
   // Helper to check if two DateTimes fall on the same local day
   bool _isSameDay(DateTime date1, DateTime date2) {
@@ -70,58 +78,64 @@ class SalesProvider extends ChangeNotifier {
     return months[month - 1];
   }
 
-  Future<void> fetchSales() async {
-    _isLoading = true;
-    _errorMessage = null;
-    notifyListeners();
+  void _watch() {
+    _subscription ??= _sync.store.changes
+        .where((table) => table == LocalTables.sales)
+        .listen((_) => _load());
+  }
 
+  void _load() {
+    final loaded = <SaleModel>[];
+    for (final row in _sync.store.rows(LocalTables.sales)) {
+      try {
+        loaded.add(SaleModel.fromJson(row));
+      } catch (e) {
+        debugPrint('Skipping unreadable sale ${row['id']}: $e');
+      }
+    }
+    loaded.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    _sales = loaded;
+    notifyListeners();
+  }
+
+  /// Shows the sales on the device at once, then refreshes them from the
+  /// server if it can be reached.
+  Future<void> fetchSales() async {
+    if (_sync.currentUserId == null) return;
+    _watch();
+    _load();
+
+    final firstLoad =
+        _sales.isEmpty && _sync.lastPulledAt == null && _sync.isOnline;
+    if (firstLoad) {
+      _isLoading = true;
+      notifyListeners();
+    }
     try {
-      final userId = _supabase.auth.currentUser?.id;
-      if (userId == null) {
+      await _sync.refresh();
+    } finally {
+      if (_isLoading) {
         _isLoading = false;
         notifyListeners();
-        return;
       }
-
-      final response = await _supabase
-          .from('sale')
-          .select()
-          .eq('user_id', userId)
-          .order('created_at', ascending: false);
-
-      _sales = (response as List).map((e) => SaleModel.fromJson(e)).toList();
-    } catch (e) {
-      _errorMessage = e.toString();
-      debugPrint('Error fetching sales: $e');
-    } finally {
-      _isLoading = false;
-      notifyListeners();
     }
   }
 
+  /// Records [sale] on the device and queues it for the server.
   Future<void> addSale(SaleModel sale) async {
-    _isLoading = true;
-    notifyListeners();
+    final userId = _sync.currentUserId;
+    if (userId == null) throw Exception('User is not authenticated.');
 
-    final user = _supabase.auth.currentUser;
+    _watch();
+    await _sync.insertRow(LocalTables.sales, {
+      ...sale.toJson(),
+      'user_id': userId,
+    });
+  }
 
-    if (user == null) {
-      _isLoading = false;
-      notifyListeners();
-      throw Exception('User is not authenticated.');
-    }
-
-    try {
-      final saleData = sale.toJson();
-      saleData['user_id'] = user.id;
-
-      await _supabase.from('sale').insert(saleData);
-      await fetchSales();
-    } catch (e) {
-      rethrow;
-    } finally {
-      _isLoading = false;
-      notifyListeners();
-    }
+  @override
+  void dispose() {
+    _subscription?.cancel();
+    super.dispose();
   }
 }

@@ -62,10 +62,17 @@ class _FinancialSummaryPageState extends State<FinancialSummaryPage> {
       body: financialProvider.isLoading
           ? const Center(child: CircularProgressIndicator())
           : summary == null
-          ?  Center(
-              child: Text(
-                "no_financial_summary_records_found".tr(),
-                style: TextStyle(color: Colors.grey),
+          ? Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Text(
+                  financialProvider.isSavedCopy &&
+                          financialProvider.updatedAt == null
+                      ? 'summary_needs_internet'.tr()
+                      : 'no_financial_summary_records_found'.tr(),
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(color: Colors.grey),
+                ),
               ),
             )
           : RefreshIndicator(
@@ -73,6 +80,7 @@ class _FinancialSummaryPageState extends State<FinancialSummaryPage> {
               child: ListView(
                 padding: const EdgeInsets.all(16),
                 children: [
+                  _FreshnessNote(provider: financialProvider),
                   FinancialFiltersRow(
                     provider: financialProvider,
                     batchProvider: batchProvider,
@@ -88,6 +96,44 @@ class _FinancialSummaryPageState extends State<FinancialSummaryPage> {
                 ],
               ),
             ),
+    );
+  }
+}
+
+/// Says when the figures are a saved copy, or may not include the latest
+/// entries yet.
+class _FreshnessNote extends StatelessWidget {
+  const _FreshnessNote({required this.provider});
+
+  final FinancialSummaryProvider provider;
+
+  @override
+  Widget build(BuildContext context) {
+    final updatedAt = provider.updatedAt;
+    final lines = [
+      if (provider.isSavedCopy && updatedAt != null)
+        'last_updated'.tr(
+          args: [DateFormat('d MMM, HH:mm').format(updatedAt.toLocal())],
+        ),
+      if (provider.hasUnsentChanges) 'figures_may_be_behind'.tr(),
+    ];
+    if (lines.isEmpty) return const SizedBox.shrink();
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Icon(Icons.info_outline, size: 18, color: Colors.grey),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              lines.join(' '),
+              style: const TextStyle(color: Colors.grey, fontSize: 13),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

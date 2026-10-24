@@ -5,8 +5,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:ikuku/features/auth/data/pending_registration.dart';
 import 'package:ikuku/features/auth/provider/auth_provider.dart';
 import 'package:ikuku/routing/app_router.dart';
+import 'package:ikuku/shared/offline/offline_services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../helpers/fake_supabase.dart';
 
@@ -22,12 +25,19 @@ void main() {
     await initFakeSupabase(backend);
   });
 
-  setUp(() {
+  setUp(() async {
     backend.reset();
+    // Forgets any pending sign-up from an earlier test.
+    SharedPreferences.setMockInitialValues({});
+    // Background syncs after signing in don't fetch tables here.
+    await initOfflineServices(pullSpecs: const []);
     // testConnection probes the users table.
     backend.on('GET', usersPath, (_) async => FakeSupabaseBackend.json([]));
   });
-  tearDown(signOutFakeUser);
+  tearDown(() async {
+    await resetOfflineServices();
+    await signOutFakeUser();
+  });
 
   /// Mounts a router on the app's [navigatorKey], which AuthProvider reads
   /// when it is created, and returns a fresh provider.
@@ -40,6 +50,7 @@ void main() {
       routes: [
         GoRoute(path: '/', builder: (_, _) => const Text('home')),
         GoRoute(path: '/login', builder: (_, _) => const Text('login')),
+        GoRoute(path: '/auth', builder: (_, _) => const Text('auth')),
         GoRoute(
           path: '/create-farm',
           builder: (_, state) => Text('create-farm ${state.extra ?? ''}'),
@@ -174,6 +185,27 @@ void main() {
       );
     }
 
+    testWidgets('goes home without asking the server when this phone already '
+        'has the farm', (tester) async {
+      signInSucceeds();
+      await OfflineServices.instance.store.claimFor(fakeUserId);
+      await OfflineServices.instance.store.put(LocalTables.farms, {
+        'id': 'f1',
+        'user_id': fakeUserId,
+      });
+      backend.on(
+        'GET',
+        usersPath,
+        (_) async => FakeSupabaseBackend.json({'id': fakeUserId}),
+      );
+      final provider = await pumpAuth(tester);
+
+      await run(tester, () => provider.login('a@b.co', 'secret1'));
+
+      expect(backend.requestsTo(farmsPath), isEmpty);
+      expect(location(), '/');
+    });
+
     testWidgets('goes home when the user has a farm', (tester) async {
       signInSucceeds();
       backend.on(
@@ -265,10 +297,10 @@ void main() {
         'configuration_error',
       ),
       (
-        'unexpected errors',
+        'server errors',
         500,
         {'message': 'Database: exploded'},
-        'an_error_occurred',
+        'server_busy_message',
       ),
     ]) {
       testWidgets('maps $description to "$expected"', (tester) async {
@@ -287,7 +319,7 @@ void main() {
       });
     }
 
-    testWidgets('maps network failures to "no_internet_connection"', (
+    testWidgets('maps network failures to "sign_in_needs_internet"', (
       tester,
     ) async {
       backend.on(
@@ -301,7 +333,7 @@ void main() {
 
       await run(tester, () => provider.login('a@b.co', 'secret1'));
 
-      expect(provider.errorMessage, 'no_internet_connection');
+      expect(provider.errorMessage, 'sign_in_needs_internet');
       expect(provider.isConnectionError, isTrue);
       expect(location(), '/login');
     });
@@ -361,7 +393,9 @@ void main() {
       );
     });
 
-    testWidgets('times out a farm lookup that never answers', (tester) async {
+    testWidgets('goes home when the farm lookup times out after signing in', (
+      tester,
+    ) async {
       signInSucceeds();
       backend.on('GET', farmsPath, (_) async {
         await Future<void>.delayed(const Duration(milliseconds: 300));
@@ -374,8 +408,9 @@ void main() {
 
       await run(tester, () => provider.login('a@b.co', 'secret1'));
 
-      expect(provider.errorMessage, 'request_timed_out');
-      expect(location(), '/login');
+      // Signed in is signed in; the farm comes down with the next sync.
+      expect(provider.errorMessage, isNull);
+      expect(location(), '/');
       await tester.runAsync(
         () => Future<void>.delayed(const Duration(milliseconds: 350)),
       );
@@ -423,29 +458,28 @@ void main() {
   });
 
   group('when Supabase is unreachable', () {
-    setUp(
-      () => backend.on(
-        'GET',
-        usersPath,
-        (_) async => throw const SocketException(
-          'Failed host lookup: fake.supabase.test',
-        ),
-      ),
-    );
+    setUp(() {
+      backend.on('GET', usersPath, unreachable);
+      backend.on('POST', '/auth/v1/token', unreachable);
+      backend.on('POST', '/auth/v1/signup', unreachable);
+    });
 
-    testWidgets('login stops before contacting auth', (tester) async {
+    testWidgets('login explains that signing in needs the internet', (
+      tester,
+    ) async {
       final provider = await pumpAuth(tester);
 
       await run(tester, () => provider.login('a@b.co', 'secret1'));
 
-      expect(provider.errorMessage, 'unable_to_connect');
+      expect(provider.errorMessage, 'sign_in_needs_internet');
       expect(provider.isConnectionError, isTrue);
       expect(provider.isLoading, isFalse);
-      expect(backend.requestsTo('/auth/v1/token'), isEmpty);
       expect(location(), '/login');
     });
 
-    testWidgets('register stops before contacting auth', (tester) async {
+    testWidgets('register keeps the details and carries on to create-farm', (
+      tester,
+    ) async {
       final provider = await pumpAuth(tester);
 
       await run(
@@ -453,9 +487,35 @@ void main() {
         () => provider.register('a@b.co', 'secret1', 'secret1'),
       );
 
-      expect(provider.errorMessage, 'unable_to_connect');
+      expect(provider.errorMessage, isNull);
       expect(provider.isLoading, isFalse);
-      expect(backend.requestsTo('/auth/v1/signup'), isEmpty);
+      expect(
+        provider.pendingSignUpStatus,
+        PendingSignUpStatus.waitingForNetwork,
+      );
+      expect(location(), '/create-farm');
+      final pending = await tester.runAsync(PendingRegistrationStore.load);
+      expect(pending?.email, 'a@b.co');
+    });
+
+    testWidgets('register keeps farm details from an earlier attempt', (
+      tester,
+    ) async {
+      await tester.runAsync(
+        () => PendingRegistrationStore.save(
+          const PendingRegistration(email: 'typo@b.co', farmName: 'Shamba'),
+        ),
+      );
+      final provider = await pumpAuth(tester);
+
+      await run(
+        tester,
+        () => provider.register('a@b.co', 'secret1', 'secret1'),
+      );
+
+      final pending = await tester.runAsync(PendingRegistrationStore.load);
+      expect(pending?.email, 'a@b.co');
+      expect(pending?.farmName, 'Shamba');
     });
 
     testWidgets('internetTest reports the failure', (tester) async {
@@ -466,6 +526,200 @@ void main() {
       expect(provider.errorMessage, 'connection_test_failed');
       expect(provider.isConnectionError, isTrue);
       expect(provider.isLoading, isFalse);
+    });
+  });
+
+  group('completePendingRegistration', () {
+    const complete = PendingRegistration(
+      email: 'a@b.co',
+      fullName: 'Jane',
+      phone: '0712345678',
+      farmName: 'Shamba',
+      farmLocation: 'Nakuru',
+      recoveryQuestion: 'question_1',
+      recoveryAnswer: ' Blue ',
+    );
+
+    Future<void> savePending(
+      WidgetTester tester, [
+      PendingRegistration pending = complete,
+    ]) => tester.runAsync(() => PendingRegistrationStore.save(pending));
+
+    List<PendingChange> queued() => OfflineServices.instance.sync.outbox.all;
+
+    testWidgets('asks for the password again after a restart', (tester) async {
+      await savePending(tester);
+      final provider = await pumpAuth(tester);
+
+      await run(tester, provider.completePendingRegistration);
+
+      expect(provider.pendingSignUpStatus, PendingSignUpStatus.needsPassword);
+      expect(backend.requestsTo('/auth/v1/signup'), isEmpty);
+    });
+
+    testWidgets('keeps waiting while still offline', (tester) async {
+      backend.on('POST', '/auth/v1/signup', unreachable);
+      await savePending(tester);
+      final provider = await pumpAuth(tester);
+
+      await run(
+        tester,
+        () => provider.completePendingRegistration(password: 'secret1'),
+      );
+
+      expect(
+        provider.pendingSignUpStatus,
+        PendingSignUpStatus.waitingForNetwork,
+      );
+      expect(await tester.runAsync(PendingRegistrationStore.load), isNotNull);
+    });
+
+    testWidgets('creates the account, queues the farm details and goes home', (
+      tester,
+    ) async {
+      backend.on(
+        'POST',
+        '/auth/v1/signup',
+        (_) async => FakeSupabaseBackend.json(fakeSession()),
+      );
+      await savePending(tester);
+      final provider = await pumpAuth(tester);
+
+      await run(
+        tester,
+        () => provider.completePendingRegistration(password: 'secret1'),
+      );
+
+      expect(location(), '/');
+      expect(provider.pendingSignUpStatus, PendingSignUpStatus.idle);
+      expect(await tester.runAsync(PendingRegistrationStore.load), isNull);
+
+      final changes = queued();
+      expect(changes.map((c) => (c.kind, c.target)), [
+        (ChangeKind.upsert, 'users'),
+        (ChangeKind.insert, 'farms'),
+        (ChangeKind.update, 'users'),
+      ]);
+      expect(changes[0].payload, {
+        'id': fakeUserId,
+        'full_name': 'Jane',
+        'phone_number': '0712345678',
+      });
+      expect(changes[1].payload, {
+        'user_id': fakeUserId,
+        'farm_name': 'Shamba',
+        'farm_location': 'Nakuru',
+      });
+      expect(changes[2].payload, {
+        'recovery_question': 'question_1',
+        'recovery_answer': 'blue',
+      });
+      // The recovery answer is sent, never kept on the phone.
+      final profile = OfflineServices.instance.store.row(
+        LocalTables.users,
+        fakeUserId,
+      );
+      expect(profile, isNot(contains('recovery_answer')));
+    });
+
+    testWidgets('signs in when an earlier attempt already made the account', (
+      tester,
+    ) async {
+      backend.on(
+        'POST',
+        '/auth/v1/signup',
+        (_) async => FakeSupabaseBackend.json({
+          'code': 422,
+          'error_code': 'user_already_exists',
+          'msg': 'User already registered',
+        }, status: 422),
+      );
+      backend.on(
+        'POST',
+        '/auth/v1/token',
+        (_) async => FakeSupabaseBackend.json(fakeSession()),
+      );
+      await savePending(tester);
+      final provider = await pumpAuth(tester);
+
+      await run(
+        tester,
+        () => provider.completePendingRegistration(password: 'secret1'),
+      );
+
+      expect(location(), '/');
+      expect(queued(), hasLength(3));
+    });
+
+    testWidgets('says the email is taken when the password differs', (
+      tester,
+    ) async {
+      backend.on(
+        'POST',
+        '/auth/v1/signup',
+        (_) async => FakeSupabaseBackend.json({
+          'code': 422,
+          'error_code': 'user_already_exists',
+          'msg': 'User already registered',
+        }, status: 422),
+      );
+      backend.on(
+        'POST',
+        '/auth/v1/token',
+        (_) async => FakeSupabaseBackend.json({
+          'error': 'invalid_grant',
+          'error_description': 'Invalid login credentials',
+        }, status: 400),
+      );
+      await savePending(tester);
+      final provider = await pumpAuth(tester);
+
+      await run(
+        tester,
+        () => provider.completePendingRegistration(password: 'secret1'),
+      );
+
+      expect(provider.pendingSignUpStatus, PendingSignUpStatus.accountExists);
+      expect(queued(), isEmpty);
+    });
+
+    testWidgets('waits for email confirmation when there is no session', (
+      tester,
+    ) async {
+      backend.on(
+        'POST',
+        '/auth/v1/signup',
+        (_) async => FakeSupabaseBackend.json(fakeUser()),
+      );
+      await savePending(tester);
+      final provider = await pumpAuth(tester);
+
+      await run(
+        tester,
+        () => provider.completePendingRegistration(password: 'secret1'),
+      );
+
+      expect(provider.pendingSignUpStatus, PendingSignUpStatus.confirmEmail);
+      expect(await tester.runAsync(PendingRegistrationStore.load), isNotNull);
+    });
+
+    testWidgets('signing in with the same email later applies the details', (
+      tester,
+    ) async {
+      backend.on(
+        'POST',
+        '/auth/v1/token',
+        (_) async => FakeSupabaseBackend.json(fakeSession()),
+      );
+      await savePending(tester);
+      final provider = await pumpAuth(tester);
+
+      await run(tester, () => provider.login('A@B.co', 'secret1'));
+
+      expect(location(), '/');
+      expect(queued(), hasLength(3));
+      expect(await tester.runAsync(PendingRegistrationStore.load), isNull);
+      expect(backend.requestsTo(farmsPath), isEmpty);
     });
   });
 

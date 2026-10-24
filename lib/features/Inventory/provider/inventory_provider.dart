@@ -1,8 +1,19 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:ikuku/features/Inventory/model/inventoryitem.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:ikuku/shared/offline/offline_services.dart';
 
+/// The farm store's items, read from and written to the device first.
+/// Changes reach the server in the background whenever there is a
+/// connection.
 class InventoryProvider extends ChangeNotifier {
+  InventoryProvider({SyncEngine? sync}) : _syncOverride = sync;
+
+  final SyncEngine? _syncOverride;
+  SyncEngine get _sync => _syncOverride ?? OfflineServices.instance.sync;
+
+  StreamSubscription<String>? _subscription;
   final List<InventoryItem> _inventory = [];
   bool _isloading = false;
 
@@ -21,87 +32,75 @@ class InventoryProvider extends ChangeNotifier {
   List get lowStockFeeds {
     return feeds.where((item) => (item.quantity as num).toDouble() < 30.0).toList();
   }
-  Future<void> fetchInventory() async {
-    final userId = Supabase.instance.client.auth.currentUser?.id;
-    if (userId == null) return;
 
-    _isloading = true;
-    notifyListeners();
+  void _watch() {
+    _subscription ??= _sync.store.changes
+        .where((table) => table == LocalTables.inventoryItems)
+        .listen((_) => _load());
+  }
 
-    try {
-      final response = await Supabase.instance.client
-          .from('inventory_items')
-          .select()
-          .eq('user_id', userId)
-          .order('added_on', ascending: false);
-
-      _inventory.clear();
-      for (final json in response) {
-        _inventory.add(InventoryItem.fromJson(json));
+  void _load() {
+    final loaded = <InventoryItem>[];
+    for (final row in _sync.store.rows(LocalTables.inventoryItems)) {
+      try {
+        loaded.add(InventoryItem.fromJson(row));
+      } catch (e) {
+        debugPrint('Skipping unreadable inventory item ${row['id']}: $e');
       }
-    } catch (e) {
-      debugPrint('Error fetching inventory: $e');
-    } finally {
-      _isloading = false;
+    }
+    loaded.sort((a, b) => b.addedOn.compareTo(a.addedOn));
+    _inventory
+      ..clear()
+      ..addAll(loaded);
+    notifyListeners();
+  }
+
+  /// Shows the items on the device at once, then refreshes them from the
+  /// server if it can be reached.
+  Future<void> fetchInventory() async {
+    if (_sync.currentUserId == null) return;
+    _watch();
+    _load();
+
+    // Only a first-ever load waits on the server; otherwise the device's
+    // copy is shown straight away.
+    final firstLoad =
+        _inventory.isEmpty && _sync.lastPulledAt == null && _sync.isOnline;
+    if (firstLoad) {
+      _isloading = true;
       notifyListeners();
+    }
+    try {
+      await _sync.refresh();
+    } finally {
+      if (_isloading) {
+        _isloading = false;
+        notifyListeners();
+      }
     }
   }
 
   Future<void> addInventoryItem(InventoryItem item) async {
-    try {
-      await Supabase.instance.client
-          .from('inventory_items')
-          .insert(item.toJson());
-
-      _inventory.add(item);
-      notifyListeners();
-    } catch (e) {
-      debugPrint('Error adding inventory item: $e');
-    }
+    _watch();
+    await _sync.saveRow(LocalTables.inventoryItems, item.toJson());
   }
 
   Future<void> deleteInventoryItem(String id) async {
-    try {
-      await Supabase.instance.client
-          .from('inventory_items')
-          .delete()
-          .eq('id', id);
-
-      _inventory.removeWhere((item) => item.id == id);
-      notifyListeners();
-    } catch (e) {
-      debugPrint('Error deleting inventory item: $e');
-    }
+    _watch();
+    await _sync.deleteRow(LocalTables.inventoryItems, id);
   }
 
   Future<void> incrementQuantity(String id, int amount) async {
     final index = _inventory.indexWhere((item) => item.id == id);
     if (index == -1) return;
 
-    final currentItem = _inventory[index];
-    final newQuantity = currentItem.quantity + amount;
-
-    try {
-      await Supabase.instance.client
-          .from('inventory_items')
-          .update({'quantity': newQuantity})
-          .eq('id', id);
-
-      _inventory[index] = InventoryItem(
-        dailyRecordsId: currentItem.dailyRecordsId,
-        id: currentItem.id,
-        userId: currentItem.userId,
-        name: currentItem.name,
-        quantity: newQuantity,
-        unit: currentItem.unit,
-        price: currentItem.price,
-        category: currentItem.category,
-        addedOn: currentItem.addedOn,
-      );
-      notifyListeners();
-    } catch (e) {
-      debugPrint("Error incrementing quantity: $e");
-    }
+    _watch();
+    await _sync.updateRow(
+      LocalTables.inventoryItems,
+      localId: id,
+      values: {'quantity': _inventory[index].quantity + amount},
+      match: {'id': id},
+    );
   }
 
   void clearInventory() {
@@ -109,25 +108,21 @@ class InventoryProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Update an item's details on Supabase and sync local state
+  /// Saves an item's new details on the device and queues them for the
+  /// server.
   Future<void> updateInventoryItem(InventoryItem updatedItem) async {
-    try {
-      // 1. Update the row inside your Supabase table matching the item ID
-      await Supabase.instance.client
-          .from('inventory_items')
-          .update(updatedItem.toJson())
-          .eq('id', updatedItem.id);
+    _watch();
+    await _sync.updateRow(
+      LocalTables.inventoryItems,
+      localId: updatedItem.id,
+      values: updatedItem.toJson(),
+      match: {'id': updatedItem.id},
+    );
+  }
 
-      // 2. Only if the network request succeeds, update our local memory list
-      final index = _inventory.indexWhere((item) => item.id == updatedItem.id);
-      if (index != -1) {
-        _inventory[index] = updatedItem;
-        notifyListeners(); // Refresh the UI screens immediately
-      }
-
-      debugPrint("Successfully updated inventory item in Supabase.");
-    } catch (e) {
-      debugPrint("Error updating inventory item: $e");
-    }
+  @override
+  void dispose() {
+    _subscription?.cancel();
+    super.dispose();
   }
 }

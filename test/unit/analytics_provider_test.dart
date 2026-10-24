@@ -1,17 +1,23 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ikuku/features/home/provider/analytics_provider.dart';
+import 'package:ikuku/shared/offline/offline_services.dart';
 
 import '../helpers/fake_supabase.dart';
-
-const statsPath = '/rest/v1/user_dashboard_stats';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   final backend = FakeSupabaseBackend();
+  late SyncEngine sync;
 
   setUpAll(() => initFakeSupabase(backend));
-  setUp(backend.reset);
-  tearDown(signOutFakeUser);
+  setUp(() async {
+    backend.reset();
+    sync = (await initOfflineServices(pullSpecs: const [])).sync;
+  });
+  tearDown(() async {
+    await resetOfflineServices();
+    await signOutFakeUser();
+  });
 
   test('starts with an empty summary', () {
     final provider = AnalyticsProvider();
@@ -37,67 +43,82 @@ void main() {
 
     await provider.fetchSummary();
 
-    expect(backend.requestsTo(statsPath), isEmpty);
+    expect(backend.requests, isEmpty);
     expect(loadingStates, [true, false]);
     expect(provider.summary.totalBirds, 0);
   });
 
   group('signed in', () {
-    setUp(() => signInFakeUser(backend));
+    late AnalyticsProvider provider;
 
-    test('fetchSummary loads the current user\'s stats', () async {
-      backend.on(
-        'GET',
-        statsPath,
-        (_) async => FakeSupabaseBackend.json({
-          'user_id': fakeUserId,
-          'total_birds': 320,
-          'total_feeds': 12,
-          'total_eggs': 1500,
-          'full_name': 'Jane Wanjiku',
-        }),
-      );
-      final provider = AnalyticsProvider();
+    setUp(() async {
+      await signInFakeUser(backend);
+      final store = sync.store;
+      await store.put(LocalTables.users, {
+        'id': fakeUserId,
+        'full_name': 'Jane Wanjiku',
+      });
+      await store.putAll(LocalTables.batches, [
+        {'id': 'b1', 'initial_count': 200},
+        {'id': 'b2', 'initial_count': 120},
+      ]);
+      await store.putAll(LocalTables.inventoryItems, [
+        {'id': 'i1', 'category': 'feeds', 'quantity': 10},
+        {'id': 'i2', 'category': 'feeds', 'quantity': 2},
+        {'id': 'i3', 'category': 'medicines', 'quantity': 99},
+      ]);
+      await store.putAll(LocalTables.batchRecords, [
+        {'id': 'r1', 'eggs_collected': 1000},
+        {'id': 'r2', 'eggs_collected': 500},
+        {'id': 'r3', 'eggs_collected': null},
+      ]);
+      provider = AnalyticsProvider();
+    });
+
+    tearDown(() => provider.dispose());
+
+    test('fetchSummary totals what is on the device', () async {
       final loadingStates = <bool>[];
       provider.addListener(() => loadingStates.add(provider.isLoading));
 
       await provider.fetchSummary();
 
-      final request = backend.requestsTo(statsPath).single;
-      expect(request.url.queryParameters['user_id'], 'eq.$fakeUserId');
-      expect(request.headers['Accept'], 'application/vnd.pgrst.object+json');
       expect(provider.summary.totalBirds, 320);
       expect(provider.summary.totalFeeds, 12);
       expect(provider.summary.totalEggs, 1500);
       expect(provider.summary.userName, 'Jane Wanjiku');
-      expect(loadingStates, [true, false]);
+      expect(loadingStates.first, isTrue);
+      expect(loadingStates.last, isFalse);
     });
 
-    test(
-      'fetchSummary keeps the previous summary when the query fails',
-      () async {
-        backend.on(
-          'GET',
-          statsPath,
-          (_) async =>
-              FakeSupabaseBackend.json({'total_birds': 5, 'full_name': 'Jane'}),
-        );
-        final provider = AnalyticsProvider();
-        await provider.fetchSummary();
+    test('works offline', () async {
+      sync.connectivity.reportUnreachable();
 
-        backend.on(
-          'GET',
-          statsPath,
-          (_) async => FakeSupabaseBackend.json({
-            'code': 'PGRST116',
-            'message': 'no rows',
-          }, status: 406),
-        );
-        await provider.fetchSummary();
+      await provider.fetchSummary();
 
-        expect(provider.summary.totalBirds, 5);
-        expect(provider.isLoading, isFalse);
-      },
-    );
+      expect(provider.summary.totalBirds, 320);
+    });
+
+    test('updates as soon as something is recorded', () async {
+      await provider.fetchSummary();
+
+      await sync.saveRow(LocalTables.batches, {
+        'id': 'b3',
+        'initial_count': 30,
+      });
+
+      expect(provider.summary.totalBirds, 350);
+    });
+
+    test('falls back when the profile has no name', () async {
+      await sync.store.put(LocalTables.users, {
+        'id': fakeUserId,
+        'full_name': '  ',
+      });
+
+      await provider.fetchSummary();
+
+      expect(provider.summary.userName, 'type_here');
+    });
   });
 }
