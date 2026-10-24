@@ -511,10 +511,19 @@
   "session_expired_message": "Tafadhali ingia tena ili kuendelea.",
   "something_went_wrong_message": "Kuna hitilafu imetokea. Tafadhali jaribu tena.",
   "offline_banner": "Uko nje ya mtandao. Kila unachoingiza kinahifadhiwa kwenye simu hii.",
-  "offline_banner_pending": "Uko nje ya mtandao. Mabadiliko {} yatapakiwa utakaporudi mtandaoni.",
+  "offline_banner_pending": {
+    "one": "Uko nje ya mtandao. Badiliko {} litapakiwa utakaporudi mtandaoni.",
+    "other": "Uko nje ya mtandao. Mabadiliko {} yatapakiwa utakaporudi mtandaoni."
+  },
   "syncing_banner": "Inapakia mabadiliko yako…",
-  "pending_banner": "Mabadiliko {} yanasubiri kupakiwa",
-  "parked_banner": "Mabadiliko {} hayakuweza kupakiwa. Gusa ili kuangalia.",
+  "pending_banner": {
+    "one": "Badiliko {} linasubiri kupakiwa",
+    "other": "Mabadiliko {} yanasubiri kupakiwa"
+  },
+  "parked_banner": {
+    "one": "Badiliko {} halikuweza kupakiwa. Gusa ili kuangalia.",
+    "other": "Mabadiliko {} hayakuweza kupakiwa. Gusa ili kuangalia."
+  },
   "sync_problem_title": "Baadhi ya mabadiliko hayakuweza kupakiwa",
   "sync_problem_message": "Seva haikukubali mabadiliko yako {}. Unaweza kuyatuma tena, au kuyaacha na kubaki na yaliyo kwenye seva.",
   "discard": "Acha",
@@ -532,7 +541,10 @@
   "create_account_now": "Unda akaunti yangu",
   "change_sign_up_details": "Badilisha barua pepe au nenosiri",
   "go_to_sign_in": "Nenda kuingia",
-  "logout_unsynced_warning": "Mabadiliko {} kwenye simu hii bado hayajapakiwa. Ukitoka sasa, yatapotea.",
+  "logout_unsynced_warning": {
+    "one": "Badiliko {} kwenye simu hii bado halijapakiwa. Ukitoka sasa, litapotea.",
+    "other": "Mabadiliko {} kwenye simu hii bado hayajapakiwa. Ukitoka sasa, yatapotea."
+  },
   "logout_anyway": "Toka hata hivyo",
   "photo_needs_internet": "Unganisha mtandao ili kubadilisha picha yako.",
   "news_offline": "Uko nje ya mtandao. Inaonyesha habari zilizohifadhiwa kwenye simu hii.",
