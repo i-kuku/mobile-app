@@ -35,7 +35,7 @@ class BatchDetailContainer extends StatelessWidget {
           ),
           const SizedBox(height: 6),
           Text(
-            '${batch.typeOfBird.toUpperCase()} • ${batch.initialCount} ${'birds'.tr()} • ${batch.age} ${batch.ageUnit} ${'old'.tr()}',
+            '${batch.typeOfBird.toUpperCase()} • ${batch.initialCount} ${'birds'.tr()} • ${'age_old'.tr(args: ['${batch.age} ${batch.ageUnit.tr()}'])}',
             style: const TextStyle(fontSize: 14, color: Colors.grey),
           ),
         ],

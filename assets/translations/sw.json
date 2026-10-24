@@ -554,5 +554,21 @@
   "saved_will_upload": "Imehifadhiwa. Itapakiwa utakaporudi mtandaoni.",
   "all_changes_uploaded": "Mabadiliko yako yote yamepakiwa",
   "sync_status": "Usawazishaji",
-  "upload_now": "Pakia sasa"
+  "upload_now": "Pakia sasa",
+  "bird_type": "Aina ya kuku",
+  "chicken": "Kuku",
+  "missing_batch_id": "Kundi hili halikupatikana. Rudi nyuma ujaribu tena.",
+  "updating": "Inasasisha…",
+  "batch_updated_successfully": "Kundi limesasishwa",
+  "enter_the_cost": "Weka gharama",
+  "no_reports_found": "Hakuna ripoti zilizopatikana",
+  "age_old": "umri wa {}",
+  "please_select_chicken_type": "Tafadhali chagua aina ya kuku",
+  "batches": "Makundi",
+  "close_article": "Funga makala",
+  "how_many_chickens_curled?": "Kuku wangapi wamekunjamana?",
+  "how_many_chickens_died?": "Kuku wangapi wamekufa?",
+  "how_many_chickens_stolen?": "Kuku wangapi wameibiwa?",
+  "you_have_created ": "Umeunda ",
+  "kienyeji": "Kienyeji"
 }

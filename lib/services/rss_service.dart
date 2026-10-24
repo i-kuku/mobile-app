@@ -75,8 +75,10 @@ class RssService {
   /// reached, e.g. offline.
   Future<NewsFeed> loadNews() async {
     final (:articles, :reachedAnyFeed) = await _fetchAll();
-    if (reachedAnyFeed) return NewsFeed(articles, isSaved: false);
-    return NewsFeed(await getCachedArticles(), isSaved: true);
+    if (articles.isNotEmpty) return NewsFeed(articles, isSaved: false);
+    // Nothing new came through, so show what was saved last time. It only
+    // counts as offline if no feed could be reached at all.
+    return NewsFeed(await getCachedArticles(), isSaved: !reachedAnyFeed);
   }
 
   Future<({List<NewsArticle> articles, bool reachedAnyFeed})>
@@ -89,7 +91,8 @@ class RssService {
     // Sort by publication date, newest first
     allArticles.sort((a, b) => b.publishDate.compareTo(a.publishDate));
 
-    if (reached.isNotEmpty) await _cacheArticles(allArticles);
+    // Never replace the saved articles with nothing.
+    if (allArticles.isNotEmpty) await _cacheArticles(allArticles);
     return (articles: allArticles, reachedAnyFeed: reached.isNotEmpty);
   }
 

@@ -86,6 +86,13 @@ void main() {
         const AuthApiException('Invalid login credentials', statusCode: '400'),
       ),
       ('anything else', StateError('bug')),
+      (
+        'a full disk',
+        Exception(
+          'FileSystemException: Cannot open file, path = /x.jpg '
+          '(OS Error: No space left on device, errno = 28)',
+        ),
+      ),
     ]) {
       test('treats $description as rejected', () {
         expect(classifyFailure(error), FailureKind.rejected);

@@ -42,7 +42,6 @@ const _networkMessageFragments = [
   'certificate_verify_failed',
   'xmlhttprequest error',
   'failed to fetch',
-  'os error',
 ];
 
 bool _looksLikeNetworkFailure(String message) {

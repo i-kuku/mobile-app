@@ -306,12 +306,18 @@ class AuthProvider with ChangeNotifier {
       await _offline?.signedIn(user.id);
 
       final pending = await PendingRegistrationStore.load();
-      if (pending != null &&
-          pending.email.toLowerCase() == email.toLowerCase()) {
-        // Finishing a sign-up whose email needed confirming first.
-        await _applyPendingRegistration(user.id, pending);
-        _go(pending.hasFarmDetails ? '/' : '/create-farm');
-        return;
+      if (pending != null) {
+        if (pending.email.toLowerCase() == email.toLowerCase()) {
+          // Finishing a sign-up whose email needed confirming first.
+          await _applyPendingRegistration(user.id, pending);
+          _go(pending.hasFarmDetails ? '/' : '/create-farm');
+          return;
+        }
+        // Signing in with another account abandons that sign-up, which
+        // would otherwise keep redirecting signed-out sessions to it.
+        await PendingRegistrationStore.clear();
+        _pendingPassword = null;
+        _pendingStatus = PendingSignUpStatus.idle;
       }
 
       final (location, extra) = await _destinationAfterSignIn(user);

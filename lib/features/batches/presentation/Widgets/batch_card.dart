@@ -30,7 +30,7 @@ class BatchCard extends StatelessWidget {
           Expanded(
             child: Container(
               constraints: const BoxConstraints(minHeight: 80),
-              padding: EdgeInsets.fromLTRB(16, 8, 16, 8),
+              padding: EdgeInsets.fromLTRB(8, 8, 12, 8),
               decoration: BoxDecoration(borderRadius: BorderRadius.circular(4)),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -45,29 +45,21 @@ class BatchCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    "${"Bird type".tr()}: ${batch.typeOfBird}",
+                    "${"bird_type".tr()}: ${batch.typeOfBird.tr()}",
                     style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                       color: Colors.grey,
                       fontSize: 16,
                     ),
                   ),
-                  Row(
-                    children: [
-                      Text(
-                        "${"chicken".tr()}: ${batch.initialCount}",
-                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                          color: Colors.grey,
-                          fontSize: 16,
-                        ),
-                      ),
-                      Text(
-                        ", ${"age".tr()}: ${batch.age} ${batch.ageUnit} ",
-                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                          color: Colors.grey,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ],
+                  // One Text, so a narrow screen wraps it between words and
+                  // never starts a line with the comma.
+                  Text(
+                    "${"chicken".tr()}: ${batch.initialCount}, "
+                    "${"age".tr()}: ${batch.age} ${batch.ageUnit.tr()}",
+                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                      color: Colors.grey,
+                      fontSize: 16,
+                    ),
                   ),
                 ],
               ),

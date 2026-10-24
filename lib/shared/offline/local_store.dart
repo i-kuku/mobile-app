@@ -14,6 +14,7 @@ abstract final class LocalTables {
   static const sales = 'sale';
   static const users = 'users';
   static const farms = 'farms';
+  static const userNotifications = 'user_notifications';
 
   /// Server results that can't be rebuilt from the tables above, keyed by
   /// whatever identifies the query (e.g. a financial summary per batch).
@@ -33,6 +34,7 @@ abstract final class LocalTables {
     sales,
     users,
     farms,
+    userNotifications,
     cache,
     outbox,
     meta,
@@ -144,6 +146,17 @@ class LocalStore {
   /// The name of each table as it changes.
   Stream<String> get changes => _changes.stream;
 
+  final Map<String, int> _revisions = {};
+
+  /// Goes up every time [table] changes, so callers can cache what they
+  /// derive from it.
+  int revisionOf(String table) => _revisions[table] ?? 0;
+
+  void _changed(String table) {
+    _revisions[table] = revisionOf(table) + 1;
+    _changes.add(table);
+  }
+
   Map<String, String> _table(String table) =>
       _tables.putIfAbsent(table, () => {});
 
@@ -173,13 +186,13 @@ class LocalStore {
     final encoded = {for (final row in rows) idOf(row): jsonEncode(row)};
     if (encoded.isEmpty) return Future.value();
     _table(table).addAll(encoded);
-    _changes.add(table);
+    _changed(table);
     return _persist(() => _persistence.put(table, encoded));
   }
 
   Future<void> remove(String table, String id) {
     if (_table(table).remove(id) == null) return Future.value();
-    _changes.add(table);
+    _changed(table);
     return _persist(() => _persistence.delete(table, [id]));
   }
 
@@ -192,7 +205,7 @@ class LocalStore {
     final removed = current.keys.where((id) => !encoded.containsKey(id));
     final removedIds = removed.toList();
     _tables[table] = encoded;
-    _changes.add(table);
+    _changed(table);
     return _persist(() async {
       if (removedIds.isNotEmpty) {
         await _persistence.delete(table, removedIds);
@@ -206,7 +219,7 @@ class LocalStore {
     for (final table in LocalTables.all) {
       if (_table(table).isEmpty) continue;
       _table(table).clear();
-      _changes.add(table);
+      _changed(table);
       await _persist(() => _persistence.clear(table));
     }
   }

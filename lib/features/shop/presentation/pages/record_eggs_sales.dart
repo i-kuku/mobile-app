@@ -194,6 +194,7 @@ class _RecordEggsSalePageState extends State<RecordEggsSalePage> {
                 Expanded(
                   child: SelectCard(
                     label: 'chicken'.tr(),
+                    type: 'chicken',
                     icon: SvgPicture.asset(
                       'assets/icons/animal-chicken.svg',
                       colorFilter: const ColorFilter.mode(
@@ -209,6 +210,7 @@ class _RecordEggsSalePageState extends State<RecordEggsSalePage> {
                 Expanded(
                   child: SelectCard(
                     label: 'eggs'.tr(),
+                    type: 'eggs',
                     icon: SvgPicture.asset(
                       'assets/icons/eggs-f.svg',
                       colorFilter: const ColorFilter.mode(
@@ -224,6 +226,7 @@ class _RecordEggsSalePageState extends State<RecordEggsSalePage> {
                 Expanded(
                   child: SelectCard(
                     label: 'manure'.tr(),
+                    type: 'manure',
                     icon: SvgPicture.asset(
                       'assets/icons/feeds.svg',
                       colorFilter: const ColorFilter.mode(
@@ -251,7 +254,7 @@ class _RecordEggsSalePageState extends State<RecordEggsSalePage> {
                 children: [
                   Expanded(
                     child: ChickenTypeCard(
-                      label: 'Kienyeji',
+                      label: 'kienyeji'.tr(),
                       onTap: () =>
                           setState(() => _selectedBirdType = 'kienyeji'),
                       isSelected: _selectedBirdType == 'kienyeji',
