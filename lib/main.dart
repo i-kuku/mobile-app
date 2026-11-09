@@ -128,7 +128,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
+      title: 'i-kuku',
       theme: appTheme,
       routerConfig: AppRouter.router,
       // Tells the farmer when they're offline or have changes to upload.

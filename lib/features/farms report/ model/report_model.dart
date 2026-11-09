@@ -54,7 +54,7 @@ class Report {
     dailyRecordId: json['daily_record_id'] as String,
     batchId: json['batch_id'] as String,
     chickenReduction: json['chicken_reduction'] as bool? ?? false,
-    chickensSold: json['chicken_sold'] as int? ?? 0,
+    chickensSold: json['chickens_sold'] as int? ?? 0,
     chickensCurled: json['chickens_curled'] as int? ?? 0,
     chickensDied: json['chickens_died'] as int? ?? 0,
     chickensStolen: json['chickens_stolen'] as int? ?? 0,

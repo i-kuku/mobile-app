@@ -142,7 +142,18 @@ class _ChickenReductionPageState extends State<ChickenReductionPage> {
                           stolen: 0,
                         );
                       }
-                      context.push('/egg_production');
+                      // context.push('/egg_production');
+                      final isBroiler = (widget.batch?.typeOfBird ?? '')
+                      .trim()
+                      .toLowerCase()
+                      .contains('broiler');
+
+                      if(isBroiler){
+                        provider.clearEggs();
+                        context.push('/feeds_selection');
+                      }else{
+                        context.push('/egg_production');
+                      }
                     },
                   ),
                 ],
