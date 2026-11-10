@@ -563,5 +563,9 @@
     "enter_the_cost": "Enter the cost",
     "no_reports_found": "No reports found",
     "age_old": "{} old",
-    "please_select_chicken_type": "Please select a chicken type"
+    "please_select_chicken_type": "Please select a chicken type",
+    "bags": "Bags",
+    "report_already_submitted_content": "A daily report for this batch has already been submitted today",
+    "report_already_submitted": "Report Already Submitted",
+    "edit_report": "Edit Report"
 }

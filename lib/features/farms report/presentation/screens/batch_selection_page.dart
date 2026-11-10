@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:ikuku/features/batches/model/chicken_batch_model.dart';
 import 'package:ikuku/features/batches/provider/batch_provider.dart';
 import 'package:ikuku/features/farms%20report/presentation/widgets/batch_card.dart';
 import 'package:ikuku/features/farms%20report/provider/farm_report_provider.dart';
@@ -40,21 +41,65 @@ class _BatchSelectionPageState extends State<BatchSelectionPage> {
     }
   }
 
-  void _alreadyReportedDialog(BuildContext context, String batchName) {
+  void _alreadyReportedDialog(BuildContext context, ChickenBatch batch) {
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
+        backgroundColor: Colors.white,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadiusGeometry.circular(10),
         ),
-        title: Text('Report Already Submitted'),
+        title: Text(
+          'report_already_submitted'.tr(),
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
         content: Text(
-          "A daily report for this batch has already been submitted today",
+          "report_already_submitted_content".tr(),
+          style: Theme.of(context).textTheme.bodyLarge,
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: Text("Ok"),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                    side: BorderSide(color: CustomColors.primary),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  onPressed: () => Navigator.pop(dialogContext),
+                  child: Text("back".tr()),
+                ),
+              ),
+              SizedBox(width: 10),
+              Expanded(
+                child: FilledButton(
+                  style: FilledButton.styleFrom(
+                    backgroundColor: CustomColors.primary,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.pop(dialogContext);
+                    final row = _repository.reportOn(batch.id, DateTime.now());
+                    if (row == null) return;
+                    final provider = context.read<FarmReportProvider>();
+
+                    provider.resetForm();
+                    provider.loadReportForEditing(row);
+                    provider.setBatch(batch);
+                    context.push('/Farm_Report_Entry_Screen', extra: batch.id);
+                  },
+                  child: Text("edit_report".tr()),
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -115,25 +160,26 @@ class _BatchSelectionPageState extends State<BatchSelectionPage> {
                               batch.id,
                               DateTime.now(),
                             )) {
-                              _alreadyReportedDialog(context, batch.name);
+                              _alreadyReportedDialog(context, batch);
                               return;
                             }
                             setState(() {
                               _selectedBatchId = batch.id;
                             });
-                            context.read<FarmReportProvider>().setBatch(batch);
-                            await Future.delayed(
-                              const Duration(milliseconds: 100),
-                            );
+                            final report = context.read<FarmReportProvider>();
+                            report.resetForm();
+                            report.setBatch(batch);
+                            report.setReportDate(DateTime.now());
+                            // await Future.delayed(
+                            //   const Duration(milliseconds: 100),
+                            // );
 
                             if (!context.mounted) return;
 
-                            if (mounted) {
-                              await context.push(
-                                '/calendar_page',
-                                extra: batch.id,
-                              );
-                            }
+                            await context.push(
+                              '/calendar_page',
+                              extra: batch.id,
+                            );
                           },
                           birdTypeColor: _getBirdTypeColor(batch.typeOfBird),
                           isSelected: _selectedBatchId == batch.id,

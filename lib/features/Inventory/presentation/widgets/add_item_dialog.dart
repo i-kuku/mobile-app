@@ -106,7 +106,7 @@ class _AddItemFormState extends State<AddItemForm>{
                   initialValue: _selectedUnit,
                   decoration: _inputDecoration(),
                   icon: const Icon(Icons.keyboard_arrow_down),
-                  items: ['Kg', 'L', 'g', 'Mifuko']
+                  items: ['Kg', 'L', 'g', 'bags']
                       .map((u) => DropdownMenuItem(value: u, child: Text(u)))
                       .toList(),
                   onChanged: (val) => setState(() => _selectedUnit = val!),

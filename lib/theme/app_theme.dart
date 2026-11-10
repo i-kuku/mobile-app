@@ -91,4 +91,12 @@ final ThemeData appTheme = ThemeData(
     hintStyle: TextStyle(color: CustomColors.textDisabled),
     labelStyle: TextStyle(color: CustomColors.text),
   ),
+ snackBarTheme: SnackBarThemeData(
+  backgroundColor: CustomColors.secondary,
+  contentTextStyle: const TextStyle(color: Colors.white, fontSize: 15),
+  behavior: SnackBarBehavior.floating,
+  shape: RoundedRectangleBorder(
+    borderRadius: BorderRadius.circular(10),
+  ),
+),
 );
