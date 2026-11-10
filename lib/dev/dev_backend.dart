@@ -61,6 +61,10 @@ class DevBackend extends http.BaseClient {
   static const url = 'http://dev.ikuku.local';
   static const publishableKey = 'dev-publishable-key';
 
+  /// Where supabase_flutter keeps the signed-in session between launches.
+  static final sessionKey =
+      'sb-${Uri.parse(url).host.split('.').first}-auth-token';
+
   /// The running backend, when [enabled].
   static DevBackend? instance;
 
@@ -466,11 +470,19 @@ class DevBackend extends http.BaseClient {
     }
 
     final params = url.queryParametersAll;
+    // Real PostgREST would answer these differently, so fail loudly rather
+    // than return rows it would have filtered out.
+    final unsupported = _unsupported(params);
+    if (unsupported != null) {
+      return _pgError(
+        400,
+        'PGRST100',
+        'The dev backend does not support $unsupported',
+      );
+    }
     final filters = [
       for (final MapEntry(:key, :value) in params.entries)
-        // Filters on embedded resources (`daily_records.user_id`) are
-        // ignored: the dev backend doesn't embed.
-        if (!_reservedParams.contains(key) && !key.contains('.'))
+        if (!_reservedParams.contains(key))
           for (final v in value) _Filter.parse(key, v),
     ];
     bool matches(Map<String, dynamic> row) =>
@@ -588,7 +600,25 @@ class DevBackend extends http.BaseClient {
     if (uid == null) return false;
     if (table == 'users') return row['id'] == uid;
     if (row.containsKey('user_id')) return row['user_id'] == uid;
+    if (table == 'batch_records') return _owns(table, row, uid);
     return true;
+  }
+
+  /// What in a query the dev backend can't answer like PostgREST, if any.
+  static String? _unsupported(Map<String, List<String>> params) {
+    final select = params['select']?.firstOrNull ?? '';
+    if (select.contains('(')) return 'embedded resources ("$select")';
+    for (final MapEntry(:key, :value) in params.entries) {
+      if (_reservedParams.contains(key)) continue;
+      if (key == 'or' || key == 'and' || key.contains('.')) {
+        return 'the "$key" filter';
+      }
+      for (final v in value) {
+        final op = _Filter.parse(key, v).op;
+        if (!_Filter.operators.contains(op)) return 'the "$op" operator';
+      }
+    }
+    return null;
   }
 
   Map<String, dynamic> _withDefaults(String table, Map<String, dynamic> row) {
@@ -668,11 +698,25 @@ class DevBackend extends http.BaseClient {
     if (order == null || order.isEmpty) return rows;
     final keys = [
       for (final part in order.split(','))
-        (column: part.split('.').first, desc: part.split('.').contains('desc')),
+        if (part.split('.') case [final column, ...final modifiers])
+          (
+            column: column,
+            desc: modifiers.contains('desc'),
+            // Unless told otherwise, PostgreSQL sorts NULL above any value.
+            nullsFirst:
+                modifiers.contains('nullsfirst') ||
+                (modifiers.contains('desc') &&
+                    !modifiers.contains('nullslast')),
+          ),
     ];
     return rows.toList()..sort((a, b) {
-      for (final (:column, :desc) in keys) {
-        final c = _compare(a[column], b[column]);
+      for (final (:column, :desc, :nullsFirst) in keys) {
+        final (x, y) = (a[column], b[column]);
+        if (x == null || y == null) {
+          if (x == y) continue;
+          return (x == null) == nullsFirst ? -1 : 1;
+        }
+        final c = _compare(x, y);
         if (c != 0) return desc ? -c : c;
       }
       return 0;
@@ -698,9 +742,11 @@ class DevBackend extends http.BaseClient {
     } on _Expired {
       return _pgError(401, 'PGRST301', 'JWT expired');
     }
-    final params = body.isEmpty
-        ? <String, dynamic>{}
-        : jsonDecode(body) as Map<String, dynamic>;
+    // Called without params, the client sends `null`.
+    final params = switch (body.isEmpty ? null : jsonDecode(body)) {
+      final Map<String, dynamic> map => map,
+      _ => <String, dynamic>{},
+    };
     switch (function) {
       case 'get_financial_summary':
         if (uid == null) return _Reply.json(<Object>[], 200);
@@ -716,9 +762,21 @@ class DevBackend extends http.BaseClient {
         return _Reply.json(null, 200, changed: profile != null);
       case 'delete_user_account':
         if (uid == null) return _pgError(401, '42501', 'Not signed in');
-        final tables = _state['tables'] as Map<String, dynamic>;
-        for (final table in tables.keys) {
-          _table(table).removeWhere((row) => _owns(table, row, uid));
+        // batch_records are owned through daily_records, so they go first.
+        // Shared tables, whose rows have no owner, are left alone.
+        final tables = (_state['tables'] as Map<String, dynamic>).keys.toList()
+          ..sort(
+            (a, b) =>
+                (b == 'batch_records' ? 1 : 0) - (a == 'batch_records' ? 1 : 0),
+          );
+        for (final table in tables) {
+          _table(table).removeWhere(
+            (row) =>
+                (table == 'users' ||
+                    table == 'batch_records' ||
+                    row.containsKey('user_id')) &&
+                _owns(table, row, uid),
+          );
         }
         _authUsers.removeWhere((u) => u['id'] == uid);
         _refreshTokens.removeWhere((_, owner) => owner == uid);
@@ -815,6 +873,19 @@ class _Filter {
   final String op;
   final String arg;
 
+  static const operators = {
+    'eq',
+    'neq',
+    'is',
+    'in',
+    'gt',
+    'gte',
+    'lt',
+    'lte',
+    'like',
+    'ilike',
+  };
+
   static String _text(Object? v) => v == null ? 'null' : '$v';
 
   bool matches(Map<String, dynamic> row) {
@@ -823,7 +894,8 @@ class _Filter {
       case 'eq':
         return _text(value) == arg;
       case 'neq':
-        return _text(value) != arg;
+        // As in SQL, NULL is neither equal nor unequal to anything.
+        return value != null && _text(value) != arg;
       case 'is':
         return switch (arg) {
           'null' => value == null,
@@ -855,8 +927,8 @@ class _Filter {
         );
         return pattern.hasMatch(_text(value));
     }
-    // Unknown operators don't filter rather than hide everything.
-    return true;
+    // DevBackend._rest rejects other operators before filtering.
+    return false;
   }
 }
 

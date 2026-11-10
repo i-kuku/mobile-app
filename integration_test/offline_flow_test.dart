@@ -86,6 +86,12 @@ void main() {
       isTrue,
       reason: 'Run with --dart-define=IKUKU_DEV_BACKEND=true',
     );
+    // The counts checked below are the seed's.
+    expect(
+      DevBackend.resetOnStart,
+      isTrue,
+      reason: 'Run with --dart-define=IKUKU_DEV_RESET=true',
+    );
 
     // A first launch, minus the home tour, which would cover the screen.
     final prefs = await SharedPreferences.getInstance();
@@ -117,10 +123,8 @@ void main() {
 
     // --- Offline from here ---------------------------------------------------
     await tester.tap(find.byKey(DevOfflineSwitch.switchKey));
-    await waitFor(
-      tester,
-      find.text("You're offline. Everything you enter is saved on this phone."),
-    );
+    // Notifications the seed triggers may still be waiting to upload.
+    await waitFor(tester, offlineBanner);
     await screenshot(tester, 'home_offline');
     final pendingAtStart = sync().pendingCount;
 
@@ -147,11 +151,12 @@ void main() {
     await settle(tester, const Duration(seconds: 3));
     await waitFor(tester, find.text('Add New Batch'));
     await waitFor(tester, find.text('Offline Batch'));
-    expect(sync().pendingCount, pendingAtStart + 1);
+    final pending = sync().pendingCount;
+    expect(pending, pendingAtStart + 1);
     await waitFor(
       tester,
       find.textContaining(
-        pendingAtStart == 0 ? '1 change will upload' : 'changes will upload',
+        pending == 1 ? '1 change will upload' : '$pending changes will upload',
       ),
     );
     await screenshot(tester, 'batch_saved_offline');
