@@ -16,6 +16,8 @@ class FarmReportEntryScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final report = context.watch<FarmReportProvider>();
     final birdType = report.batch?.typeOfBird.toUpperCase() ?? '';
+     final isBroiler =
+      (report.batch?.typeOfBird ?? '').toLowerCase().contains('broiler');
     final formattedDate = DateFormat('dd MMM yyyy').format(report.reportDate);
 
     return Scaffold(
@@ -30,7 +32,7 @@ class FarmReportEntryScreen extends StatelessWidget {
             context,
             title: 'Birds- $birdType',
             rows: {
-              'sold'.tr(): report.chickensSold,
+              // 'sold'.tr(): report.chickensSold,
               'died'.tr(): report.chickensDied,
               'curled'.tr(): report.chickensCurled,
               'stolen'.tr(): report.chickensStolen,
@@ -38,6 +40,7 @@ class FarmReportEntryScreen extends StatelessWidget {
             onEdit: () => context.push('/chicken_reduction'),
           ),
           const SizedBox(height: 16),
+          if(!isBroiler)...[
           _sectionCard(
             context,
             title: 'eggs'.tr(),
@@ -50,6 +53,7 @@ class FarmReportEntryScreen extends StatelessWidget {
             onEdit: () => context.push('/egg_production'),
           ),
           const SizedBox(height: 16),
+          ],
           _listCard(
             context,
             title: 'feeds_used'.tr(),

@@ -2,13 +2,14 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:ikuku/features/home/data/model/analytic_summary.dart';
+import 'package:ikuku/features/shop/data/stock_service.dart';
 import 'package:ikuku/shared/offline/offline_services.dart';
 
 /// The home screen's totals, worked out from the data on the device so they
 /// include entries that haven't reached the server yet.
 class AnalyticsProvider with ChangeNotifier {
   AnalyticsProvider({SyncEngine? sync}) : _syncOverride = sync;
-
+  
   final SyncEngine? _syncOverride;
   SyncEngine get _sync => _syncOverride ?? OfflineServices.instance.sync;
 
@@ -24,6 +25,7 @@ class AnalyticsProvider with ChangeNotifier {
     LocalTables.inventoryItems,
     LocalTables.batchRecords,
     LocalTables.users,
+    LocalTables.sales,
   };
 
   void toggleLoadingState() {
@@ -47,18 +49,20 @@ class AnalyticsProvider with ChangeNotifier {
         ? null
         : store.row(LocalTables.users, userId)?['full_name'] as String?;
 
+    final records = store.rows(LocalTables.batchRecords);
     _summary = AnalyticSummary.fromJson({
-      'total_birds': _sum(store.rows(LocalTables.batches), 'initial_count'),
+      'total_birds': StockService(sync: _sync).totalChickensAvailable(),
       'total_feeds': _sum(
         store
             .rows(LocalTables.inventoryItems)
             .where((item) => item['category'] == 'feeds'),
         'quantity',
       ),
+
       'total_eggs': _sum(
-        store.rows(LocalTables.batchRecords),
+        records,
         'eggs_collected',
-      ),
+      ) + _sum(records, 'eggs_standard'),
       if (fullName != null && fullName.trim().isNotEmpty) 'full_name': fullName,
     });
     notifyListeners();

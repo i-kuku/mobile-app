@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:ikuku/features/shop/data/stock_service.dart';
 import 'package:ikuku/features/shop/model/sale_model.dart';
 import 'package:ikuku/features/shop/presentation/widgets/chicken_type_card.dart';
 import 'package:ikuku/features/shop/presentation/widgets/input_fields.dart';
@@ -291,6 +292,17 @@ class _RecordChickenSalePageState extends State<RecordChickenSalePage> {
         );
         return;
       }
+           final available = StockService().chickensAvailable(_selectedBirdType!);
+      if (count > available) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'You only have $available $_selectedBirdType chickens available',
+            ),
+          ),
+        );
+        return;
+      }
     }
     if (_selectedTypes.contains('eggs')) {
       final eggsCount = int.tryParse(_eggsCountController.text) ?? 0;
@@ -308,8 +320,8 @@ class _RecordChickenSalePageState extends State<RecordChickenSalePage> {
       context: context,
       builder: (dialogContext) => ConfirmationDialog(
         onTap: () {
-           
-          context.push('/my_shop');
+          Navigator.of(dialogContext).pop();
+          // context.push('/my_shop');
          _handleSale();
         },
       ),

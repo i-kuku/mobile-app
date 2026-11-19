@@ -480,10 +480,10 @@
   "total_cost_of_items_in_store": "Jumla ya vitu vilivyopo kwenye stoo",
   "3_months": "Miezi tatu",
   "lifecycle": "Mzunguko wa uzalio",
-  "record_sales": "Sajili Mauzo",
+  "record_sales": "Rekodi Mauzo",
   "today_total_sales": "Jumla ya Mauzo ya Leo",
-  "record_sale": "Sajili Mauzo",
-  "all_sales": "Mauzo Yote",
+  "record_sale": "Rekodi Mauzo",
+  "all_sales": "Jumla ya mauzo",
   "latest_sales": "MAUZO YA HIVI KARIBUNI",
   "what_have_you_sold": "Umeuza nini?",
   "chicken_type": "Aina ya kuku",
@@ -570,5 +570,9 @@
   "how_many_chickens_died?": "Kuku wangapi wamekufa?",
   "how_many_chickens_stolen?": "Kuku wangapi wameibiwa?",
   "you_have_created ": "Umeunda ",
-  "kienyeji": "Kienyeji"
+  "kienyeji": "Kienyeji",
+  "bags": "Mifuko",
+  "report_already_submitted_content": "Tayari umeshatuma ripoti ya kundi hili kwa tarehe uliyochagua. ",
+  "report_already_submitted": "Ripoti Tayari Imetumwa",
+  "edit_report": "Hariri Ripoti"
 }

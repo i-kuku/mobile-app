@@ -84,6 +84,17 @@ class FarmReportProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void clearEggs(){
+    _eggsCollected = 0;
+    _eggsSmall = 0;
+    _eggsDeformed = 0;
+    _eggsStandard = 0;
+    _eggsBroken = 0;
+    _eggsCollection = false;
+    _gradeEggs = false;
+    notifyListeners();
+  }
+
   void updateFeeds(List<Map<String, dynamic>> feeds) {
     _feedsUsed = feeds;
     notifyListeners();
@@ -248,6 +259,7 @@ class FarmReportProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+  
 
   void resetForm() {
     _chickensCurled = 0;

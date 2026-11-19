@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ikuku/features/financial%20summaries/provider/financial_provider.dart';
+import 'package:ikuku/features/shop/data/stock_service.dart';
 import 'package:ikuku/features/shop/model/sale_model.dart';
 import 'package:ikuku/features/shop/presentation/widgets/chicken_type_card.dart';
 import 'package:ikuku/features/shop/presentation/widgets/confirmation_dialog.dart';
@@ -63,6 +64,17 @@ class _RecordEggsSalePageState extends State<RecordEggsSalePage> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Please enter valid chicken quantity and price'),
+          ),
+        );
+        return;
+      }
+      final available = StockService().chickensAvailable(_selectedBirdType!);
+      if (chickenCount > available) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'You only have $available $_selectedBirdType chickens available',
+            ),
           ),
         );
         return;
@@ -134,7 +146,7 @@ class _RecordEggsSalePageState extends State<RecordEggsSalePage> {
       if (mounted) {
         context.read<FinancialSummaryProvider>().refresh();
         context.pop();
-        }
+      }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(

@@ -85,4 +85,16 @@ class ReportsRepository {
               true,
     );
   }
+
+  /// The report for [batchId] dated [date], or null.
+  Map<String, dynamic>? reportOn(String batchId, DateTime date) {
+    final dateStr = date.toIso8601String().split('T')[0];
+    for (final r in _reports()) {
+      final reportDate = (r['daily_records'] as Map)['report_date'] as String?;
+      if (r['batch_id'] == batchId && reportDate?.startsWith(dateStr) == true) {
+        return r;
+      }
+    }
+    return null;
+  }
 }

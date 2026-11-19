@@ -58,9 +58,23 @@ void main() {
         'id': fakeUserId,
         'full_name': 'Jane Wanjiku',
       });
+      // await store.putAll(LocalTables.batches, [
+      //   {'id': 'b1', 'initial_count': 200},
+      //   {'id': 'b2', 'initial_count': 120},
+      // ]);
       await store.putAll(LocalTables.batches, [
-        {'id': 'b1', 'initial_count': 200},
-        {'id': 'b2', 'initial_count': 120},
+        {
+          'id': 'b1',
+          'user_id': fakeUserId,
+          'type_of_bird': 'broiler',
+          'initial_count': 200,
+        },
+        {
+          'id': 'b2',
+          'user_id': fakeUserId,
+          'type_of_bird': 'layer',
+          'initial_count': 120,
+        },
       ]);
       await store.putAll(LocalTables.inventoryItems, [
         {'id': 'i1', 'category': 'feeds', 'quantity': 10},
@@ -68,7 +82,12 @@ void main() {
         {'id': 'i3', 'category': 'medicines', 'quantity': 99},
       ]);
       await store.putAll(LocalTables.batchRecords, [
-        {'id': 'r1', 'eggs_collected': 1000},
+        {
+          'id': 'r1',
+          'batch_id': 'b2',
+          'eggs_collected': 1000,
+          'eggs_standard': 200,
+        },
         {'id': 'r2', 'eggs_collected': 500},
         {'id': 'r3', 'eggs_collected': null},
       ]);
@@ -85,12 +104,33 @@ void main() {
 
       expect(provider.summary.totalBirds, 320);
       expect(provider.summary.totalFeeds, 12);
-      expect(provider.summary.totalEggs, 1500);
+      expect(provider.summary.totalEggs, 1700);
       expect(provider.summary.userName, 'Jane Wanjiku');
       expect(loadingStates.first, isTrue);
       expect(loadingStates.last, isFalse);
     });
 
+    test('birds total subtracts reductions and chicken sales', () async {
+      await sync.store.putAll(LocalTables.batchRecords, [
+        {
+          'id': 'r9',
+          'batch_id': 'b1',
+          'chickens_died': 10,
+          'chickens_stolen': 5,
+        },
+      ]);
+      await sync.store.put(LocalTables.sales, {
+        'id': 's1',
+        'sale_type': 'chicken',
+        'sub_type': 'broiler',
+        'quantity': 20,
+      });
+
+      await provider.fetchSummary();
+
+      // 320 - 15 reduced - 20 sold
+      expect(provider.summary.totalBirds, 285);
+    });
     test('works offline', () async {
       sync.connectivity.reportUnreachable();
 
@@ -102,10 +142,18 @@ void main() {
     test('updates as soon as something is recorded', () async {
       await provider.fetchSummary();
 
+      // await sync.saveRow(LocalTables.batches, {
+      //   'id': 'b3',
+      //   'initial_count': 30,
+      // }
       await sync.saveRow(LocalTables.batches, {
         'id': 'b3',
+        'user_id': fakeUserId,
+        'type_of_bird': 'kienyeji',
         'initial_count': 30,
       });
+
+      expect(provider.summary.totalBirds, 350);
 
       expect(provider.summary.totalBirds, 350);
     });

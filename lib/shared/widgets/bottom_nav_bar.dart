@@ -4,30 +4,25 @@ import 'package:ikuku/theme/app_theme.dart';
 import 'package:easy_localization/easy_localization.dart';
 
 class BottomNavBar extends StatelessWidget {
-  final int currentIndex;
+  final int? currentIndex;
   const BottomNavBar({super.key, required this.currentIndex});
 
   @override
   Widget build(BuildContext context) {
+    final highlighted = currentIndex != null;
+
     return BottomNavigationBar(
       backgroundColor: Colors.white,
-      currentIndex: currentIndex,
+      currentIndex: currentIndex ?? 0,
       onTap: (index) {
         if (index == 0) {
           // Home: Go to dashboard
           context.go('/');
-        } else if (index == 2) {
-          // Profile: Go to profile page
-          context.go('/profile');
         } else if (index == 1) {
-          // My Shop: Show coming soon message (inactive)
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('coming_soon'.tr()),
-              duration: Duration(seconds: 2),
-              backgroundColor: CustomColors.primary,
-            ),
-          );
+          // Profile: Go to profile page
+          context.go('/my_shop');
+        } else if (index == 2) {
+          context.go('/profile');
         }
       },
       items: [
@@ -39,9 +34,11 @@ class BottomNavBar extends StatelessWidget {
           label: 'home'.tr(),
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.store, color: Colors.grey),
+          icon: Icon(
+            Icons.store,
+            color: currentIndex == 1 ? CustomColors.primary : Colors.grey,
+          ),
           label: 'my_shop'.tr(),
-          backgroundColor: Colors.grey.withValues(alpha: 0.1),
         ),
         BottomNavigationBarItem(
           icon: Icon(
@@ -51,7 +48,7 @@ class BottomNavBar extends StatelessWidget {
           label: 'profile'.tr(),
         ),
       ],
-      selectedItemColor: CustomColors.primary,
+      selectedItemColor: highlighted ? CustomColors.primary : Colors.grey,
       unselectedItemColor: Colors.grey,
     );
   }

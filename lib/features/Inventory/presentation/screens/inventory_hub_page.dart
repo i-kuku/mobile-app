@@ -4,7 +4,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ikuku/features/Inventory/presentation/widgets/inventory_category_card.dart';
 import 'package:ikuku/features/Inventory/provider/inventory_provider.dart';
-import 'package:ikuku/features/dashboard/presentation/components/app_bottom_nav_bar.dart';
+import 'package:ikuku/shared/widgets/bottom_nav_bar.dart';
 import 'package:provider/provider.dart';
 
 class InventoryCategory{
@@ -90,18 +90,7 @@ class _InventoryHubPageState extends State<InventoryHubPage> {
           );
         },
       ),
-      bottomNavigationBar: AppBottomNavbar(
-        currentIndex: 0,
-        onTap: (index) {
-          if (index == 0) {
-            context.go('/');
-          } else if (index == 1) {
-            context.go('/shop');
-          } else if (index == 2) {
-            context.go('/profile');
-          }
-        },
-      ),
+      bottomNavigationBar: BottomNavBar(currentIndex: null,),
     );
   }
 }
